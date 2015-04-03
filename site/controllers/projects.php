@@ -60,7 +60,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         $state  = $this->input->get->get('state', 0, 'int');
         $state  = (!$state) ? 0 : 1;
 
-        $return     = $this->input->get->get('return');
+        $return     = $this->input->get->get('return', null, 'base64');
         $returnLink = JRoute::_(CrowdFundingHelperRoute::getProjectsRoute(), false);
 
         // Get return link from parameters.

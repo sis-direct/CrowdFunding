@@ -673,4 +673,62 @@ abstract class CrowdFundingHelper
 
         return $socialProfiles;
     }
+
+    public static function intentionPaymentSessionExists($intentionId)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select("COUNT(*)")
+            ->from($db->quoteName("#__crowdf_payment_sessions", "a"))
+            ->where("a.intention_id = ". (int)$intentionId);
+
+        $db->setQuery($query);
+        $result = (int)$db->loadResult();
+
+        return (!$result) ? false : true;
+    }
+
+    public static function removeIntention($intentionId)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->delete($db->quoteName("#__crowdf_intentions"))
+            ->where($db->quoteName("id"). " = ". (int)$intentionId);
+
+        $db->setQuery($query);
+        $db->execute();
+    }
+
+    public static function paymentSessionIntentionExists($intentionId)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select("COUNT(*)")
+            ->from($db->quoteName("#__crowdf_payment_sessions", "a"))
+            ->where("a.intention_id = ". (int)$intentionId);
+
+        $db->setQuery($query);
+        $result = (int)$db->loadResult();
+
+        return (!$result) ? false : true;
+    }
+
+    public static function removePaymentSession($intentionId)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->delete($db->quoteName("#__crowdf_payment_sessions"))
+            ->where($db->quoteName("intention_id"). " = ". (int)$intentionId);
+
+        $db->setQuery($query);
+        $db->execute();
+    }
 }

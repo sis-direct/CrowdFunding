@@ -10,7 +10,8 @@
                 />
 
         <field name="description" type="textarea" class="span12"
-               label="COM_CROWDFUNDING_FIELD_DESCRIPTION"
+               label="COM_CROWDFUNDING_DESCRIPTION"
+               description="COM_CROWDFUNDING_FIELD_UPDATE_DESCRIPTION_DESC"
                filter="trim"
                rows="5"
                required="true"

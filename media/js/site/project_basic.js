@@ -71,7 +71,7 @@ jQuery(document).ready(function () {
     tokenObject[tokenArray[0].name] = tokenArray[0].value;
 
     // Prepare form fields.
-    var formData = jQuery.extend({}, {id: projectId}, tokenObject);
+    var formData = extend({}, {id: projectId}, tokenObject);
 
     // Get the loader.
     var $loader  = jQuery("#js-thumb-fileupload-loader");
@@ -133,7 +133,7 @@ jQuery(document).ready(function () {
         jQuery("#js-image-tools").hide();
 
         // Add the token.
-        var fields = jQuery.extend({}, tokenObject);
+        var fields = extend({}, tokenObject);
 
         jQuery.ajax({
             url: "index.php?option=com_crowdfunding&format=raw&task=project.cancelImageCrop",
@@ -164,7 +164,7 @@ jQuery(document).ready(function () {
         };
 
         // Add the token.
-        var fields = jQuery.extend({}, data, tokenObject);
+        var fields = extend({}, data, tokenObject);
 
         jQuery.ajax({
             url: "index.php?option=com_crowdfunding&format=raw&task=project.cropImage",
@@ -213,4 +213,13 @@ jQuery(document).ready(function () {
         }
 
     });
+
+    // Custom function that prevent conflict between Mootools and jQuery.
+    function extend(){
+        for(var i=1; i<arguments.length; i++)
+            for(var key in arguments[i])
+                if(arguments[i].hasOwnProperty(key))
+                    arguments[0][key] = arguments[i][key];
+        return arguments[0];
+    }
 });

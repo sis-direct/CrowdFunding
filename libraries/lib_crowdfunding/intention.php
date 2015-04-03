@@ -307,6 +307,10 @@ class CrowdFundingIntention
      *
      * $intention->setId($intentionId);
      * </code>
+     *
+     * @param int $id
+     *
+     * @return self
      */
     public function setId($id)
     {
@@ -501,6 +505,11 @@ class CrowdFundingIntention
      *
      * $gateway = $intention->getData("token");
      * </code>
+     *
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
      */
     public function getData($key, $default = null)
     {

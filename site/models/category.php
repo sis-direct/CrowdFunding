@@ -191,15 +191,24 @@ class CrowdFundingModelCategory extends JModelList
     {
         $params    = $this->getState("params");
 
-        $order     = (int)$this->getState("list.ordering", $params->get("items_order", CrowdFundingConstants::ORDER_BY_START_DATE));
-        $orderDirn = $this->getState("list.direction", $params->get("items_order_direction", "desc"));
+        $order     = $this->getState("list.ordering");
+        $orderDirn = $this->getState("list.direction");
 
-/*        $allowedDirns = array("asc", "desc");
+        if (!is_numeric($order)) {
+            $order     = $params->get("items_order", CrowdFundingConstants::ORDER_BY_START_DATE);
+            $orderDirn = $params->get("items_order_direction", "desc");
+        }
+
+        // Convert direction to uppercase.
+        $orderDirn = JString::strtoupper($orderDirn);
+
+        // Validate directions.
+        $allowedDirns = array("ASC", "DESC");
         if (!in_array($orderDirn, $allowedDirns)) {
             $orderDirn = "ASC";
-        } else {
-            $orderDirn = JString::strtoupper($orderDirn);
-        }*/
+        }
+
+        $fundingEndSort = ", a.funding_end ASC";
 
         switch ($order) {
 
@@ -217,6 +226,7 @@ class CrowdFundingModelCategory extends JModelList
 
             case CrowdFundingConstants::ORDER_BY_END_DATE:
                 $orderCol = "a.funding_end";
+                $fundingEndSort = "";
                 break;
 
             case CrowdFundingConstants::ORDER_BY_POPULARITY:
@@ -232,7 +242,7 @@ class CrowdFundingModelCategory extends JModelList
                 break;
         }
 
-        $orderString = 'a.featured DESC, ' . $orderCol . ' ' . $orderDirn;
+        $orderString = 'a.featured DESC, ' . $orderCol . ' ' . $orderDirn . $fundingEndSort;
 
         return $orderString;
     }

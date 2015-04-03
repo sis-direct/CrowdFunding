@@ -62,7 +62,7 @@ $socialProfiles = $displayData["socialProfiles"];
                         <p><?php echo JHtmlString::truncate($item->short_desc, $displayData["descriptionLength"], true, false); ?></p>
                     <?php } ?>
                 </div>
-                <div class="cf-caption-info absolute-bottom hidden-phone">
+                <div class="cf-caption-info absolute-bottom">
                     <?php echo JHtml::_("crowdfunding.progressbar", $fundedPercents, $item->days_left, $item->funding_type); ?>
                     <div class="row-fluid">
                         <div class="span4">

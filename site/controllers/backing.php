@@ -271,6 +271,16 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         );
 
         $intention->bind($custom);
+
+        // Check for existing intention ID in payment session database.
+        // @todo remove this in CF v2.0.
+        $intentionId = $intention->getId();
+        if (!empty($intentionId) and CrowdFundingHelper::intentionPaymentSessionExists($intentionId)) {
+            CrowdFundingHelper::removeIntention($intentionId);
+            $intention->setId(0);
+        }
+
+        // Store the intention data.
         $intention->store();
 
         // Redirect to next page

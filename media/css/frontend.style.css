@@ -663,3 +663,8 @@ form.bs-docs-example {
 #js-fixed-dragger-cropper{
 	text-align: center;
 }
+
+.cf-caption-info .span4 {
+    float: left !important;
+    max-width: 80px;
+}

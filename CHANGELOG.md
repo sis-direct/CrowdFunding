@@ -1,6 +1,15 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.11.2
+* Fixed a bug with wrong redirection after launch.
+* Improved ordering.
+* Fixed some typos.
+* Resolved conflict between jQuery and MooTools when cropping images.
+
+###v1.11.1
+* Fixed URL to an image when it is not enabled URL rewrite.
+
 ###v1.11
 * Added functionality users to report projects.
 * Now, the featured projects will be displayed first on the discover page and on the category view.
