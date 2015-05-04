@@ -93,6 +93,6 @@ class CrowdFundingControllerComment extends ITPrismControllerFormFrontend
         }
 
         // Redirect to next page
-        $this->displayNotice(JText::_("COM_CROWDFUNDING_COMMENT_SUCCESSFULLY_SEND"), $redirectOptions);
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_COMMENT_SUCCESSFULLY_SEND"), $redirectOptions);
     }
 }

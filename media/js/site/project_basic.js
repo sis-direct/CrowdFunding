@@ -100,17 +100,16 @@ jQuery(document).ready(function () {
                     $image.attr("src", response.result.data);
 
                     $image.cropper({
+                        aspectRatio: 1/1,
                         autoCropArea: 0.6, // Center 60%
                         multiple: false,
                         dragCrop: false,
                         dashed: false,
                         movable: true,
-                        resizable: false,
+                        resizable: true,
                         zoomable: false,
                         minWidth: cfImageWidth,
                         minHeight: cfImageHeight,
-                        maxWidth: cfImageWidth,
-                        maxHeight: cfImageHeight,
                         done: function () {
                             jQuery("#js-image-tools").show();
                             $image.cropperInitialized = true;

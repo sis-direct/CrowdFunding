@@ -179,6 +179,8 @@ class CrowdFundingCategories extends JCategories
      * Load categories.
      *
      * <code>
+     * $parentId = 2;
+     *
      * $options = array(
      *    "offset" => 0,
      *    "limit" => 10,
@@ -189,20 +191,17 @@ class CrowdFundingCategories extends JCategories
      * $categories   = new CrowdFundingCategories();
      * $categories->setDb(JFactory::getDbo());
      *
-     * $number = $categories->getProjectsNumber($ids);
+     * $categories->load($parentId);
      * </code>
      * 
      * @param null|int $parentId Parent ID or "root".
      * @param array $options
-     * 
-     * 
-     *
      */
     public function load($parentId = null, $options = array())
     {
         $offset    = (isset($options["offset"])) ? $options["offset"] : 0;
         $limit     = (isset($options["limit"])) ? $options["limit"] : 20;
-        $orderBy   = (isset($options["order_by"])) ? $options["order_by"] : "a.name";
+        $orderBy   = (isset($options["order_by"])) ? $options["order_by"] : "a.title";
         $orderDir  = (isset($options["order_dir"])) ? $options["order_dir"] : "ASC";
 
         $orderDir = JString::strtoupper($orderDir);

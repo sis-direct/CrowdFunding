@@ -46,6 +46,8 @@ $componentParams = JComponentHelper::getParams("com_crowdfunding");
 
 $socialPlatform  = $componentParams->get("integration_social_platform");
 $imageFolder     = $componentParams->get("images_directory", "images/crowdfunding");
+$imageWidth      = $componentParams->get("image_width", 200);
+$imageHeight     = $componentParams->get("image_height", 200);
 
 // Get currency
 jimport("crowdfunding.currency");

@@ -299,8 +299,9 @@ abstract class CrowdFundingHelper
             $query = $db->getQuery(true);
             $query
                 ->select("COUNT(*) AS funders")
-                ->from($db->quoteName("#__crowdf_transactions"))
-                ->where("project_id  = " . (int)$projectId);
+                ->from($db->quoteName("#__crowdf_transactions", "a"))
+                ->where("a.project_id  = " . (int)$projectId)
+                ->where("(a.txn_status = " . $db->quote("completed") . " OR a.txn_status = ". $db->quote("pending") . ")");
 
             $db->setQuery($query);
 
@@ -646,6 +647,9 @@ abstract class CrowdFundingHelper
      * @param Joomla\Registry\Registry $params
      *
      * @return null|array
+     *
+     * @deprecated
+     * @todo remove it in version 1.12
      */
     public static function prepareIntegrationGrid($items, $params)
     {
@@ -669,6 +673,7 @@ abstract class CrowdFundingHelper
         if (!empty($socialPlatform)) {
             jimport("itprism.integrate.profiles");
             $socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+            $socialProfiles->load($usersIds);
         }
 
         return $socialProfiles;

@@ -93,7 +93,6 @@ class CrowdFundingModelFunders extends JModelList
      */
     protected function getListQuery()
     {
-
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
@@ -127,6 +126,8 @@ class CrowdFundingModelFunders extends JModelList
         if (!$displayAnonymous) {
             $query->where("a.investor_id != 0");
         }
+
+        $query->where("(a.txn_status = " . $db->quote("completed") . " OR a.txn_status = ". $db->quote("pending") . ")");
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

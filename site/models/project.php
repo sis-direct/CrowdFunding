@@ -449,6 +449,15 @@ class CrowdFundingModelProject extends JModelForm
         $left   = JArrayHelper::getValue($options, "x", 0);
         $top    = JArrayHelper::getValue($options, "y", 0);
         $image->crop($width, $height, $left, $top, false);
+
+        // Resize to general size.
+        $width  = JArrayHelper::getValue($options, "resize_width", 200);
+        $width  = ($width < 25) ? 50 : $width;
+        $height = JArrayHelper::getValue($options, "resize_height", 200);
+        $height = ($height < 25) ? 50 : $height;
+        $image->resize($width, $height, false);
+
+        // Store to file.
         $image->toFile($imageFile, IMAGETYPE_PNG);
 
         // Load parameters.

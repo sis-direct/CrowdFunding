@@ -178,6 +178,8 @@ class CrowdFundingViewDetails extends JViewLegacy
                 $usersIds[] = $item->user_id;
             }
 
+            $usersIds = array_unique($usersIds);
+
             // Prepare integration. Load avatars and profiles.
             $this->prepareIntegration($usersIds, $this->params);
 

@@ -301,12 +301,16 @@ class CrowdFundingControllerProject extends JControllerLegacy
             // Get the folder where the images will be stored
             $destination = CrowdFundingHelper::getTemporaryImagesFolder();
 
+            $params = JComponentHelper::getParams("com_crowdfunding");
+
             $options = array(
                 "width"    => $this->input->getFloat("width"),
                 "height"   => $this->input->getFloat("height"),
                 "x"        => $this->input->getFloat("x"),
                 "y"        => $this->input->getFloat("y"),
                 "destination"  => $destination,
+                "resize_width" => $params->get("image_width", 200),
+                "resize_height" => $params->get("image_height", 200)
             );
 
             // Resize the picture.

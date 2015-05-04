@@ -1,6 +1,9 @@
 CrowdFunding Release Notes
 ==========================
 
+###v1.11.3
+* Fixed some issues.
+
 ###v1.11.2
 * Fixed a bug with wrong redirection after launch.
 * Improved ordering.

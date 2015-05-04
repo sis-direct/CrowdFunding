@@ -25,8 +25,8 @@ defined('_JEXEC') or die;
     </p>
 <?php } else { ?>
 
-    <a class="btn btn-primary btn-large" id="js-btn-project-unpublish" href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".(int)$this->item->id."&state=0&".JSession::getFormToken()."=1&return=".base64_encode($this->returnUrl)); ?>">
-        <i class="icon-ok-circle icon-white"></i>
+    <a class="btn btn-danger btn-large" id="js-btn-project-unpublish" href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=projects.savestate&id=".(int)$this->item->id."&state=0&".JSession::getFormToken()."=1&return=".base64_encode($this->returnUrl)); ?>">
+        <i class="icon-remove-sign icon-white"></i>
         <?php echo JText::_("COM_CROWDFUNDING_STOP");?>
     </a>
 
