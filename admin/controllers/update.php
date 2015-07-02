@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,20 +10,15 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding update controller class.
+ * Crowdfunding update controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Components
  * @since          1.6
  */
-class CrowdFundingControllerUpdate extends ITPrismControllerFormBackend
+class CrowdfundingControllerUpdate extends Prism\Controller\Form\Backend
 {
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -37,13 +32,13 @@ class CrowdFundingControllerUpdate extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelUpdate */
+        /** @var $model CrowdfundingModelUpdate */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form data
@@ -60,9 +55,9 @@ class CrowdFundingControllerUpdate extends ITPrismControllerFormBackend
             $model->save($validData);
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_UPDATE_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_UPDATE_SAVED'), $redirectOptions);
     }
 }

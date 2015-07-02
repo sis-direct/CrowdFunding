@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.admin');
-
 /**
- * CrowdFunding projects controller
+ * Crowdfunding projects controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerProjects extends ITPrismControllerAdmin
+class CrowdfundingControllerProjects extends Prism\Controller\Admin
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'ProjectItem', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'ProjectItem', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -61,7 +59,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         $state  = (!$state) ? 0 : 1;
 
         $return     = $this->input->get->get('return', null, 'base64');
-        $returnLink = JRoute::_(CrowdFundingHelperRoute::getProjectsRoute(), false);
+        $returnLink = JRoute::_(CrowdfundingHelperRoute::getProjectsRoute(), false);
 
         // Get return link from parameters.
         if (!empty($return)) {
@@ -73,7 +71,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelProjectItem */
+        /** @var $model CrowdfundingModelProjectItem */
 
         $item = $model->getItem($itemId, $userId);
         if (!$item->id) {
@@ -92,7 +90,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         // If there is an error, redirect to another page.
         foreach ($results as $result) {
             if ($result["success"] == false) {
-                $this->displayNotice(JArrayHelper::getValue($result, "message"), $redirectOptions);
+                $this->displayNotice(Joomla\Utilities\ArrayHelper::getValue($result, "message"), $redirectOptions);
                 return;
             }
         }

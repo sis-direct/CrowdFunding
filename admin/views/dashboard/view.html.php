@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewDashboard extends JViewLegacy
+class CrowdfundingViewDashboard extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -35,9 +33,10 @@ class CrowdFundingViewDashboard extends JViewLegacy
     protected $mostFunded;
     protected $latestStarted;
     protected $latestCreated;
-    protected $currency;
+    protected $amount;
     protected $version;
-    protected $itprismVersion;
+    protected $prismVersion;
+    protected $prismVersionLowerMessage;
 
     protected $sidebar;
 
@@ -52,43 +51,44 @@ class CrowdFundingViewDashboard extends JViewLegacy
         $this->state  = $this->get("State");
         $this->params = $this->state->get("params");
 
-        $this->version = new CrowdFundingVersion();
+        $this->version = new Crowdfunding\Version();
 
         // Load ITPrism library version
-        jimport("itprism.version");
-        if (!class_exists("ITPrismVersion")) {
-            $this->itprismVersion = JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY_DOWNLOAD");
+        if (!class_exists("Prism\\Version")) {
+            $this->prismVersion = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD");
         } else {
-            $itprismVersion       = new ITPrismVersion();
-            $this->itprismVersion = $itprismVersion->getShortVersion();
+            $prismVersion       = new Prism\Version();
+            $this->prismVersion = $prismVersion->getShortVersion();
+
+            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, "<")) {
+                $this->prismVersionLowerMessage = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_LOWER_VERSION");
+            }
         }
 
         // Get popular projects.
-        jimport("crowdfunding.statistics.projects.popular");
-        $this->popular = new CrowdFundingStatisticsProjectsPopular(JFactory::getDbo());
+        $this->popular = new Crowdfunding\Statistics\Projects\Popular(JFactory::getDbo());
         $this->popular->load(5);
 
         // Get popular most funded.
-        jimport("crowdfunding.statistics.projects.mostfunded");
-        $this->mostFunded = new CrowdFundingStatisticsProjectsMostFunded(JFactory::getDbo());
+        $this->mostFunded = new Crowdfunding\Statistics\Projects\MostFunded(JFactory::getDbo());
         $this->mostFunded->load(5);
 
         // Get latest started.
-        jimport("crowdfunding.statistics.projects.latest");
-        $this->latestStarted = new CrowdFundingStatisticsProjectsLatest(JFactory::getDbo());
+        $this->latestStarted = new Crowdfunding\Statistics\Projects\Latest(JFactory::getDbo());
         $this->latestStarted->load(5);
 
         // Get latest created.
-        $this->latestCreated = new CrowdFundingStatisticsProjectsLatest(JFactory::getDbo());
+        $this->latestCreated = new Crowdfunding\Statistics\Projects\Latest(JFactory::getDbo());
         $this->latestCreated->loadByCreated(5);
 
         // Get currency.
-        jimport("crowdfunding.currency");
-        $currencyId = $this->params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+
+        $this->amount = new Crowdfunding\Amount($this->params);
+        $this->amount->setCurrency($currency);
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu($this->getName());
+        CrowdfundingHelper::addSubmenu($this->getName());
 
         $this->addToolbar();
         $this->addSidebar();

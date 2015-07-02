@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -71,8 +71,6 @@ defined('_JEXEC') or die;
                 <?php } ?>
             </div>
 
-            <div class="clearfix"></div>
-            <?php echo $this->loadTemplate("extraimages"); ?>
         </div>
         <?php echo JHtml::_('bootstrap.endTab'); ?>
 

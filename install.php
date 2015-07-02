@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * Script file of the component
  */
-class pkg_crowdFundingInstallerScript
+class pkg_crowdfundingInstallerScript
 {
     /**
      * Method to install the component.
@@ -75,11 +75,13 @@ class pkg_crowdFundingInstallerScript
         }
 
         // Register Component helpers
-        JLoader::register("CrowdFundingInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "install.php");
+        JLoader::register("CrowdfundingInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "install.php");
 
         jimport('joomla.filesystem.path');
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.file');
+        jimport('Prism.init');
+        jimport('Crowdfunding.init');
 
         $params             = JComponentHelper::getParams("com_crowdfunding");
         /** @var $params Joomla\Registry\Registry */
@@ -91,20 +93,20 @@ class pkg_crowdFundingInstallerScript
         // Create images folder.
         $imagesPath   = JPath::clean(JPATH_SITE . DIRECTORY_SEPARATOR . $imagesFolder);
         if (!is_dir($imagesPath)) {
-            CrowdFundingInstallHelper::createFolder($imagesPath);
+            CrowdfundingInstallHelper::createFolder($imagesPath);
         }
 
         // Create temporary images folder
         $temporaryImagesPath  = JPath::clean(JPATH_SITE . DIRECTORY_SEPARATOR . $temporaryImagesFolder);
         if (!is_dir($temporaryImagesPath)) {
-            CrowdFundingInstallHelper::createFolder($temporaryImagesPath);
+            CrowdfundingInstallHelper::createFolder($temporaryImagesPath);
         }
 
         // Start table with the information
-        CrowdFundingInstallHelper::startTable();
+        CrowdfundingInstallHelper::startTable();
 
         // Requirements
-        CrowdFundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_MINIMUM_REQUIREMENTS"));
+        CrowdfundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_MINIMUM_REQUIREMENTS"));
 
         // Display result about verification for existing folder
         $title = JText::_("COM_CROWDFUNDING_IMAGE_FOLDER");
@@ -114,7 +116,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for writable folder
         $title = JText::_("COM_CROWDFUNDING_IMAGE_WRITABLE_FOLDER");
@@ -124,7 +126,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for existing folder
         $title = JText::_("COM_CROWDFUNDING_TEMPORARY_IMAGE_FOLDER");
@@ -134,7 +136,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for writable folder
         $title = JText::_("COM_CROWDFUNDING_TEMPORARY_IMAGE_WRITABLE_FOLDER");
@@ -144,7 +146,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for GD library
         $title = JText::_("COM_CROWDFUNDING_GD_LIBRARY");
@@ -154,7 +156,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JON"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for cURL library
         $title = JText::_("COM_CROWDFUNDING_CURL_LIBRARY");
@@ -165,7 +167,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JON"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification Magic Quotes
         $title = JText::_("COM_CROWDFUNDING_MAGIC_QUOTES");
@@ -176,7 +178,7 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JOFF"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification FileInfo
         $title = JText::_("COM_CROWDFUNDING_FILEINFO");
@@ -187,9 +189,9 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JON"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
-        // Display result about verification FileInfo
+        // Display result about verification of PHP Version.
         $title = JText::_("COM_CROWDFUNDING_PHP_VERSION");
         $info  = "";
         if (version_compare(PHP_VERSION, '5.3.0') < 0) {
@@ -197,80 +199,87 @@ class pkg_crowdFundingInstallerScript
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
-        // Display result about verification of installed ITPrism Library
-        jimport("itprism.version");
-        $title = JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY");
+        // Display result about verification of installed Prism Library
+        $title = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY");
         $info  = "";
-        if (!class_exists("ITPrismVersion")) {
-            $info   = JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY_DOWNLOAD");
+        if (!class_exists("Prism\\Version")) {
+            $info   = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD");
             $result = array("type" => "important", "text" => JText::_("JNO"));
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
         }
-        CrowdFundingInstallHelper::addRow($title, $result, $info);
+        CrowdfundingInstallHelper::addRow($title, $result, $info);
 
         // Installed extensions
 
-        CrowdFundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_INSTALLED_EXTENSIONS"));
+        CrowdfundingInstallHelper::addRowHeading(JText::_("COM_CROWDFUNDING_INSTALLED_EXTENSIONS"));
 
-        // CrowdFunding Library
+        // Crowdfunding Library
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_LIBRARY"), $result, JText::_("COM_CROWDFUNDING_LIBRARY"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_LIBRARY"), $result, JText::_("COM_CROWDFUNDING_LIBRARY"));
 
         // Plugins
 
-        // Content - CrowdFunding - Navigation
+        // Content - Crowdfunding - Navigation
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_NAVIGATION"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_NAVIGATION"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
-        // Content - CrowdFunding - Share
+        // Content - Crowdfunding - Share
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_SHARE"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_SHARE"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
-        // Content - CrowdFunding - Admin Mail
+        // Content - Crowdfunding - Admin Mail
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_ADMIN_MAIL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_ADMIN_MAIL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
-        // Content - CrowdFunding - User Mail
+        // Content - Crowdfunding - User Mail
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_USER_MAIL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_USER_MAIL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
-        // Content - CrowdFunding - Validator
+        // Content - Crowdfunding - Validator
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_VALIDATOR"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CONTENT_CROWDFUNDING_VALIDATOR"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
-        // System - CrowdFunding - Modules
+        // System - Crowdfunding - Modules
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_SYSTEM_CROWDFUNDINGMODULES"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_SYSTEM_CROWDFUNDINGMODULES"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
-        // CrowdFunding Payment - PayPal
+        // Crowdfunding Payment - PayPal
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDINGPAYMENT_PAYPAL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDINGPAYMENT_PAYPAL"), $result, JText::_("COM_CROWDFUNDING_PLUGIN"));
 
         // Modules
 
-        // CrowdFunding Info
+        // Crowdfunding Info
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_INFO"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_INFO"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
 
-        // CrowdFunding Details
+        // Crowdfunding Details
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_DETAILS"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_DETAILS"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
 
-        // CrowdFunding Rewards
+        // Crowdfunding Rewards
         $result = array("type" => "success", "text" => JText::_("COM_CROWDFUNDING_INSTALLED"));
-        CrowdFundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_REWARDS"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
+        CrowdfundingInstallHelper::addRow(JText::_("COM_CROWDFUNDING_CROWDFUNDING_MODULE_REWARDS"), $result, JText::_("COM_CROWDFUNDING_MODULE"));
 
         // End table
-        CrowdFundingInstallHelper::endTable();
+        CrowdfundingInstallHelper::endTable();
 
         echo JText::sprintf("COM_CROWDFUNDING_MESSAGE_REVIEW_SAVE_SETTINGS", JRoute::_("index.php?option=com_crowdfunding"));
 
-        jimport("itprism.version");
-        if (!class_exists("ITPrismVersion")) {
-            echo JText::_("COM_CROWDFUNDING_MESSAGE_INSTALL_ITPRISM_LIBRARY");
+        if (!class_exists("Prism\\Version")) {
+            echo JText::_("COM_CROWDFUNDING_MESSAGE_INSTALL_PRISM_LIBRARY");
+        } else {
+
+            if (class_exists("Crowdfunding\\Version")) {
+                $prismVersion        = new Prism\Version();
+                $crowdfundingVersion = new Crowdfunding\Version();
+                if (version_compare($prismVersion->getShortVersion(), $crowdfundingVersion->requiredPrismVersion)) {
+                    echo JText::_("COM_CROWDFUNDING_MESSAGE_INSTALL_PRISM_LIBRARY");
+                }
+            }
         }
 
         // Remove the files that the system does not use anymore.
@@ -280,7 +289,19 @@ class pkg_crowdFundingInstallerScript
     private function removeUnusedFiles()
     {
         $files = array(
-            "/components/com_crowdfunding/helpers/category.php"
+            "/components/com_crowdfunding/helpers/category.php",
+            "/components/com_crowdfunding/views/project/tmpl/story_extraimages.php",
+            "/administrator/components/com_crowdfunding/views/project/tmpl/edit_extraimages.php",
+            "/administrator/components/com_crowdfunding/models/fields/projects.php",
+            "/administrator/components/com_crowdfunding/models/fields/goal.php",
+            "/administrator/components/com_crowdfunding/models/fields/fundingtype.php",
+            "/administrator/components/com_crowdfunding/models/fields/currencies.php",
+            "/administrator/components/com_crowdfunding/models/fields/cfemails.php",
+            "/administrator/components/com_crowdfunding/layouts/project_wizard_six_steps.php",
+            "/administrator/components/com_crowdfunding/layouts/project_wizard.php",
+            "/administrator/components/com_crowdfunding/layouts/payment_wizard_four_steps.php",
+            "/administrator/components/com_crowdfunding/layouts/payment_wizard.php",
+            "/administrator/components/com_crowdfunding/layouts/items_grid.php"
         );
 
         foreach ($files as $file) {

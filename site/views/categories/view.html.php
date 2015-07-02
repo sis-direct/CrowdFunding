@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewCategories extends JViewLegacy
+class CrowdfundingViewCategories extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -72,17 +72,16 @@ class CrowdFundingViewCategories extends JViewLegacy
                 $ids[] = $item->id;
             }
 
-            $categories = new CrowdFundingCategories();
+            $categories = new Crowdfunding\Categories();
             $categories->setDb(JFactory::getDbo());
 
-            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => CrowdFundingConstants::PUBLISHED, "approved" => CrowdFundingConstants::APPROVED));
+            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => Prism\Constants::PUBLISHED, "approved" => Prism\Constants::APPROVED));
         }
 
         // Prepare items parameters.
         if (!empty($this->items)) {
-            $this->items = CrowdFundingHelper::prepareCategories($this->items, $this->numberInRow);
+            $this->items = CrowdfundingHelper::prepareCategories($this->items, $this->numberInRow);
         }
-
 
         // Get layout
         $layout = $this->params->get("categories_layout", "grid");

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -14,8 +14,8 @@ defined('_JEXEC') or die;?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-    <div class="row-fluid">
-        <div class="span8">
+    <div class="row">
+        <div class="col-md-8">
             <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=reward&id='.$this->reward->getId()); ?>" method="post" name="adminForm" id="adminForm">
 
                 <table class="table table-striped table-bordered">
@@ -27,7 +27,7 @@ defined('_JEXEC') or die;?>
                             <th class="nowrap hidden-phone">
                                 <?php echo JHtml::_('crowdfunding.sort',  'COM_CROWDFUNDING_TRANSACTION_ID', 'a.txn_id', $this->listDirn, $this->listOrder); ?>
                             </th>
-                            <th class="nowrap cf-center">
+                            <th class="nowrap text-center">
                                 <?php echo JHtml::_('crowdfunding.sort',  'JSTATUS', 'a.reward_state', $this->listDirn, $this->listOrder); ?>
                             </th>
                         </tr>
@@ -41,11 +41,11 @@ defined('_JEXEC') or die;?>
                                 <?php echo JHtml::_('crowdfunding.socialProfileLink', $socialProfileLink, $item->name); ?>
                             </td>
                             <td class="hidden-phone">
-                                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getTransactionsRoute()."&filter_search=id:".$item->transaction_id); ?>">
+                                <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getTransactionsRoute()."&filter_search=id:".$item->transaction_id); ?>">
                                     <?php echo $item->txn_id; ?>
                                 </a>
                             </td>
-                            <td class="cf-center">
+                            <td class="text-center">
                                 <?php
                                 $canEdit = ($this->userId != $item->receiver_id) ? false : true;
                                 echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward_name, $item->transaction_id, $item->reward_state, $canEdit, $this->redirectUrl);
@@ -65,7 +65,7 @@ defined('_JEXEC') or die;?>
             </form>
         </div>
 
-        <div class="span4">
+        <div class="col-md-4">
             <table class="table table-bordered">
                 <tbody>
                 <tr>
@@ -117,20 +117,14 @@ defined('_JEXEC') or die;?>
         </div>
     </div>
 </div>
-<div class="clearfix"></div>
-<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getFormRoute($this->reward->getProjectId(), "manager")); ?>" class="btn">
-    <i class="icon-circle-arrow-left"></i>
+<a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getFormRoute($this->reward->getProjectId(), "manager")); ?>" class="btn btn-default">
+    <span class="glyphicon glyphicon-menu-left"></span>
     <?php echo JText::_("COM_CROWDFUNDING_BACK_PROJECT_MANAGER"); ?>
 </a>
-<div class="clearfix"></div>
-<div class="pagination">
-        
-    <?php if ($this->params->def('show_pagination_results', 1)) : ?>
-        <p class="counter">
-            <?php echo $this->pagination->getPagesCounter(); ?>
-        </p>
-    <?php endif; ?>
-
-    <?php echo $this->pagination->getPagesLinks(); ?>
-</div>
-<div class="clearfix"></div>
+<?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>
+    <div class="pagination">
+        <?php if ($this->params->def('show_pagination_results', 1)) { ?>
+            <p class="counter pull-right"> <?php echo $this->pagination->getPagesCounter(); ?> </p>
+        <?php } ?>
+        <?php echo $this->pagination->getPagesLinks(); ?> </div>
+<?php } ?>

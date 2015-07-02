@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -12,11 +12,14 @@ defined('_JEXEC') or die;
 ?>
 <div class="row-fluid">
 
-    <h2><?php echo $this->escape($this->item->title); ?></h2>
+    <h2><?php echo JText::_("COM_CROWDFUNDING_TITLE"); ?></h2>
+    <p class="well"><?php echo $this->escape($this->item->title); ?></p>
 
-    <p><?php echo JText::sprintf("COM_CROWDFUNDING_LOG_TYPE", $this->item->type); ?></p>
-
+    <h2><?php echo JText::_("COM_CROWDFUNDING_MESSAGE"); ?></h2>
     <pre><?php echo $this->escape($this->item->data); ?></pre>
+
+    <h2><?php echo JText::_("COM_CROWDFUNDING_LOG_TYPE"); ?></h2>
+    <p class="well"><i><?php echo $this->escape($this->item->type); ?></i></p>
 
     <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="adminForm"
           id="adminForm" class="form-validate">

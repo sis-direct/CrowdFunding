@@ -2,21 +2,21 @@
 <form>
     <fieldset name="friendmail">
 
-        <field name="subject" type="text" class="span12"
+        <field name="subject" type="text" class="form-control"
                label="COM_CROWDFUNDING_SUBJECT"
                description="COM_CROWDFUNDING_FIELD_FRIEND_MAIL_SUBJECT_DESC"
                filter="trim"
                required="true"
                 />
 
-        <field name="sender_name" type="text"
+        <field name="sender_name" type="text" class="form-control"
                label="COM_CROWDFUNDING_SENDER_NAME"
                description="COM_CROWDFUNDING_SENDER_NAME_DESC"
                filter="trim"
                required="true"
                 />
 
-        <field name="sender" type="email"
+        <field name="sender" type="email" class="form-control"
                label="COM_CROWDFUNDING_SENDER_MAIL"
                description="COM_CROWDFUNDING_SENDER_MAIL_DESC"
                filter="trim"
@@ -24,7 +24,7 @@
                validate="email"
                 />
 
-        <field name="receiver" type="email"
+        <field name="receiver" type="email" class="form-control"
                label="COM_CROWDFUNDING_RECEIVER_MAIL"
                description="COM_CROWDFUNDING_RECEIVER_MAIL_DESC"
                filter="trim"
@@ -32,7 +32,7 @@
                validate="email"
                 />
 
-        <field name="message" type="textarea" class="span12"
+        <field name="message" type="textarea" class="form-control"
                label="COM_CROWDFUNDING_MESSAGE"
                filter="trim"
                rows="5"

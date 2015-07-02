@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Modules
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,10 +10,10 @@
 // no direct access
 defined("_JEXEC") or die;
 
-jimport("itprism.init");
-jimport("crowdfunding.init");
+jimport("Prism.init");
+jimport("Crowdfunding.init");
 JLoader::register(
-    "CrowdFundingRewardsModuleHelper",
+    "CrowdfundingRewardsModuleHelper",
     JPATH_ROOT . DIRECTORY_SEPARATOR . "modules" . DIRECTORY_SEPARATOR . "mod_crowdfundingrewards" . DIRECTORY_SEPARATOR . "helper.php"
 );
 
@@ -39,19 +39,17 @@ $componentParams = JComponentHelper::getParams("com_crowdfunding");
 /** @var  $componentParams Joomla\Registry\Registry */
 
 // Get currency
-jimport("crowdfunding.currency");
-$currencyId = $componentParams->get("project_currency");
-$currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $componentParams);
+$currency   = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $componentParams->get("project_currency"));
+$amount     = new Crowdfunding\Amount($componentParams);
+$amount->setCurrency($currency);
 
-jimport("crowdfunding.project");
-jimport("crowdfunding.rewards");
-$project = CrowdFundingProject::getInstance(JFactory::getDbo(), $projectId);
+$project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
 
 $rewards = $project->getRewards(array("state" => 1));
 
 // Calculate the number of funders.
 if ($params->get("display_funders", 0)) {
-    $rewards->loadAdditionalData();
+    $rewards->countReceivers();
 }
 
 $additionalInfo = false;
@@ -68,9 +66,9 @@ switch ($layout) {
 
         // Get the folder where the images are saved.
         $userId           = $project->getUserId();
-        $rewardsImagesUri = CrowdFundingHelper::getImagesFolderUri($userId);
+        $rewardsImagesUri = CrowdfundingHelper::getImagesFolderUri($userId);
 
-        JHtml::_("crowdfunding.jquery_fancybox");
+        JHtml::_("crowdfunding.jqueryFancybox");
 
         $js  = '
 jQuery(document).ready(function() {

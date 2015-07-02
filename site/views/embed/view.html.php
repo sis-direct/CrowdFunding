@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewEmbed extends JViewLegacy
+class CrowdfundingViewEmbed extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -29,14 +29,11 @@ class CrowdFundingViewEmbed extends JViewLegacy
 
     protected $item;
 
-    /**
-     * @var CrowdFundingCurrency
-     */
-    protected $currency;
-
+    protected $amount;
     protected $imageFolder;
     protected $embedLink;
-    protected $socialPlatform;
+    protected $socialProfileLink;
+    protected $displayCreator;
     protected $embedCode;
     protected $form;
 
@@ -53,7 +50,7 @@ class CrowdFundingViewEmbed extends JViewLegacy
     public function display($tpl = null)
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Get model state.
         $this->state = $this->get('State');
@@ -68,22 +65,37 @@ class CrowdFundingViewEmbed extends JViewLegacy
 
         if (!$this->item) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
-            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute(), false));
+            $app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute(), false));
             return;
         }
 
         // Get currency
-        jimport("crowdfunding.currency");
-        $currencyId     = $this->params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+        // Get currency
+        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $this->amount = new Crowdfunding\Amount($this->params);
+        $this->amount->setCurrency($currency);
 
-        // Get a social platform for integration.
-        $this->socialPlatform = $this->params->get("integration_social_platform");
+        // Integrate with social profile.
+        $this->displayCreator = $this->params->get("integration_display_creator", true);
+
+        // Prepare integration. Load avatars and profiles.
+        if ($this->displayCreator and !empty($this->item->user_id)) {
+            $socialProfilesBuilder = new Prism\Integration\Profile\Builder(
+                array(
+                    "social_platform" => $this->params->get("integration_social_platform"),
+                    "user_id" => $this->item->user_id
+                )
+            );
+            $socialProfilesBuilder->build();
+
+            $socialProfile = $socialProfilesBuilder->getProfile();
+            $this->socialProfileLink  = (!$socialProfile) ? null : $socialProfile->getLink();
+        }
 
         // Set a link to project page
         $uri              = JUri::getInstance();
         $host             = $uri->toString(array("scheme", "host"));
-        $this->item->link = $host . JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
+        $this->item->link = $host . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
 
         // Set a link to image
         $this->item->link_image = $host . "/" . $this->imageFolder . "/" . $this->item->image;
@@ -122,17 +134,13 @@ class CrowdFundingViewEmbed extends JViewLegacy
      * @param string $host
      *
      * @return string
-     *
-     * @todo check this method
      */
     protected function prepareEmbedCode($item, $host)
     {
         // Generate embed link
-        $this->embedLink = $host . JRoute::_(CrowdFundingHelperRoute::getEmbedRoute($this->item->slug, $this->item->catslug) . "&layout=widget&tmpl=component", false);
+        $embedLink = $host . JRoute::_(CrowdfundingHelperRoute::getEmbedRoute($item->slug, $item->catslug) . "&layout=widget&tmpl=component", false);
 
-        $code = '<iframe src="' . $this->embedLink . '" width="280px" height="560px" frameborder="0" scrolling="no"></iframe>';
-
-        return $code;
+        return '<iframe src="' . $embedLink . '" width="280px" height="560px" frameborder="0" scrolling="no"></iframe>';
     }
 
     /**
@@ -142,7 +150,7 @@ class CrowdFundingViewEmbed extends JViewLegacy
      */
     protected function prepareEmailForm($item)
     {
-        $model = JModelLegacy::getInstance("FriendMail", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model = JModelLegacy::getInstance("FriendMail", "CrowdfundingModel", $config = array('ignore_request' => false));
 
         // Prepare default content of the form
         $formData = array(

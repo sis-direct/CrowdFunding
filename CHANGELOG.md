@@ -1,5 +1,15 @@
-CrowdFunding Release Notes
+Crowdfunding Release Notes
 ==========================
+
+###v2.0
+* Improved Crowdfunding library.
+* Improved code quality.
+* Removed Email templates section. You have to use the new extension (Email Templates) [http://itprism.com/free-joomla-extensions/others/email-templates-manager].
+* Integrated with Easy Profile.
+* Built over (Twitter Bootstrap 3) [http://getbootstrap.com/].
+* Renamed the plugin "Content - CrowdFunding Share" to "Content - CrowdFunding Social Share".
+* Removed extra images. This functionality will be implemented as third-party extension.
+* Added functionality users to subscribe to campaigns following them.
 
 ###v1.11.3
 * Fixed some issues.
@@ -32,7 +42,7 @@ CrowdFunding Release Notes
 * Added a new view "Category".
 * It was improved the URI routing. Now, the projects are not assigned to "Discover" page. They can be part from "Discover", "Categories", "Category" or "Details" view. You have to assign the [specific modules] (http://itprism.com/help/95-crowdfunding-documentation-faq#specific_modules) to one of those menu items.
 * Added a new event "onBeforePaymentAuthorize".
-* It was removed the options of the plugin "System - CrowdFunding Modules". Now, all specific modules will be managed by default.
+* It was removed the options of the plugin "System - Crowdfunding Modules". Now, all specific modules will be managed by default.
 * Improved usability.
 
 ###v1.9.1
@@ -44,8 +54,8 @@ CrowdFunding Release Notes
 * Added option project owners to provide payout information - PayPal account, IBAN and Bank Account,...
 * Added functionality project owners to receive their amounts to their PayPal accounts instantly.
 * It was done the PayPal Adaptive payment plugin.
-* It was fixed the plugins "Content - CrowdFunding - User Mail" and "Content - CrowdFunding - Admin Mail".
-* Added option to display number of funders, delivery date and claimed rewards on the module "CrowdFunding Rewards".
+* It was fixed the plugins "Content - Crowdfunding - User Mail" and "Content - Crowdfunding - Admin Mail".
+* Added option to display number of funders, delivery date and claimed rewards on the module "Crowdfunding Rewards".
 * Added a view "Categories".
 * Improved
 * Fixed some issues.
@@ -70,7 +80,7 @@ CrowdFunding Release Notes
     * custom CSS styles ( Now you can include styles for project states "completed successfully", "completed unsuccessfully", "new", "ending soon", "featured" ).
     * title and description length.
 * Added option for amount formatting.
-* Improved "Content - CrowdFunding Share".
+* Improved "Content - Crowdfunding Share".
     * Added new option to Facebook Like. That is a button type "Button".
     * Replaced "Send" button with "Share".
     * Added languages to the LinkedIn button.
@@ -80,8 +90,8 @@ CrowdFunding Release Notes
 * Added event "onContentValidateAfterSave" to step "Story".
 * Added event "onContentAfterSave" to steps Basic, Funding, Story of the wizard.
 * Added method "notifyAjax". Now, the plugin BankTransfer send a request to that method to process transaction.
-* Move functionality that validates wizard steps to a plugin "Content - CrowdFunding Validator".
-* It was written and generated [CrowdFunding Library documentation] (http://cdn.itprism.com/api/crowdfunding/index.html).
+* Move functionality that validates wizard steps to a plugin "Content - Crowdfunding Validator".
+* It was written and generated [Crowdfunding Library documentation] (http://cdn.itprism.com/api/crowdfunding/index.html).
 * Improved code quality.
 
 ###v1.6.1
@@ -144,11 +154,11 @@ CrowdFunding Release Notes
 
 ###v1.4
 
-* Added a new event "onTransactionChangeStatus" to plugins with type CrowdFundingPayment. Now, when the administrator change the status, that event will be triggered.
+* Added a new event "onTransactionChangeStatus" to plugins with type CrowdfundingPayment. Now, when the administrator change the status, that event will be triggered.
 * Improved the payment process. Some payment plugins were improved too. 
 * It was added feature, anonymous users to be able to donate.
 * Added ability for uploading many images to projects.
-* CrowdFundingCurrency class was refactored. It was implemented [The NumberFormatter class] (http://www.php.net/manual/en/class.numberformatter.php).
+* CrowdfundingCurrency class was refactored. It was implemented [The NumberFormatter class] (http://www.php.net/manual/en/class.numberformatter.php).
 * Fixed some issues.
 * Improved
 
@@ -167,18 +177,18 @@ CrowdFunding Release Notes
 * Fixed loading locations lag.
 * Now, rewards are optional. You are able to publish project without rewards.
 * Improved usability of the wizard used for project creating.
-* Fixed [issue #29] (https://github.com/ITPrism/CrowdFunding/issues/29). Now, rewards are set as trashed, it they are part of transaction.
-* Removed some plugins from the package. The plugins are "Search - CrowdFunding", "Content - CrowdFunding - Manager" and "CrowdFunding Info". 
-* Developed some modules - "CrowdFunding Search", "CrowdFunding Latest", "CrowdFunding Popular". 
+* Fixed [issue #29] (https://github.com/ITPrism/Crowdfunding/issues/29). Now, rewards are set as trashed, it they are part of transaction.
+* Removed some plugins from the package. The plugins are "Search - Crowdfunding", "Content - Crowdfunding - Manager" and "Crowdfunding Info".
+* Developed some modules - "Crowdfunding Search", "Crowdfunding Latest", "Crowdfunding Popular".
 * Developed some payment plugins
     * Bank Transfer
     * Mollie iDEAL
 
-NOTE: All new extensions and the removed from the package are available for downloading on [CrowdFunding extension page] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital).
+NOTE: All new extensions and the removed from the package are available for downloading on [Crowdfunding extension page] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital).
 
 ###v1.2.1
 
-* Added to the package the plugins "Content - CrowdFunding - User Mail" and "Content - CrowdFunding - Admin Mail".
+* Added to the package the plugins "Content - Crowdfunding - User Mail" and "Content - Crowdfunding - Admin Mail".
 * Fixed some issues.
 
 ###v1.2
@@ -188,16 +198,16 @@ NOTE: All new extensions and the removed from the package are available for down
     * maximum days
     * duration type
     * funding type
-* The box with project state information moved to module "CrowdFunding Info"
-* The box with rewards moved to module "CrowdFunding Rewards"
-* The box with project details moved to module "CrowdFunding Details"
+* The box with project state information moved to module "Crowdfunding Info"
+* The box with rewards moved to module "Crowdfunding Rewards"
+* The box with project details moved to module "Crowdfunding Details"
 * Added option to set number of project in row.
 * Improved responsive design
-* [[#12]](https://github.com/ITPrism/CrowdFunding/issues/12 "Date display issue") Fixed the date issue
+* [[#12]](https://github.com/ITPrism/Crowdfunding/issues/12 "Date display issue") Fixed the date issue
 * Added plugins used for sending mails to administrator and user
-    * Content - CrowdFunding - User Mail ( It sends notification mail to the administrator when a user creates or publishes a project. )
-    * Content - CrowdFunding - Admin Mail ( It sends notification mail to a user when the administrator approves a project. )
-    * Content - CrowdFunding - Manager ( It adds functionality for managing project on details page. It also display statistical information about it. )
+    * Content - Crowdfunding - User Mail ( It sends notification mail to the administrator when a user creates or publishes a project. )
+    * Content - Crowdfunding - Admin Mail ( It sends notification mail to a user when the administrator approves a project. )
+    * Content - Crowdfunding - Manager ( It adds functionality for managing project on details page. It also display statistical information about it. )
 * It was added some plugin events
     * onContentAfterSave
     * onContentChangeState
@@ -206,7 +216,7 @@ NOTE: All new extensions and the removed from the package are available for down
 * Added filters on backend
 * Added filters on discover page
 * Now, the owner of the projects can review them even they are not approved.
-* Improved the plugin "Content - CrowdFunding - Share"
+* Improved the plugin "Content - Crowdfunding - Share"
 * Added view "Featured"
 * Moved "Discover" options from component config to menu item options.
 * Fixed some issues
@@ -225,7 +235,7 @@ NOTE: All new extensions and the removed from the package are available for down
 
 ###v1.1.1
 
-* Fixed an issue [[#11]](https://github.com/ITPrism/CrowdFunding/pull/11 "small change to use title for project alias")
+* Fixed an issue [[#11]](https://github.com/ITPrism/Crowdfunding/pull/11 "small change to use title for project alias")
 * Added option to search plugin that enables or disables searching in area.
 
 ###v1.1

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelCurrencies extends JModelList
+class CrowdfundingModelCurrencies extends JModelList
 {
     /**
      * Constructor.
@@ -26,7 +26,7 @@ class CrowdFundingModelCurrencies extends JModelList
             $config['filter_fields'] = array(
                 'id', 'a.id',
                 'title', 'a.title',
-                'abbr', 'a.abbr',
+                'code', 'a.code',
                 'symbol', 'a.symbol'
             );
         }
@@ -34,13 +34,6 @@ class CrowdFundingModelCurrencies extends JModelList
         parent::__construct($config);
     }
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since   1.6
-     */
     protected function populateState($ordering = null, $direction = null)
     {
         // Load the filter state.
@@ -84,7 +77,7 @@ class CrowdFundingModelCurrencies extends JModelList
     protected function getListQuery()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -93,7 +86,7 @@ class CrowdFundingModelCurrencies extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.abbr, a.symbol'
+                'a.id, a.title, a.code, a.symbol'
             )
         );
         $query->from($db->quoteName('#__crowdf_currencies', 'a'));

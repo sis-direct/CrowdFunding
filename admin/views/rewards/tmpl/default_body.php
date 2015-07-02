@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -11,7 +11,7 @@
 defined('_JEXEC') or die; ?>
 
 <?php foreach ($this->items as $i => $item) {
-    $dateValidator = new ITPrismValidatorDate($item->delivery);
+    $dateValidator = new Prism\Validator\Date($item->delivery);
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td class="center hidden-phone">
@@ -30,7 +30,7 @@ defined('_JEXEC') or die; ?>
                 <i class="icon icon-eye"></i>
             </a>
         </td>
-        <td class="center"><?php echo $this->currency->getAmountString($item->amount); ?></td>
+        <td class="center"><?php echo $this->amount->setValue($item->amount)->formatCurrency(); ?></td>
         <td class="center hidden-phone"><?php echo $item->number; ?></td>
         <td class="center hidden-phone"><?php echo $item->distributed; ?></td>
         <td class="center hidden-phone"><?php echo $item->available; ?></td>

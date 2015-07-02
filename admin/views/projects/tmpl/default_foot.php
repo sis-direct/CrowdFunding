@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 ?>
 <tr>
-    <td colspan="14">
+    <td colspan="13">
         <?php echo $this->pagination->getListFooter(); ?>
     </td>
 </tr>

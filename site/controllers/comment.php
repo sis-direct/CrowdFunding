@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.frontend');
-
 /**
- * CrowdFunding comment controller
+ * Crowdfunding comment controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerComment extends ITPrismControllerFormFrontend
+class CrowdfundingControllerComment extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerComment extends ITPrismControllerFormFrontend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Comment', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Comment', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -52,18 +50,17 @@ class CrowdFundingControllerComment extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "project_id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
 
         // Get project
-        jimport("crowdfunding.project");
-        $item = CrowdFundingProject::getInstance(JFactory::getDbo(), $itemId);
+        $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         $redirectOptions = array(
-            "force_direction" => CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "comments")
+            "force_direction" => CrowdfundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "comments")
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelComment */
+        /** @var $model CrowdfundingModelComment */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */

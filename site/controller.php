@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
-class CrowdFundingController extends JControllerLegacy
+class CrowdfundingController extends JControllerLegacy
 {
     protected $cacheableViews = array("categories", "category", "discover", "featured");
 

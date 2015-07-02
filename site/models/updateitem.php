@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelUpdateItem extends JModelItem
+class CrowdfundingModelUpdateItem extends JModelItem
 {
     protected $item;
 
@@ -24,7 +24,7 @@ class CrowdFundingModelUpdateItem extends JModelItem
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Update', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Update', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -57,7 +57,7 @@ class CrowdFundingModelUpdateItem extends JModelItem
      *
      * @param    integer  $id  The id of the object to get.
      *
-     * @return    mixed    Object on success, false on failure.
+     * @return    null|object    Object on success, false on failure.
      */
     public function getItem($id = null)
     {
@@ -76,7 +76,8 @@ class CrowdFundingModelUpdateItem extends JModelItem
 
             // Attempt to load the row.
             if ($table->get("id")) {
-                $this->item[$storedId] = $table;
+                $properties = $table->getProperties();
+                $this->item[$storedId] = Joomla\Utilities\ArrayHelper::toObject($properties);
             }
         }
 

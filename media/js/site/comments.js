@@ -29,9 +29,9 @@ jQuery(document).ready(function() {
 						jQuery(this).remove();
 					});
 
-                    ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+                    PrismUIHelper.displayMessageSuccess(response.title, response.text);
 				} else {
-                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                    PrismUIHelper.displayMessageFailure(response.title, response.text);
 				}
 				
 				// Reset form data if the element has been loaded for editing.
@@ -60,7 +60,7 @@ jQuery(document).ready(function() {
 			success: function(response) {
 				
 				if(!response.success) {
-                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                    PrismUIHelper.displayMessageFailure(response.title, response.text);
 				}
 				
 				jQuery("#jform_comment").val(response.data.comment);

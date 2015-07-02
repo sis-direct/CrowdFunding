@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Modules
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-class CrowdFundingRewardsModuleHelper
+class CrowdfundingRewardsModuleHelper
 {
     public static function image($thumb, $image, $width = 50, $height = 50)
     {

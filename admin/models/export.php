@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,19 +10,19 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelExport extends JModelLegacy
+class CrowdfundingModelExport extends JModelLegacy
 {
     public function getCurrencies()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
         $query
-            ->select('a.id, a.title, a.abbr, a.symbol, a.position')
+            ->select('a.id, a.title, a.code, a.symbol, a.position')
             ->from($db->quoteName('#__crowdf_currencies', 'a'));
 
 
@@ -37,7 +37,7 @@ class CrowdFundingModelExport extends JModelLegacy
     public function getLocations()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -62,7 +62,7 @@ class CrowdFundingModelExport extends JModelLegacy
     public function getStates()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -83,7 +83,7 @@ class CrowdFundingModelExport extends JModelLegacy
     public function getCountries()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);

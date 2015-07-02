@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,21 +10,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding import controller.
+ * Crowdfunding import controller.
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  */
-class CrowdFundingControllerImport extends ITPrismControllerFormBackend
+class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 {
-    /**
-     * Proxy for getModel.
-     * @since   1.6
-     */
-    public function getModel($name = 'Import', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Import', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -43,13 +37,13 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelImport */
+        /** @var $model CrowdfundingModelImport */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -64,7 +58,7 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         $fileData = JArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
         }
 
@@ -77,14 +71,15 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
             if (!empty($removeOld)) {
                 $model->removeAll("currencies");
             }
+
             $model->importCurrencies($filePath, $resetId);
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_CURRENCIES_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_CURRENCIES_IMPORTED'), $redirectOptions);
 
     }
 
@@ -101,13 +96,13 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelImport */
+        /** @var $model CrowdfundingModelImport */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -122,7 +117,7 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         $fileData = JArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
         }
 
@@ -141,10 +136,10 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_LOCATIONS_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_LOCATIONS_IMPORTED'), $redirectOptions);
 
     }
 
@@ -161,13 +156,13 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelImport * */
+        /** @var $model CrowdfundingModelImport * */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm * */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -182,7 +177,7 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         $fileData = JArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
         }
 
@@ -199,10 +194,10 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_COUNTRIES_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_COUNTRIES_IMPORTED'), $redirectOptions);
 
     }
 
@@ -219,13 +214,13 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelImport * */
+        /** @var $model CrowdfundingModelImport */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm * */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -240,7 +235,7 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         $fileData = JArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
 
             return;
         }
@@ -253,17 +248,17 @@ class CrowdFundingControllerImport extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_STATES_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_STATES_IMPORTED'), $redirectOptions);
 
     }
 
     public function cancel($key = null)
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationAdministrator * */
+        /** @var $app JApplicationAdministrator */
 
         $view = $app->getUserState("import.context", "currencies");
 

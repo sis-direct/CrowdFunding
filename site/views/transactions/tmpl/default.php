@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -9,7 +9,7 @@
 
 // no direct access
 defined('_JEXEC') or die;?>
-<div class="cfunding<?php echo $this->pageclass_sfx;?>">
+<div class="cftransactions<?php echo $this->pageclass_sfx;?>">
     <?php if ($this->params->get('show_page_heading', 1)) { ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
@@ -46,7 +46,7 @@ defined('_JEXEC') or die;?>
             	<?php foreach($this->items as $item) {?>
             	<tr>
             		<td class="has-context">
-            			<a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
+            			<a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));?>">
             			<?php echo JHtmlString::truncate(strip_tags($item->project), 64); ?>
             		    </a>
                         <?php if(!empty($item->txn_id)) { ?>
@@ -55,16 +55,16 @@ defined('_JEXEC') or die;?>
                         </div>
                         <?php } ?>
         		    </td>
-            		<td class="cf-center"><?php echo $this->currency->getAmountString($item->txn_amount); ?></td>
-            		<td class="cf-center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->investor); ?></td>
-            		<td class="cf-center hidden-phone"><?php echo $this->escape($item->receiver); ?></td>
-            		<td class="cf-center hidden-phone"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
-            		<td class="cf-center hidden-phone">
+            		<td class="text-center"><?php echo $this->amount->setValue($item->txn_amount)->formatCurrency(); ?></td>
+            		<td class="text-center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->investor); ?></td>
+            		<td class="text-center hidden-phone"><?php echo $this->escape($item->receiver); ?></td>
+            		<td class="text-center hidden-phone"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
+            		<td class="text-center hidden-phone">
             		    <?php 
             		    $canEdit = ($this->userId != $item->receiver_id) ? false : true;
             		    echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward, $item->id, $item->reward_state, $canEdit, $this->redirectUrl); ?>
             		</td>
-            		<td class="cf-center hidden-phone">
+            		<td class="text-center hidden-phone">
             			<?php echo $item->id; ?>
             		</td>
             	</tr>
@@ -80,15 +80,10 @@ defined('_JEXEC') or die;?>
         <?php echo JHtml::_('form.token'); ?>
     </form>
 </div>
-<div class="clearfix"></div>
-<div class="pagination">
-        
-    <?php if ($this->params->def('show_pagination_results', 1)) : ?>
-        <p class="counter">
-            <?php echo $this->pagination->getPagesCounter(); ?>
-        </p>
-    <?php endif; ?>
-
-    <?php echo $this->pagination->getPagesLinks(); ?>
-</div>
-<div class="clearfix"></div>
+<?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>
+    <div class="pagination">
+    <?php if ($this->params->def('show_pagination_results', 1)) { ?>
+        <p class="counter pull-right"> <?php echo $this->pagination->getPagesCounter(); ?> </p>
+    <?php } ?>
+    <?php echo $this->pagination->getPagesLinks(); ?> </div>
+<?php } ?>

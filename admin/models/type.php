@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelType extends JModelAdmin
+class CrowdfundingModelType extends JModelAdmin
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class CrowdFundingModelType extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Type', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Type', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -30,7 +30,7 @@ class CrowdFundingModelType extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param   array   $data     An optional array of data for the form to interogate.
+     * @param   array   $data     An optional array of data for the form to interrogate.
      * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
      *
      * @return  JForm   A JForm object on success, false on failure
@@ -78,7 +78,7 @@ class CrowdFundingModelType extends JModelAdmin
         $description = JArrayHelper::getValue($data, "description");
 
         $params = JArrayHelper::getValue($data, "params", array(), "array");
-        $aprams = json_encode($params);
+        $params = json_encode($params);
 
         // Load a record from the database
         $row = $this->getTable();
@@ -86,7 +86,7 @@ class CrowdFundingModelType extends JModelAdmin
 
         $row->set("title", $title);
         $row->set("description", $description);
-        $row->set("params", $aprams);
+        $row->set("params", $params);
 
         $row->store();
 

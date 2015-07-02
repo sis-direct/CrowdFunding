@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,17 +10,14 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
 /**
  * This controller provides functionality
  * that helps to payment plugins to prepare their payment data.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Payments
- *
  */
-class CrowdFundingControllerPayments extends JControllerLegacy
+class CrowdfundingControllerPayments extends JControllerLegacy
 {
     protected $option;
     protected $log;
@@ -30,7 +27,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy
 
     protected $projectId;
 
-    protected $text_prefix = "COM_CROWDFUNDING";
+    protected $text_prefix = "COM_Crowdfunding";
 
     public function __construct($config = array())
     {
@@ -47,9 +44,9 @@ class CrowdFundingControllerPayments extends JControllerLegacy
 
         $file = JPath::clean(JFactory::getApplication()->get("log_path") . DIRECTORY_SEPARATOR . $fileName);
 
-        $this->log = new ITPrismLog();
-        $this->log->addWriter(new ITPrismLogWriterDatabase(JFactory::getDbo(), $tableName));
-        $this->log->addWriter(new ITPrismLogWriterFile($file));
+        $this->log = new Prism\Log\Log();
+        $this->log->addWriter(new Prism\Log\Writer\Database(JFactory::getDbo(), $tableName));
+        $this->log->addWriter(new Prism\Log\Writer\File($file));
 
     }
 
@@ -82,7 +79,7 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         }
 
         $app = JFactory::getApplication();
-        /** @var $app JApplicationAdministrator * */
+        /** @var $app JApplicationAdministrator */
 
         $cid    = $this->input->get("cid", array(), "array");
 
@@ -95,21 +92,25 @@ class CrowdFundingControllerPayments extends JControllerLegacy
 
             if (!empty($cid)) {
 
-                jimport("crowdfunding.transactions");
-                $items = new CrowdFundingTransactions(JFactory::getDbo());
-                $items->load($cid, array("txn_status" => "pending"));
+                $options = array(
+                    "ids" => $cid,
+                    "txn_status" => "pending"
+                );
+
+                $items = new Crowdfunding\Transactions(JFactory::getDbo());
+                $items->load($options);
 
                 if (count($items) == 0) {
                     throw new UnexpectedValueException(JText::_($this->text_prefix . "_ERROR_INVALID_TRANSACTIONS"));
                 }
 
-                // Import CrowdFunding Payment Plugins
+                // Import Crowdfunding Payment Plugins
                 $dispatcher = JEventDispatcher::getInstance();
                 JPluginHelper::importPlugin('crowdfundingpayment');
 
                 foreach ($items as $item) {
 
-                    $context = $this->option . '.payments.capture.' . JString::strtolower(str_replace(" ", "", $item->service_provider));
+                    $context = $this->option . '.payments.capture.' . Joomla\String\String::strtolower(str_replace(" ", "", $item->service_provider));
 
                     // Trigger onContentPreparePayment event.
                     $results = $dispatcher->trigger("onPaymentsCapture", array($context, &$item, &$params));
@@ -170,27 +171,30 @@ class CrowdFundingControllerPayments extends JControllerLegacy
         JArrayHelper::toInteger($cid);
 
         $messages = array();
-
-        // Trigger the event
+        
         try {
 
             if (!empty($cid)) {
 
-                jimport("crowdfunding.transactions");
-                $items = new CrowdFundingTransactions(JFactory::getDbo());
-                $items->load($cid, array("txn_status" => "pending"));
+                $options = array(
+                    "ids" => $cid,
+                    "txn_status" => "pending"
+                );
+
+                $items = new Crowdfunding\Transactions(JFactory::getDbo());
+                $items->load($options);
 
                 if (count($items) == 0) {
                     throw new UnexpectedValueException(JText::_($this->text_prefix . "_ERROR_INVALID_TRANSACTIONS"));
                 }
 
-                // Import CrowdFunding Payment Plugins
+                // Import Crowdfunding Payment Plugins
                 $dispatcher = JEventDispatcher::getInstance();
                 JPluginHelper::importPlugin('crowdfundingpayment');
 
                 foreach ($items as $item) {
 
-                    $context = $this->option . '.payments.void.' . JString::strtolower(str_replace(" ", "", $item->service_provider));
+                    $context = $this->option . '.payments.void.' . Joomla\String\String::strtolower(str_replace(" ", "", $item->service_provider));
 
                     // Trigger onContentPreparePayment event.
                     $results = $dispatcher->trigger("onPaymentsVoid", array($context, &$item, &$params));

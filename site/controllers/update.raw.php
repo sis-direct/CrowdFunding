@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
 /**
- * CrowdFunding update controller
+ * Crowdfunding update controller
  *
  * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @subpackage  Crowdfunding
  */
-class CrowdFundingControllerUpdate extends JControllerLegacy
+class CrowdfundingControllerUpdate extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'UpdateItem', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'UpdateItem', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -43,8 +41,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
     public function getData()
     {
         // Create response object.
-        jimport('itprism.response.json');
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         // Get the input
         $itemId = $this->input->get->get('id', 0, 'int');
@@ -52,7 +49,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
 
         // Get the model
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelUpdateItem * */
+        /** @var $model CrowdfundingModelUpdateItem */
 
         try {
 
@@ -61,7 +58,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
             if ($item->user_id != $userId) {
                 $response
                     ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                    ->setTitle(JText::_("COM_CROWDFUNDING_RECORD_CANNOT_EDIT"))
+                    ->setText(JText::_("COM_CROWDFUNDING_RECORD_CANNOT_EDIT"))
                     ->failure();
 
                 echo $response;
@@ -72,16 +69,20 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
             JLog::add($e->getMessage());
             $response
                 ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                ->setTitle(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"))
+                ->setText(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"))
                 ->failure();
 
             echo $response;
             JFactory::getApplication()->close();
         }
 
-        $response
-            ->setData($item)
-            ->success();
+        if (isset($item) and is_object($item)) {
+            $response
+                ->setData(Joomla\Utilities\ArrayHelper::fromObject($item))
+                ->success();
+        } else {
+            $response->failure();
+        }
 
         echo $response;
         JFactory::getApplication()->close();
@@ -100,15 +101,14 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
         /** $app JApplicationSite */
 
         // Create response object.
-        jimport('itprism.response.json');
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         $itemId = $app->input->post->get('id', 0, 'int');
         $userId = JFactory::getUser()->get("id");
 
         // Get the model
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelUpdateItem */
+        /** @var $model CrowdfundingModelUpdateItem */
 
         try {
 
@@ -117,7 +117,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
             if ($item->user_id != $userId) {
                 $response
                     ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                    ->setTitle(JText::_("COM_CROWDFUNDING_RECORD_CANNOT_REMOVED"))
+                    ->setText(JText::_("COM_CROWDFUNDING_RECORD_CANNOT_REMOVED"))
                     ->failure();
 
                 echo $response;
@@ -130,7 +130,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
             JLog::add($e->getMessage());
             $response
                 ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                ->setTitle(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM_CANNOT_REMOVED"))
+                ->setText(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM_CANNOT_REMOVED"))
                 ->failure();
 
             echo $response;
@@ -139,7 +139,7 @@ class CrowdFundingControllerUpdate extends JControllerLegacy
 
         $response
             ->setTitle(JText::_("COM_CROWDFUNDING_SUCCESS"))
-            ->setTitle(JText::_("COM_CROWDFUNDING_RECORD_REMOVED_SUCCESSFULLY"))
+            ->setText(JText::_("COM_CROWDFUNDING_RECORD_REMOVED_SUCCESSFULLY"))
             ->success();
 
         echo $response;

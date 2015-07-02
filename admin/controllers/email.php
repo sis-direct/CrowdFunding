@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,20 +10,15 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding email controller class.
+ * Crowdfunding email controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Component
  * @since          1.6
  */
-class CrowdFundingControllerEmail extends ITPrismControllerFormBackend
+class CrowdfundingControllerEmail extends Prism\Controller\Form\Backend
 {
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -37,13 +32,13 @@ class CrowdFundingControllerEmail extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelEmail * */
+        /** @var $model CrowdfundingModelEmail */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form data
@@ -64,9 +59,9 @@ class CrowdFundingControllerEmail extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_EMAIL_SAVED_SUCCESSFULLY'), $responseOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_EMAIL_SAVED_SUCCESSFULLY'), $responseOptions);
     }
 }

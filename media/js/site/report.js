@@ -13,27 +13,37 @@ jQuery(document).ready(function () {
 
     if ($projectTitleElement) {
 
-        // Load projects from the server
+        // Load locations from the server
         $projectTitleElement.typeahead({
+            minLength: 3,
+            hint: false
+        }, {
+            source: function(query, syncResults, asyncResults) {
 
-            ajax: {
-                url: "index.php?option=com_crowdfunding&format=raw&task=project.loadProject",
-                method: "get",
-                triggerLength: 3,
-                preProcess: function (response) {
-
+                jQuery.ajax({
+                    url: "index.php?option=com_crowdfunding&format=raw&task=project.loadProject",
+                    type: "GET",
+                    data: {query: query},
+                    dataType: "text json",
+                    async: true
+                }).done(function(response){
                     if (response.success === false) {
                         return false;
                     }
 
-                    return response.data;
-                }
-            },
-            onSelect: function (item) {
-                jQuery("#cfreport_id").val(item.value);
-            }
+                    return asyncResults(response.data);
+                });
 
+            },
+            async: true,
+            limit: 5,
+            display: "name"
         });
+
+        $projectTitleElement.bind('typeahead:select', function(event, suggestion) {
+            jQuery("#cfreport_id").attr("value", suggestion.id);
+        });
+
     }
 
 });

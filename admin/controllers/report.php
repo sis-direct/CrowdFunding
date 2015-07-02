@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,19 +10,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding report controller class.
+ * Crowdfunding report controller class.
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  */
-class CrowdFundingControllerReport extends ITPrismControllerFormBackend
+class CrowdfundingControllerReport extends Prism\Controller\Form\Backend
 {
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -36,13 +31,13 @@ class CrowdFundingControllerReport extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelReport */
+        /** @var $model CrowdfundingModelReport */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form data
@@ -62,9 +57,9 @@ class CrowdFundingControllerReport extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_REPORT_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_REPORT_SAVED'), $redirectOptions);
     }
 }

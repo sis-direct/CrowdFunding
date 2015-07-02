@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -15,22 +15,26 @@ defined('_JEXEC') or die;
 
 <?php if($this->userId) { ?>
 <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="commentsForm" id="crowdf-comments-form" class="form-validate" autocomplete="off">
-        
+
+    <div class="form-group">
     <?php echo $this->form->getLabel('comment'); ?>
     <?php echo $this->form->getInput('comment'); ?>
-        
+    </div>
+
+    <div class="form-group">
     <?php echo $this->form->getInput('id'); ?>
     <?php echo $this->form->getInput('project_id'); ?>
+    </div>
         
     <input type="hidden" name="task" value="comment.save" />
     <?php echo JHtml::_('form.token'); ?>
     
     <div class="clearfix"></div>
     <button type="submit" class="btn btn-primary"><?php echo JText::_("COM_CROWDFUNDING_SEND")?></button>
-    <button type="submit" class="btn" id="js-cfcomments-btn-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
+    <button type="submit" class="btn btn-default" id="js-cfcomments-btn-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
     
 </form>
-<div class="hr mtb_15_0"></div>
+<div class="hr mtb-15-0"></div>
 <?php } ?>
 <?php if(!empty($this->items)) {
     
@@ -47,10 +51,12 @@ defined('_JEXEC') or die;
     <div class="row-fluid cf-comment-item" id="comment<?php echo $item->id;?>">
         
         <div class="media">
-            <a class="pull-left" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
-                <img class="media-object" src="<?php echo $socialAvatar;?>" width="<?php echo $this->avatarsSize;?>" height="<?php echo $this->avatarsSize;?>">
-            </a>
-            
+            <div class="media-left">
+                <a href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
+                    <img class="media-object" src="<?php echo $socialAvatar;?>" />
+                </a>
+            </div>
+
             <div class="media-body">
             	<div class="cf-info-bar"> 
             		<div class="pull-left">
@@ -61,7 +67,7 @@ defined('_JEXEC') or die;
             		</div>
                 	<?php if($this->userId == $item->user_id ) {?>
                 	<div class="pull-right">
-                		<a href="javascript: void(0);" class="btn btn-mini js-cfcomments-btn-edit" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
+                		<a href="javascript: void(0);" class="btn btn-mini btn-default js-cfcomments-btn-edit" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
                 		<a href="javascript: void(0);" class="btn btn-mini btn-danger js-cfcomments-btn-remove" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_DELETE");?></a>
                 	</div>
                 	<?php }?>

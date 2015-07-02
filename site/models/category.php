@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelCategory extends JModelList
+class CrowdfundingModelCategory extends JModelList
 {
     protected $items   = null;
     protected $numbers = null;
@@ -195,12 +195,12 @@ class CrowdFundingModelCategory extends JModelList
         $orderDirn = $this->getState("list.direction");
 
         if (!is_numeric($order)) {
-            $order     = $params->get("items_order", CrowdFundingConstants::ORDER_BY_START_DATE);
+            $order     = $params->get("items_order", Crowdfunding\Constants::ORDER_BY_START_DATE);
             $orderDirn = $params->get("items_order_direction", "desc");
         }
 
         // Convert direction to uppercase.
-        $orderDirn = JString::strtoupper($orderDirn);
+        $orderDirn = Joomla\String\String::strtoupper($orderDirn);
 
         // Validate directions.
         $allowedDirns = array("ASC", "DESC");
@@ -212,28 +212,28 @@ class CrowdFundingModelCategory extends JModelList
 
         switch ($order) {
 
-            case CrowdFundingConstants::ORDER_BY_NAME:
+            case Crowdfunding\Constants::ORDER_BY_NAME:
                 $orderCol = "a.title";
                 break;
 
-            case CrowdFundingConstants::ORDER_BY_CREATED_DATE:
+            case Crowdfunding\Constants::ORDER_BY_CREATED_DATE:
                 $orderCol = "a.created";
                 break;
 
-            case CrowdFundingConstants::ORDER_BY_START_DATE:
+            case Crowdfunding\Constants::ORDER_BY_START_DATE:
                 $orderCol = "a.funding_start";
                 break;
 
-            case CrowdFundingConstants::ORDER_BY_END_DATE:
+            case Crowdfunding\Constants::ORDER_BY_END_DATE:
                 $orderCol = "a.funding_end";
                 $fundingEndSort = "";
                 break;
 
-            case CrowdFundingConstants::ORDER_BY_POPULARITY:
+            case Crowdfunding\Constants::ORDER_BY_POPULARITY:
                 $orderCol = "a.hits";
                 break;
 
-            case CrowdFundingConstants::ORDER_BY_FUNDING:
+            case Crowdfunding\Constants::ORDER_BY_FUNDING:
                 $orderCol = "a.funded";
                 break;
 
@@ -292,7 +292,7 @@ class CrowdFundingModelCategory extends JModelList
         }
 
         // Filter by funding type
-        $filterFundingType = JString::strtoupper(JString::trim($this->getState($this->context . ".filter_fundingtype")));
+        $filterFundingType = Joomla\String\String::strtoupper(Joomla\String\String::trim($this->getState($this->context . ".filter_fundingtype")));
         if (!empty($filterFundingType)) {
             $allowedFundingTypes = array("FIXED", "FLEXIBLE");
             if (in_array($filterFundingType, $allowedFundingTypes)) {

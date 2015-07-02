@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelEmbed extends JModelItem
+class CrowdfundingModelEmbed extends JModelItem
 {
     protected $item;
 
@@ -86,12 +86,12 @@ class CrowdFundingModelEmbed extends JModelItem
             if (!empty($result)) {
 
                 // Calculate funded percentage.
-                $percent = new ITPrismMath();
+                $percent = new Prism\Math();
                 $percent->calculatePercentage($result->funded, $result->goal, 0);
                 $result->funded_percents = (string)$percent;
 
                 // Calculate days left
-                $today = new CrowdFundingDate();
+                $today = new Crowdfunding\Date();
                 $result->days_left       = $today->calculateDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
 
                 $this->item[$storedId]   = $result;

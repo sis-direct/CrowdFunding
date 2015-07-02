@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.frontend');
-
 /**
- * CrowdFunding update controller
+ * Crowdfunding update controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerUpdate extends ITPrismControllerFormFrontend
+class CrowdfundingControllerUpdate extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerUpdate extends ITPrismControllerFormFrontend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Update', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Update', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -53,14 +51,13 @@ class CrowdFundingControllerUpdate extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "project_id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
 
         // Get project
-        jimport("crowdfunding.project");
-        $item = CrowdFundingProject::getInstance(JFactory::getDbo(), $itemId);
+        $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         $redirectOptions = array(
-            "force_direction" => CrowdFundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "updates")
+            "force_direction" => CrowdfundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "updates")
         );
 
         // Check for valid owner.
@@ -70,7 +67,7 @@ class CrowdFundingControllerUpdate extends ITPrismControllerFormFrontend
         }
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelUpdate */
+        /** @var $model CrowdfundingModelUpdate */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
@@ -102,6 +99,6 @@ class CrowdFundingControllerUpdate extends ITPrismControllerFormFrontend
         }
 
         // Redirect to next page
-        $this->displayNotice(JText::_("COM_CROWDFUNDING_UPDATE_SUCCESSFULLY_SAVED"), $redirectOptions);
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_UPDATE_SUCCESSFULLY_SAVED"), $redirectOptions);
     }
 }

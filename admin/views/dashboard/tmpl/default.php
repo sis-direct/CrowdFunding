@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -139,7 +139,7 @@ defined('_JEXEC') or die;
                                     </a>
                                 </td>
                                 <td class="center">
-                                    <?php echo (!$this->currency->getId()) ? (float)$this->mostFunded[$i]["funded"] : $this->currency->getAmountString($this->mostFunded[$i]["funded"]); ?>
+                                    <?php echo $this->amount->setValue($this->mostFunded[$i]["funded"])->formatCurrency(); ?>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -151,13 +151,8 @@ defined('_JEXEC') or die;
         </div>
 
         <div class="span4">
-            <a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital"
-               target="_blank"><img src="../media/com_crowdfunding/images/logo.png"
-                                    alt="<?php echo JText::_("COM_CROWDFUNDING"); ?>"/></a>
-            <a href="http://itprism.com" target="_blank"
-               title="<?php echo JText::_("COM_CROWDFUNDING_PRODUCT"); ?>"><img
-                    src="../media/com_crowdfunding/images/product_of_itprism.png"
-                    alt="<?php echo JText::_("COM_CROWDFUNDING_PRODUCT"); ?>"/></a>
+            <a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital" target="_blank"><img src="../media/com_crowdfunding/images/logo.png" alt="<?php echo JText::_("COM_CROWDFUNDING"); ?>"/></a>
+            <a href="http://itprism.com" target="_blank" title="<?php echo JText::_("COM_CROWDFUNDING_PRODUCT"); ?>"><img src="../media/com_crowdfunding/images/product_of_itprism.png" alt="<?php echo JText::_("COM_CROWDFUNDING_PRODUCT"); ?>"/></a>
 
             <p><?php echo JText::_("COM_CROWDFUNDING_YOUR_VOTE"); ?></p>
             <p><?php echo JText::_("COM_CROWDFUNDING_SUBSCRIPTION"); ?></p>
@@ -165,15 +160,15 @@ defined('_JEXEC') or die;
                 <tbody>
                 <tr>
                     <td><?php echo JText::_("COM_CROWDFUNDING_INSTALLED_VERSION"); ?></td>
-                    <td><?php echo $this->version->getMediumVersion(); ?></td>
+                    <td><?php echo $this->version->getShortVersion(); ?></td>
                 </tr>
                 <tr>
                     <td><?php echo JText::_("COM_CROWDFUNDING_RELEASE_DATE"); ?></td>
                     <td><?php echo $this->version->releaseDate ?></td>
                 </tr>
                 <tr>
-                    <td><?php echo JText::_("COM_CROWDFUNDING_ITPRISM_LIBRARY_VERSION"); ?></td>
-                    <td><?php echo $this->itprismVersion; ?></td>
+                    <td><?php echo JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_VERSION"); ?></td>
+                    <td><?php echo $this->prismVersion; ?></td>
                 </tr>
                 <tr>
                     <td><?php echo JText::_("COM_CROWDFUNDING_COPYRIGHT"); ?></td>
@@ -185,6 +180,9 @@ defined('_JEXEC') or die;
                 </tr>
                 </tbody>
             </table>
+            <?php if (!empty($this->prismVersionLowerMessage)) {?>
+                <p class="alert alert-warning cf-upgrade-info"><i class="icon-warning"></i> <?php echo $this->prismVersionLowerMessage; ?></p>
+            <?php } ?>
             <p class="alert alert-info cf-upgrade-info"><i class="icon-info"></i> <?php echo JText::_("COM_CROWDFUNDING_HOW_TO_UPGRADE"); ?></p>
         </div>
     </div>

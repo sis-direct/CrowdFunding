@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Modules
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 ?>
 <div class="cfinfo<?php echo $moduleclassSfx; ?>">
     <div class="cfinfo-raised">
-    	<?php echo $currency->getAmountString($project->getFunded()); ?>
+    	<?php echo $amount->setValue($project->getFunded())->formatCurrency(); ?>
     </div>
     <div class="cfinfo-raised-of">
         <?php echo JText::sprintf("MOD_CROWDFUNDINGINFO_RAISED_OF", $fundedAmount);?>
@@ -24,14 +24,14 @@ defined('_JEXEC') or die;
         		<img src="media/com_crowdfunding/images/clock.png" width="25" height="25" />
         		<?php echo $project->getDaysLeft();?>
     		</div>
-    		<div class="tac fzmfwbu"><?php echo JText::_("MOD_CROWDFUNDINGINFO_DAYS_LEFT");?></div>
+    		<div class="text-center fzmfwbu"><?php echo JText::_("MOD_CROWDFUNDINGINFO_DAYS_LEFT");?></div>
 		</div>
 		<div class="cfinfo-percent-wrapper">
 			<div class="cfinfo-percent">
     			<img src="media/com_crowdfunding/images/piggy-bank.png" width="27" height="20" />
         		<?php echo $project->getFundedPercent();?>%
     		</div>
-    		<div class="tac fzmfwbu pt5"><?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDED");?></div>
+    		<div class="text-center fzmfwbu"><?php echo JText::_("MOD_CROWDFUNDINGINFO_FUNDED");?></div>
 		</div>
 	</div>
 	<div class="clearfix"></div>
@@ -46,7 +46,7 @@ defined('_JEXEC') or die;
 	</div>
 	<?php } else {?>
 	<div class="cfinfo-funding-action">
-		<a class="btn btn-large btn-block" href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>">
+		<a class="btn btn-default btn-large btn-block" href="<?php echo JRoute::_(CrowdfundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug()));?>">
             <?php echo JText::_("MOD_CROWDFUNDINGINFO_INVEST_NOW"); ?>
         </a>
 	</div>

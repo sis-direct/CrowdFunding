@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,24 +10,17 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.admin');
-
 /**
- * CrowdFunding currencies controller
+ * Crowdfunding currencies controller
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  */
-class CrowdFundingControllerCurrencies extends ITPrismControllerAdmin
+class CrowdfundingControllerCurrencies extends Prism\Controller\Admin
 {
-    /**
-     * Proxy for getModel.
-     * @since   1.6
-     */
-    public function getModel($name = 'Currency', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Currency', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 }

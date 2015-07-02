@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Modules
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,8 +10,8 @@
 // no direct access
 defined("_JEXEC") or die;
 
-jimport("itprism.init");
-jimport("crowdfunding.init");
+jimport("Prism.init");
+jimport("Crowdfunding.init");
 
 $moduleclassSfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
@@ -34,13 +34,13 @@ if (!$projectId) {
 $componentParams = JComponentHelper::getParams("com_crowdfunding");
 /** @var  $componentParams Joomla\Registry\Registry */
 
-// Get currency
-jimport("crowdfunding.currency");
-$currencyId = $componentParams->get("project_currency");
-$currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $componentParams);
+$currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $componentParams->get("project_currency"));
 
-jimport("crowdfunding.project");
-$project      = CrowdFundingProject::getInstance(JFactory::getDbo(), $projectId);
-$fundedAmount = $currency->getAmountString($project->getGoal());
+$project      = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
+
+$amount = new Crowdfunding\Amount($componentParams);
+$amount->setCurrency($currency);
+
+$fundedAmount = $amount->setValue($project->getGoal())->formatCurrency();
 
 require JModuleHelper::getLayoutPath('mod_crowdfundinginfo', $params->get('layout', 'default'));

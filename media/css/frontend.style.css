@@ -6,21 +6,8 @@ span.help-block {
 }
 
 div.info-mini {
-	font-size: xx-small;
 	font-style: italic;
-}
-
-#crowdf-funding-form span.help-block{
-	width: 300px;
-}
-
-.navbar .nav > li > a.disabled {
-    cursor: not-allowed;
-}
-
-#crowdf-funding-form .row-fluid:nth-child(2), 
-#crowdf-funding-form .row-fluid:nth-child(3){
-	margin-top: 20px;
+	font-size: xx-small;
 }
 
 #jform_funding_days-lbl, #jform_funding_end-lbl {
@@ -34,7 +21,6 @@ div.info-mini {
 .width_400px{
 	width: 400px !important;
 }
-
 
 .height_600px{
 	height: 600px;
@@ -57,6 +43,7 @@ div.info-mini {
 	background-color: #f2f2f2;
 	border: thin solid #6c6c6c;
 	margin-bottom: 20px;
+	position: relative;
 }
 
 .reward-form-help {
@@ -65,31 +52,14 @@ div.info-mini {
 	color: black;
 }
 
-.reward-form {
-	position: relative;
-}
 .btn_remove_reward {
 	position: absolute;
 	bottom:20px;
 	right: 20px;
 }
 
-.cf-center {
-	margin: 0 auto !important;
-	text-align: center !important;
-}
-
-.cf-projects-list th {
-	margin: 0 auto !important;
-	text-align: center !important;
-}
-
 .bolder {
 	font-weight: bolder;
-}
-
-.uppercase {
-	text-transform: uppercase;
 }
 
 .font-xxsmall {
@@ -117,7 +87,7 @@ div.info-mini {
 /* END Project Thumbnail Styles */
 
 .cf-details-block {
-	margin-top: 10px;
+	margin: 10px 0;
 }
 
 .cf-border-bottom {
@@ -152,14 +122,13 @@ div.info-mini {
 	text-align: center;
 }
 
-
 .cfinfo-days-raised img {
 	margin: 5px 5px 10px 0;
 	vertical-align: middle;
 }
 
 .cfinfo-days, .cfinfo-percent {
-	font-size: xx-large;
+	font-size: x-large;
 	text-align: center;
 }
 
@@ -233,11 +202,6 @@ div.reward:hover  {
 
 /* END Rewards Navigation */
 
-
-.ramount {
-	color: black;
-}
-
 .rtitle, .rdesc {
 	color: #6c6c6c;
 }
@@ -247,7 +211,8 @@ div.reward:hover  {
 	font-weight: bold;
 	display: block;
 	border-bottom: thin dashed gray;
-    padding: 5px 0;
+   padding: 5px 0;
+   color: black;
 }
 
 .rtitle {
@@ -271,10 +236,6 @@ div.reward:hover  {
 	border-left: thin solid #b2b2b2;
 }
 
-.tac {
-	text-align: center;
-}
-
 .fzmfwbu{
 	font-size: medium;
 	text-transform: uppercase;
@@ -283,55 +244,76 @@ div.reward:hover  {
 
 /* Padding and Margin */
 
-.p5 {
+.p-5 {
 	padding: 5px;
 }
 
-.pl5 {
+.p-10 {
+	padding: 10px;
+}
+
+.p-10-5 {
+	padding: 10px 5px;
+}
+
+.pl-5 {
 	padding-left: 5px;
 }
 
-.pl10 {
+.pl-10 {
 	padding-left: 10px;
 }
 
-.pt5 {
+.pt-5 {
 	padding-top: 5px;
 }
 
-.mt5 {
+.mt-5 {
 	margin-top: 5px;
 }
 
-.mt10 {
+.mt-10 {
 	margin-top: 10px;
 }
 
-.ml10 {
+.mtb-10 {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.ml-10 {
 	margin-left: 10px;
 }
 
-.m10 {
-	margin: 5px;   
+.m-10 {
+	margin: 10px;   
 }
 
-.mtb_15_0 {
+.mtr-10-10 {
+	margin: 10px 10px 0 0;   
+}
+
+.mtb-15-0 {
 	margin: 15px 0;
 }
 
-.mtb_25_0 {
+.mtb-25-0 {
 	margin: 25px 0;
 }
 
-.cf-m-0 {
+.m-0 {
 	margin: 0;
 }
 
-.mt_0 {
+.mt-0 {
 	margin-top: 0;
 }
 
-.mb_15 {
+.mb-10 {
+	margin-bottom: 10px;
+}
+
+.mb-15 {
 	margin-bottom: 15px;
 }
 
@@ -351,32 +333,6 @@ div.reward:hover  {
 	text-align: left;
    color: #6c6c6c;
    cursor: text;
-}
-
-.bs-docs-example {
-    background-color: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    border-radius: 4px 4px 4px 4px;
-    margin: 15px 0;
-    padding: 9px 9px;
-    position: relative;
-}
-
-form.bs-docs-example {
-    padding-bottom: 19px;
-}
-
-.bs-docs-example:after {
-    background-color: #F5F5F5;
-    border: 1px solid #DDDDDD;
-    border-radius: 4px 0 4px 0;
-    color: #9DA0A4;
-    font-size: 12px;
-    font-weight: bold;
-    left: -1px;
-    padding: 3px 7px;
-    position: absolute;
-    top: -1px;
 }
 
 #form-pledge button{
@@ -489,18 +445,8 @@ form.bs-docs-example {
 	color: white; 
 }
 
-.cf-manager {
-	border: thin solid #D1D1D1;
-   margin-top: 10px;
-}
-
-.cf-manager h4, .cf-manager h5 {
-	padding-left: 10px;
-}
-
 .cf-pm-toolbar {
     background: -moz-linear-gradient(center top , #FFFFFF 0%, #EDEDED 100%) repeat scroll 0 0 transparent;
-    border-top: 1px solid #D3D3D3;
     border-bottom: 1px solid #D3D3D3;
     color: #0C192E;
     padding: 10px;
@@ -542,13 +488,6 @@ form.bs-docs-example {
 	background: #eaeaea;
 }
 
-.js-reward-image-wrapper {
-	position: absolute;
-	top: 0;
-	right: 0;
-	margin: 10px 10px 0 0;
-}
-
 .js-reward-image-wrapper .thumbnail {
 	margin-bottom: 10px;
 }
@@ -557,10 +496,8 @@ form.bs-docs-example {
 	display: block;
 }
 
-/* Padding classes */
-.cf-p10-border{
+.border-thin-solid {
     border: thin solid #d1d1d1;
-    margin-top: 10px;
 }
 
 /* YouTube Responsive */
@@ -585,16 +522,6 @@ form.bs-docs-example {
 	margin-left: 20px;
 }
 
-.cf-information-box {
-	padding: 5px;
-	background-color: #D9EDF7;
-}
-
-.cf-information-box h4 {
-   padding-left: 30px;
-	background: url(../images/information_24x24.png) no-repeat left;
-}
-
 .cf-rewards-backers {
 	font-weight: bolder;
 	background: url(../images/backers.png) no-repeat left;
@@ -604,6 +531,7 @@ form.bs-docs-example {
 .cf-rewards-delivery {
 	background: url(../images/calendar.png) no-repeat left;
 	padding-left: 20px;
+	font-size: x-small;
 }
 
 .cf-rewards-claimed {
@@ -656,7 +584,7 @@ form.bs-docs-example {
 	width: 79%; 
 }
 
-.cursor_pointer {
+.cursor-pointer {
 	cursor: pointer;
 }
 
@@ -667,4 +595,17 @@ form.bs-docs-example {
 .cf-caption-info .span4 {
     float: left !important;
     max-width: 80px;
+}
+
+.cf-vertical-align {
+  display: flex;
+  flex-direction: row;
+}
+
+.cf-vertical-align > [class^="col-"],
+.cf-vertical-align > [class*=" col-"] {
+  display: flex;
+  align-items: center;     /* Align the flex-items vertically */
+  justify-content: center; /* Optional, to align inner flex-items 
+                              horizontally within the column  */
 }

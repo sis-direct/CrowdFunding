@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewReports extends JViewLegacy
+class CrowdfundingViewReports extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -48,7 +48,7 @@ class CrowdFundingViewReports extends JViewLegacy
         $this->pagination = $this->get('Pagination');
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu($this->getName());
+        CrowdfundingHelper::addSubmenu($this->getName());
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -126,7 +126,7 @@ class CrowdFundingViewReports extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        JHtml::_('prism.ui.joomlaList');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

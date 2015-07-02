@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -13,7 +13,7 @@ defined('_JEXEC') or die;?>
     <div id="cf-categories-list">
     <?php foreach ($this->items as $item) { ?>
         <div class="cf-category">
-            <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>" class="cf-category-thumbnail">
+            <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getCategoryRoute($item->slug)); ?>" class="cf-category-thumbnail">
                 <?php if (!empty($item->image_link)) { ?>
                     <img src="<?php echo $item->image_link; ?>" alt="<?php echo $this->escape($item->title); ?>" />
                 <?php } else { ?>
@@ -25,7 +25,7 @@ defined('_JEXEC') or die;?>
 
             <div class="caption cf-category-content">
                 <h3>
-                    <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>">
+                    <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getCategoryRoute($item->slug)); ?>">
                         <?php echo $this->escape($item->title); ?>
                     </a>
                     <?php

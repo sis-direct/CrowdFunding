@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelUser extends JModelItem
+class CrowdfundingModelUser extends JModelItem
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class CrowdFundingModelUser extends JModelItem
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'User', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'User', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }

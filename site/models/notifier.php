@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelNotifier extends JModelLegacy
+class CrowdfundingModelNotifier extends JModelLegacy
 {
     /**
      * Send mail to administrator and notify him
@@ -41,8 +41,7 @@ class CrowdFundingModelNotifier extends JModelLegacy
     public function closePaymentSession($session)
     {
         if (!empty($session->id)) {
-            jimport("crowdfunding.intention");
-            $intention = new CrowdFundingIntention(JFactory::getDbo());
+            $intention = new Crowdfunding\Intention(JFactory::getDbo());
 
             $intention->setId($session->id);
             $intention->delete();

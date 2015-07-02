@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelComment extends JModelForm
+class CrowdfundingModelComment extends JModelForm
 {
     protected $item = null;
 
@@ -24,7 +24,7 @@ class CrowdFundingModelComment extends JModelForm
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Comment', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Comment', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -140,7 +140,7 @@ class CrowdFundingModelComment extends JModelForm
 
         // Convert to the JObject before adding other data.
         $properties = $table->getProperties();
-        $this->item = JArrayHelper::toObject($properties, 'JObject');
+        $this->item = Joomla\Utilities\ArrayHelper::toObject($properties, 'JObject');
 
         return $this->item;
     }
@@ -155,9 +155,9 @@ class CrowdFundingModelComment extends JModelForm
      */
     public function save($data)
     {
-        $id        = JArrayHelper::getValue($data, "id");
-        $comment   = JArrayHelper::getValue($data, "comment");
-        $projectId = JArrayHelper::getValue($data, "project_id");
+        $id        = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $comment   = Joomla\Utilities\ArrayHelper::getValue($data, "comment");
+        $projectId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
 
         $userId = JFactory::getUser()->get("id");
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -36,7 +36,7 @@ defined('_JEXEC') or die;
         <td class="hidden-phone">
             <?php echo JHtml::_("crowdfundingbackend.name", $item->beneficiary, $item->receiver_id); ?>
         </td>
-        <td><?php echo JHtml::_('crowdfundingbackend.transactionAmount', $item, $this->currencies); ?></td>
+        <td><?php echo JHtml::_('crowdfundingbackend.transactionAmount', $item, $this->amount, $this->currencies); ?></td>
         <td class="hidden-phone"><?php echo $item->txn_date; ?></td>
         <td class="hidden-phone"><?php echo $item->service_provider; ?></td>
         <td class="hidden-phone">

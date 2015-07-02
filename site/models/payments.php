@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelPayments extends JModelLegacy
+class CrowdfundingModelPayments extends JModelLegacy
 {
-
     /**
      * @param int $projectId
      * @param Joomla\Registry\Registry $params
@@ -23,8 +22,7 @@ class CrowdFundingModelPayments extends JModelLegacy
      */
     public function prepareItem($projectId, $params, $paymentSession)
     {
-        jimport("crowdfunding.project");
-        $project = new CrowdFundingProject(JFactory::getDbo());
+        $project = new Crowdfunding\Project(JFactory::getDbo());
         $project->load($projectId);
 
         if (!$project->getId()) {
@@ -36,12 +34,10 @@ class CrowdFundingModelPayments extends JModelLegacy
         }
 
         // Get currency
-        jimport("crowdfunding.currency");
-        $currencyId = $params->get("project_currency");
-        $currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+        $currency   = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get("project_currency"));
 
         // Create amount object.
-        $amount   = new CrowdFundingAmount();
+        $amount   = new Crowdfunding\Amount($params);
         $amount->setCurrency($currency);
 
         $item = new stdClass();
@@ -55,7 +51,7 @@ class CrowdFundingModelPayments extends JModelLegacy
         $item->ending_date    = $project->getFundingEnd();
 
         $item->amount         = $paymentSession->amount;
-        $item->currencyCode   = $currency->getAbbr();
+        $item->currencyCode   = $currency->getCode();
 
         $item->amountFormated = $amount->setValue($item->amount)->format();
         $item->amountCurrency = $amount->setValue($item->amount)->formatCurrency();

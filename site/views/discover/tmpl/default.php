@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -20,20 +20,15 @@ defined('_JEXEC') or die;
     <?php } ?>
 
     <?php if (!empty($this->items)) {
-        $layout      = new JLayoutFile('items_grid', $this->layoutsBasePath);
+        $layout      = new JLayoutFile('items_grid');
         echo $layout->render($this->layoutData);
     } ?>
 
-    <div class="pagination">
+    <?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>
+        <div class="pagination">
         <?php if ($this->params->def('show_pagination_results', 1)) { ?>
-            <p class="counter">
-                <?php echo $this->pagination->getPagesCounter(); ?>
-            </p>
+            <p class="counter pull-right"> <?php echo $this->pagination->getPagesCounter(); ?> </p>
         <?php } ?>
-
-        <?php echo $this->pagination->getPagesLinks(); ?>
-    </div>
-
-    <div class="clearfix">&nbsp;</div>
+        <?php echo $this->pagination->getPagesLinks(); ?> </div>
+    <?php } ?>
 </div>
-<div class="clearfix">&nbsp;</div>

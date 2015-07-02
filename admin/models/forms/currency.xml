@@ -9,9 +9,9 @@
                filter="trim"
                required="true"/>
 
-        <field name="abbr" type="text"
-               label="COM_CROWDFUNDING_ABBR"
-               description="COM_CROWDFUNDING_ABBR_DESC"
+        <field name="code" type="text"
+               label="COM_CROWDFUNDING_CURRENCY_CODE"
+               description="COM_CROWDFUNDING_CURRENCY_CODE_DESC"
                filter="trim"
                required="true"
                 />

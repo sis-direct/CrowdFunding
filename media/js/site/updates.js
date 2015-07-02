@@ -30,9 +30,9 @@ jQuery(document).ready(function() {
 						jQuery(this).remove();
 					});
 
-                    ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+                    PrismUIHelper.displayMessageSuccess(response.title, response.text);
 				} else {
-                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                    PrismUIHelper.displayMessageFailure(response.title, response.text);
 				}
 				
 				// Reset form data if the element has been loaded for editing.
@@ -53,25 +53,24 @@ jQuery(document).ready(function() {
 		
 		event.preventDefault();
 		
-		var id 		  = jQuery(this).data("id");
-
 		jQuery.ajax({
-			url: "index.php?option=com_crowdfunding&format=raw&task=update.getdata&id="+id,
-			type: "GET",
+            url: "index.php?option=com_crowdfunding&format=raw&task=update.getData&id="+jQuery(this).data("id"),
+			method: "get",
 			dataType: "text json",
-			success: function(response) {
-				
-				if(!response.success) {
-                    ITPrismUIHelper.displayMessageFailure(response.title, response.text);
-				}
-				
-				jQuery("#jform_title").val(response.data.title);
-				jQuery("#jform_description").val(response.data.description);
-				jQuery("#jform_id").val(response.data.id);
-				
-			}
-				
-		});
+            cache: false
+		}).done(function(response){
+
+            console.log(response);
+
+            if(!response.success) {
+                PrismUIHelper.displayMessageFailure(response.title, response.text);
+            }
+
+            jQuery("#jform_title").val(response.data.title);
+            jQuery("#jform_description").val(response.data.description);
+            jQuery("#jform_id").val(response.data.id);
+
+        });
 		
 	});
 	

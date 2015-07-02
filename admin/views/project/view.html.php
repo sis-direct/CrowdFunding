@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,12 +10,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
 /**
- * Class CrowdFundingViewProject
+ * Class CrowdfundingViewProject
  */
-class CrowdFundingViewProject extends JViewLegacy
+class CrowdfundingViewProject extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -43,8 +41,6 @@ class CrowdFundingViewProject extends JViewLegacy
     protected $checkedDays;
     protected $checkedDate;
     protected $fundingDuration;
-    protected $extraImages;
-    protected $extraImagesUri;
 
     protected $documentTitle;
     protected $option;
@@ -55,9 +51,6 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->option = JFactory::getApplication()->input->get("option");
     }
 
-    /**
-     * Display the view
-     */
     public function display($tpl = null)
     {
         $this->state = $this->get('State');
@@ -80,12 +73,6 @@ class CrowdFundingViewProject extends JViewLegacy
         $this->maxDays = $this->params->get("project_days_maximum");
 
         $this->prepareFundingDurationType();
-
-        jimport("crowdfunding.images");
-        $this->extraImages = new CrowdFundingImages(JFactory::getDbo());
-        $this->extraImages->load($this->item->id);
-
-        $this->extraImagesUri = "../" . CrowdFundingHelper::getImagesFolderUri($this->item->user_id);
 
         // Prepare actions, behaviors, scripts and document
         $this->addToolbar();
@@ -110,7 +97,7 @@ class CrowdFundingViewProject extends JViewLegacy
 
             default: // Both ( days and date ) types are enabled
 
-                $fundingStartDateValidator = new ITPrismValidatorDate($this->item->funding_end);
+                $fundingStartDateValidator = new Prism\Validator\Date($this->item->funding_end);
 
                 $this->checkedDays = 0;
                 $this->checkedDate = "";
@@ -171,11 +158,11 @@ class CrowdFundingViewProject extends JViewLegacy
         JHtml::_('formbehavior.chosen', 'select');
 
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
-        JHtml::_('itprism.ui.bootstrap_typeahead');
+        JHtml::_('prism.ui.bootstrapFileUploadStyle');
+        JHtml::_('prism.ui.bootstrapTypeahead2');
 
-        JHtml::_("itprism.ui.joomla_helper");
+        JHtml::_("prism.ui.joomlaHelper");
 
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

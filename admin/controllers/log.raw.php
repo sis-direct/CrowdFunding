@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,16 +10,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding log controller class.
+ * Crowdfunding log controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Components
  * @since          1.6
  */
-class CrowdFundingControllerLog extends JControllerLegacy
+class CrowdfundingControllerLog extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -31,7 +29,7 @@ class CrowdFundingControllerLog extends JControllerLegacy
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Log', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -40,14 +38,11 @@ class CrowdFundingControllerLog extends JControllerLegacy
 
     /**
      * Remove a log file.
-     *
-     * @todo Use ITPrismResponseJson
      */
     public function remove()
     {
         // Create response object
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         $file = $this->input->post->get('file', null, "raw");
 
@@ -56,7 +51,7 @@ class CrowdFundingControllerLog extends JControllerLegacy
         }
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelLog * */
+        /** @var $model CrowdfundingModelLog */
 
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.file');
@@ -69,8 +64,8 @@ class CrowdFundingControllerLog extends JControllerLegacy
 
             if (!$model->deleteFile($fileSource)) {
                 $response
-                    ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
-                    ->setText(JText::_('COM_CROWDFUNDING_ERROR_LOG_FILE_CANNOT_BE_REMOVED'))
+                    ->setTitle(JText::_('COM_Crowdfunding_FAIL'))
+                    ->setText(JText::_('COM_Crowdfunding_ERROR_LOG_FILE_CANNOT_BE_REMOVED'))
                     ->failure();
 
                 echo $response;
@@ -80,8 +75,8 @@ class CrowdFundingControllerLog extends JControllerLegacy
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             $response
-                ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
-                ->setText(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'))
+                ->setTitle(JText::_('COM_Crowdfunding_FAIL'))
+                ->setText(JText::_('COM_Crowdfunding_ERROR_SYSTEM'))
                 ->failure();
 
             echo $response;
@@ -89,8 +84,8 @@ class CrowdFundingControllerLog extends JControllerLegacy
         }
 
         $response
-            ->setTitle(JText::_('COM_CROWDFUNDING_SUCCESS'))
-            ->setText(JText::_('COM_CROWDFUNDING_LOG_FILE_REMOVED'))
+            ->setTitle(JText::_('COM_Crowdfunding_SUCCESS'))
+            ->setText(JText::_('COM_Crowdfunding_LOG_FILE_REMOVED'))
             ->success();
 
         echo $response;
@@ -106,7 +101,7 @@ class CrowdFundingControllerLog extends JControllerLegacy
         }
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelLog * */
+        /** @var $model CrowdfundingModelLog */
 
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.file');
@@ -139,7 +134,7 @@ class CrowdFundingControllerLog extends JControllerLegacy
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         echo file_get_contents($fileSource);

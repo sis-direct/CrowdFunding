@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewLogs extends JViewLegacy
+class CrowdfundingViewLogs extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -57,14 +55,13 @@ class CrowdFundingViewLogs extends JViewLegacy
         $this->pagination = $this->get('Pagination');
 
         // Get log files and count them.
-        jimport("crowdfunding.log.files");
-        $logFiles = new CrowdFundingLogFiles($this->includeFiles);
+        $logFiles = new Crowdfunding\Log\Files($this->includeFiles);
         $logFiles->load();
 
         $this->numberLogFilse = count($logFiles);
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu($this->getName());
+        CrowdfundingHelper::addSubmenu($this->getName());
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -108,8 +105,7 @@ class CrowdFundingViewLogs extends JViewLegacy
     {
         JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
 
-        jimport("crowdfunding.filters");
-        $filters = new CrowdFundingFilters(JFactory::getDbo());
+        $filters = new Crowdfunding\Filters(JFactory::getDbo());
         $types   = $filters->getLogTypes();
 
         JHtmlSidebar::addFilter(
@@ -164,7 +160,7 @@ class CrowdFundingViewLogs extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        JHtml::_('prism.ui.joomlaList');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

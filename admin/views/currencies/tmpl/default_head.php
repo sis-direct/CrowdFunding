@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -18,7 +18,7 @@ defined('_JEXEC') or die;
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_TITLE', 'a.title', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="10%" class="nowrap center">
-        <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_ABBR', 'a.abbr', $this->listDirn, $this->listOrder); ?>
+        <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_CURRENCY_CODE', 'a.code', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="10%" class="nowrap center hidden-phone">
         <?php echo JText::_('COM_CROWDFUNDING_SYMBOL'); ?>

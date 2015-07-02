@@ -1,6 +1,6 @@
 <?php
 /**
- * @package         CrowdFunding
+ * @package         Crowdfunding
  * @subpackage      Plugins
  * @author          Todor Iliev
  * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -11,15 +11,15 @@
 defined('_JEXEC') or die;
 
 /**
- * CrowdFunding User Mail Plugin
+ * Crowdfunding User Mail Plugin
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Plugins
  */
-class plgContentCrowdFundingUserMail extends JPlugin
+class plgContentCrowdfundingUserMail extends JPlugin
 {
     /**
-     * @var ITPrismLog
+     * @var Prism\Log\Log
      */
     protected $log;
 
@@ -28,30 +28,29 @@ class plgContentCrowdFundingUserMail extends JPlugin
      */
     public $params;
 
-    protected $name = "Content - CrowdFunding User Mail";
+    protected $name = "Content - Crowdfunding User Mail";
 
     public function init()
     {
-        jimport('itprism.init');
-        jimport('crowdfunding.init');
+        jimport("EmailTemplates.init");
 
         // Prepare log object
-        $registry = JRegistry::getInstance("com_crowdfunding");
+        $registry = Joomla\Registry\Registry::getInstance("com_crowdfunding");
         /** @var  $registry Joomla\Registry\Registry */
 
         $fileName  = $registry->get("logger.file");
         $tableName = $registry->get("logger.table");
 
         // Create log object
-        $this->log = new ITPrismLog();
+        $this->log = new Prism\Log\Log();
 
         // Set database writer.
-        $this->log->addWriter(new ITPrismLogWriterDatabase(JFactory::getDbo(), $tableName));
+        $this->log->addWriter(new Prism\Log\Writer\Database(JFactory::getDbo(), $tableName));
 
         // Set file writer.
         if (!empty($fileName)) {
             $file = JPath::clean(JFactory::getApplication()->get("log_path") . DIRECTORY_SEPARATOR . $fileName);
-            $this->log->addWriter(new ITPrismLogWriterFile($file));
+            $this->log->addWriter(new Prism\Log\Writer\File($file));
         }
 
         // Load language
@@ -97,9 +96,9 @@ class plgContentCrowdFundingUserMail extends JPlugin
             return false;
         }
 
-        JArrayHelper::toInteger($ids);
+        Joomla\Utilities\ArrayHelper::toInteger($ids);
 
-        if (!empty($ids) and $state == CrowdFundingConstants::APPROVED) {
+        if (!empty($ids) and $state == Prism\Constants::APPROVED) {
 
             $projects = $this->getProjectsData($ids);
 
@@ -111,9 +110,6 @@ class plgContentCrowdFundingUserMail extends JPlugin
                 );
                 return false;
             }
-
-            // Load class CrowdFundingEmail.
-            jimport("crowdfunding.email");
 
             foreach ($projects as $project) {
 
@@ -146,8 +142,8 @@ class plgContentCrowdFundingUserMail extends JPlugin
         $query = $db->getQuery(true);
 
         $query->select("a.title, c.name, c.email");
-        $query->select($query->concatenate(array("a.id", "a.alias"), "-") . " AS slug");
-        $query->select($query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug");
+        $query->select($query->concatenate(array("a.id", "a.alias"), ":") . " AS slug");
+        $query->select($query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug");
 
         $query
             ->from($db->quoteName("#__crowdf_projects", "a"))
@@ -180,7 +176,7 @@ class plgContentCrowdFundingUserMail extends JPlugin
         $appSite   = JApplicationCms::getInstance('site');
         $router    = $appSite->getRouter('site');
 
-        $routedUri = $router->build(CrowdFundingHelperRoute::getDetailsRoute($project->slug, $project->catslug));
+        $routedUri = $router->build(CrowdfundingHelperRoute::getDetailsRoute($project->slug, $project->catslug));
         if ($routedUri instanceof JUri) {
             $routedUri = $routedUri->toString();
         }
@@ -202,7 +198,7 @@ class plgContentCrowdFundingUserMail extends JPlugin
             return false;
         }
 
-        $email = new CrowdFundingEmail();
+        $email = new EmailTemplates\Email();
         $email->setDb(JFactory::getDbo());
         $email->load($emailId);
 
@@ -228,9 +224,9 @@ class plgContentCrowdFundingUserMail extends JPlugin
 
         $mailer = JFactory::getMailer();
         if (strcmp("html", $emailMode) == 0) { // Send as HTML message
-            $result = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingConstants::MAIL_MODE_HTML);
+            $result = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, Prism\Constants::MAIL_MODE_HTML);
         } else { // Send as plain text.
-            $result = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, CrowdFundingConstants::MAIL_MODE_PLAIN);
+            $result = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, Prism\Constants::MAIL_MODE_PLAIN);
         }
 
         // Log the error.

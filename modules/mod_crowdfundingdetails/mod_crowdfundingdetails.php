@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Modules
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,8 +10,8 @@
 // no direct access
 defined("_JEXEC") or die;
 
-jimport("itprism.init");
-jimport("crowdfunding.init");
+jimport("Prism.init");
+jimport("Crowdfunding.init");
 
 $moduleclassSfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
@@ -33,9 +33,7 @@ if (!$projectId) {
 }
 
 // Get project
-jimport("crowdfunding.project");
-$project = CrowdFundingProject::getInstance(JFactory::getDbo(), $projectId);
-
+$project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
 if (!$project->getId()) {
     return;
 }
@@ -50,18 +48,22 @@ $imageWidth      = $componentParams->get("image_width", 200);
 $imageHeight     = $componentParams->get("image_height", 200);
 
 // Get currency
-jimport("crowdfunding.currency");
 $currencyId = $componentParams->get("project_currency");
-$currency   = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $componentParams);
+$currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $componentParams->get("project_currency"));
+
+$amount = new Crowdfunding\Amount($componentParams);
+$amount->setCurrency($currency);
 
 // Get social platform and a link to the profile
-jimport("itprism.integrate.profile." . JString::strtolower($socialPlatform));
-$socialProfile     = CrowdFundingHelper::getSocialProfile($project->getUserId(), $socialPlatform);
+$socialBuilder     = new Prism\Integration\Profile\Builder(array("social_platform" => $socialPlatform, "user_id" => $project->getUserId()));
+$socialBuilder->build();
+
+$socialProfile     = $socialBuilder->getProfile();
 $socialProfileLink = (!$socialProfile) ? null : $socialProfile->getLink();
 
 // Get amounts
-$fundedAmount = $currency->getAmountString($project->getGoal());
-$raised       = $currency->getAmountString($project->getFunded());
+$fundedAmount = $amount->setValue($project->getGoal())->formatCurrency();
+$raised       = $amount->setValue($project->getFunded())->formatCurrency();
 
 // Prepare the value that I am going to display
 $fundedPercents = JHtml::_("crowdfunding.funded", $project->getFundedPercent());

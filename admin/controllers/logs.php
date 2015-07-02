@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,21 +10,15 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.admin');
-
 /**
- * CrowdFunding logs controller class
+ * Crowdfunding logs controller class
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  */
-class CrowdFundingControllerLogs extends ITPrismControllerAdmin
+class CrowdfundingControllerLogs extends Prism\Controller\Admin
 {
-    /**
-     * Proxy for getModel.
-     * @since   1.6
-     */
-    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Log', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -42,7 +36,7 @@ class CrowdFundingControllerLogs extends ITPrismControllerAdmin
 
         // Get the model.
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelLog * */
+        /** @var $model CrowdfundingModelLog * */
 
         try {
 
@@ -50,9 +44,9 @@ class CrowdFundingControllerLogs extends ITPrismControllerAdmin
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_ALL_ITEMS_REMOVED_SUCCESSFULLY"), $redirectOptions);
+        $this->displayMessage(JText::_("COM_Crowdfunding_ALL_ITEMS_REMOVED_SUCCESSFULLY"), $redirectOptions);
     }
 }

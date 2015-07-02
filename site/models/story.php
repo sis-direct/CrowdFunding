@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,9 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JLoader::register("CrowdFundingModelProject", CROWDFUNDING_PATH_COMPONENT_SITE . "/models/project.php");
+JLoader::register("CrowdfundingModelProject", CROWDFUNDING_PATH_COMPONENT_SITE . "/models/project.php");
 
-class CrowdFundingModelStory extends CrowdFundingModelProject
+class CrowdfundingModelStory extends CrowdfundingModelProject
 {
     /**
      * Method to get the profile form.
@@ -71,8 +71,8 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
      */
     public function save($data)
     {
-        $id          = JArrayHelper::getValue($data, "id");
-        $description = JArrayHelper::getValue($data, "description");
+        $id          = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
 
         $keys = array(
             "id" => $id,
@@ -80,7 +80,7 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         );
 
         // Load a record from the database.
-        /** @var $row CrowdFundingTableProject */
+        /** @var $row CrowdfundingTableProject */
         $row = $this->getTable();
         $row->load($keys);
 
@@ -96,15 +96,10 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         return $row->get("id");
     }
 
-    /**
-     * Prepare and sanitise the table prior to saving.
-     *
-     * @since    1.6
-     */
     protected function prepareTable(&$table, $data)
     {
         // Prepare the video
-        $pitchVideo = JArrayHelper::getValue($data, "pitch_video");
+        $pitchVideo = Joomla\Utilities\ArrayHelper::getValue($data, "pitch_video");
         $table->set("pitch_video", $pitchVideo);
 
         // Prepare the image.
@@ -145,9 +140,9 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
-        $uploadedName = JArrayHelper::getValue($image, 'name');
-        $errorCode    = JArrayHelper::getValue($image, 'error');
+        $uploadedFile = Joomla\Utilities\ArrayHelper::getValue($image, 'tmp_name');
+        $uploadedName = Joomla\Utilities\ArrayHelper::getValue($image, 'name');
+        $errorCode    = Joomla\Utilities\ArrayHelper::getValue($image, 'error');
 
         // Load parameters.
         $params     = JComponentHelper::getParams($this->option);
@@ -159,26 +154,20 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         $mediaParams = JComponentHelper::getParams("com_media");
         /** @var  $mediaParams Joomla\Registry\Registry */
 
-        jimport("itprism.file");
-        jimport("itprism.file.uploader.local");
-        jimport("itprism.file.validator.size");
-        jimport("itprism.file.validator.image");
-        jimport("itprism.file.validator.server");
-
-        $file = new ITPrismFile();
+        $file = new Prism\File\File();
 
         // Prepare size validator.
         $KB            = 1024 * 1024;
         $fileSize      = (int)$app->input->server->get('CONTENT_LENGTH');
         $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
 
-        $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+        $sizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
 
         // Prepare server validator.
-        $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
+        $serverValidator = new Prism\File\Validator\Server($errorCode, array(UPLOAD_ERR_NO_FILE));
 
         // Prepare image validator.
-        $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
+        $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
 
         // Get allowed mime types from media manager options
         $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
@@ -199,16 +188,15 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         }
 
         // Generate temporary file name
-        $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+        $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-        jimport("itprism.string");
-        $generatedName = new ITPrismString();
+        $generatedName = new Prism\String();
         $generatedName->generateRandomString(32);
 
         $tmpDestFile = JPath::clean($tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
         // Prepare uploader object.
-        $uploader = new ITPrismFileUploaderLocal($uploadedFile);
+        $uploader = new Prism\File\Uploader\Local($uploadedFile);
         $uploader->setDestination($tmpDestFile);
 
         // Upload temporary file
@@ -288,181 +276,4 @@ class CrowdFundingModelStory extends CrowdFundingModelProject
         $row->store();
     }
 
-    public function uploadExtraImages($files, $options)
-    {
-        $images      = array();
-        $destination = JArrayHelper::getValue($options, "destination", "images/crowdfunding");
-
-        jimport("itprism.file");
-        jimport("itprism.file.image");
-        jimport("itprism.file.uploader.local");
-        jimport("itprism.file.validator.size");
-        jimport("itprism.file.validator.image");
-        jimport("itprism.file.validator.server");
-        jimport("itprism.string");
-
-        // Joomla! media extension parameters
-        $mediaParams = JComponentHelper::getParams("com_media");
-        /** @var  $mediaParams Joomla\Registry\Registry */
-
-        // check for error
-        foreach ($files as $image) {
-
-            // Upload image
-            if (!empty($image['name'])) {
-
-                $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
-                $uploadedName = JArrayHelper::getValue($image, 'name');
-                $errorCode    = JArrayHelper::getValue($image, 'error');
-
-                $file = new ITPrismFile();
-
-                // Prepare size validator.
-                $KB            = 1024 * 1024;
-                $fileSize      = JArrayHelper::getValue($image, "size");
-                $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
-
-                // Prepare file size validator
-                $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
-
-                // Prepare server validator.
-                $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
-
-                // Prepare image validator.
-                $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
-
-                // Get allowed mime types from media manager options
-                $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
-                $imageValidator->setMimeTypes($mimeTypes);
-
-                // Get allowed image extensions from media manager options
-                $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
-                $imageValidator->setImageExtensions($imageExtensions);
-
-                $file
-                    ->addValidator($sizeValidator)
-                    ->addValidator($imageValidator)
-                    ->addValidator($serverValidator);
-
-                // Validate the file
-                if (!$file->isValid()) {
-                    throw new RuntimeException($file->getError());
-                }
-
-                // Generate file name
-                $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
-
-                $generatedName = new ITPrismString();
-                $generatedName->generateRandomString(6);
-
-                $tmpDestFile = $destination . DIRECTORY_SEPARATOR . $generatedName . "_extra." . $ext;
-
-                // Prepare uploader object.
-                $uploader = new ITPrismFileUploaderLocal($uploadedFile);
-                $uploader->setDestination($tmpDestFile);
-
-                // Upload temporary file
-                $file->setUploader($uploader);
-
-                $file->upload();
-
-                // Get file
-                $imageSource = $file->getFile();
-
-                if (!JFile::exists($imageSource)) {
-                    throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED"));
-                }
-
-                // Create thumbnail
-                $fileImage              = new ITPrismFileImage($imageSource);
-                $options["destination"] = $destination . DIRECTORY_SEPARATOR . $generatedName . "_extra_thumb." . $ext;
-                $thumbSource            = $fileImage->createThumbnail($options);
-
-                $names          = array("image" => "", "thumb" => "");
-                $names['image'] = basename($imageSource);
-                $names["thumb"] = basename($thumbSource);
-
-                $images[] = $names;
-            }
-        }
-
-        return $images;
-    }
-
-    /**
-     * Save additional images to the project.
-     *
-     * @param array $images
-     * @param int $projectId
-     * @param string $imagesUri
-     *
-     * @return array
-     */
-    public function storeExtraImage($images, $projectId, $imagesUri)
-    {
-        settype($images, "array");
-        settype($projectId, "integer");
-        $result = array();
-
-        if (!empty($images) and !empty($projectId)) {
-
-            $image = array_shift($images);
-
-            $db = JFactory::getDbo();
-            /** @var $db JDatabaseMySQLi * */
-
-            $query = $db->getQuery(true);
-            $query
-                ->insert($db->quoteName("#__crowdf_images"))
-                ->set($db->quoteName("image") . "=" . $db->quote($image["image"]))
-                ->set($db->quoteName("thumb") . "=" . $db->quote($image["thumb"]))
-                ->set($db->quoteName("project_id") . "=" . (int)$projectId);
-
-            $db->setQuery($query);
-            $db->execute();
-
-            $lastId = $db->insertid();
-
-            // Add URI path to images
-            $result = array(
-                "id"    => $lastId,
-                "image" => $imagesUri . "/" . $image["image"],
-                "thumb" => $imagesUri . "/" . $image["thumb"]
-            );
-
-        }
-
-        return $result;
-    }
-
-    /**
-     * Only delete an additional image.
-     *
-     * @param integer $imageId Image ID
-     * @param string  $imagesFolder A path to the images folder.
-     * @param integer  $userId
-     *
-     * @throws RuntimeException
-     */
-    public function removeExtraImage($imageId, $imagesFolder, $userId)
-    {
-        jimport("itprism.file.image");
-        jimport("itprism.file.remover.local");
-        jimport("crowdfunding.image.validator.owner");
-        jimport("crowdfunding.image.remover.extra");
-
-        $file = new ITPrismFileImage();
-
-        // Validate owner of the project.
-        $ownerValidator = new CrowdFundingImageValidatorOwner(JFactory::getDbo(), $imageId, $userId);
-        if (!$ownerValidator->isValid()) {
-            throw new RuntimeException(JText::_("COM_CROWDFUNDING_INVALID_PROJECT"));
-        }
-
-        // Remove the image.
-        $remover = new CrowdFundingImageRemoverExtra(JFactory::getDbo(), $imageId, $imagesFolder);
-        $file->addRemover($remover);
-
-        $file->remove();
-    }
 }

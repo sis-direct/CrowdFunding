@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.validator.date');
-
-class CrowdFundingViewReward extends JViewLegacy
+class CrowdfundingViewReward extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -66,9 +64,9 @@ class CrowdFundingViewReward extends JViewLegacy
 
         // Get rewards images URI.
         if (!empty($this->item->id)) {
-            $userId = CrowdFundingHelper::getUserIdByRewardId($this->item->id);
+            $userId = CrowdfundingHelper::getUserIdByRewardId($this->item->id);
             $uri = JUri::getInstance();
-            $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdFundingHelper::getImagesFolderUri($userId, JPATH_BASE);
+            $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdfundingHelper::getImagesFolderUri($userId, JPATH_BASE);
         }
 
         $app = JFactory::getApplication();
@@ -76,7 +74,7 @@ class CrowdFundingViewReward extends JViewLegacy
 
         // Get project title.
         $projectId = $app->getUserState("com_crowdfunding.rewards.pid");
-        $this->projectTitle = CrowdFundingHelper::getProjectTitle($projectId);
+        $this->projectTitle = CrowdfundingHelper::getProjectTitle($projectId);
 
         // Get a property that give us ability to upload images.
         $this->allowedImages = $this->params->get("rewards_images", 0);
@@ -96,16 +94,15 @@ class CrowdFundingViewReward extends JViewLegacy
 
     protected function prepareDefaultLayout()
     {
-        jimport("crowdfunding.user.rewards");
-        $this->rewards = new CrowdFundingUserRewards(JFactory::getDbo());
-        $this->rewards->loadByRewardId($this->item->id);
+        $this->rewards = new Crowdfunding\User\Rewards(JFactory::getDbo());
+        $this->rewards->load(array("reward_id" => $this->item->id));
 
-        $this->rewardOwnerId = CrowdFundingHelper::getUserIdByRewardId($this->item->id);
+        $this->rewardOwnerId = CrowdfundingHelper::getUserIdByRewardId($this->item->id);
 
-        $dateValidator = new ITPrismValidatorDate($this->item->delivery);
+        $dateValidator = new Prism\Validator\Date($this->item->delivery);
         $this->deliveryDate = ($dateValidator->isValid()) ? JHtml::_('date', $this->item->delivery, JText::_('DATE_FORMAT_LC3')) : "--";
 
-        $this->imagesFolder = CrowdFundingHelper::getImagesFolderUri($this->rewardOwnerId);
+        $this->imagesFolder = CrowdfundingHelper::getImagesFolderUri($this->rewardOwnerId);
 
         // Get social profile
         $socialPlatform = $this->params->get("integration_social_platform");
@@ -116,8 +113,7 @@ class CrowdFundingViewReward extends JViewLegacy
                 "user_id" => $this->rewardOwnerId
             );
 
-            jimport("itprism.integrate.profile.builder");
-            $profileBuilder = new ITPrismIntegrateProfileBuilder($options);
+            $profileBuilder = new Prism\Integration\Profile\Builder($options);
             $profileBuilder->build();
 
             $this->socialProfile = $profileBuilder->getProfile();
@@ -156,13 +152,9 @@ class CrowdFundingViewReward extends JViewLegacy
             }
 
         } else { // Layout 'default'.
-
             $this->documentTitle = JText::sprintf('COM_CROWDFUNDING_VIEW_REWARD_S_PROJECT_S', $this->item->title, $this->projectTitle);
-
             JToolbarHelper::title($this->documentTitle);
-
             JToolbarHelper::cancel('reward.cancel', 'JTOOLBAR_CLOSE');
-
         }
     }
 
@@ -179,11 +171,11 @@ class CrowdFundingViewReward extends JViewLegacy
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
-        JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
+        JHtml::_('prism.ui.bootstrapFileUploadStyle');
 
         JHtml::_('formbehavior.chosen', 'select');
 
         // Add scripts
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

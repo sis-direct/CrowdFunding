@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -40,7 +40,7 @@ defined('_JEXEC') or die;
             <tr>
                 <th><?php echo JText::_("COM_CROWDFUNDING_INVESTED_AMOUNT");?></th>
                 <td>
-                    <?php echo $this->currency->getAmountString($this->investedAmount); ?>
+                    <?php echo $this->amount->setValue($this->investedAmount)->formatCurrency(); ?>
                     <div class="small">
                         <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=sid:" . $this->item->id); ?>">
                             <?php echo JText::sprintf("COM_CROWDFUNDING_TRANSACTIONS_N", $this->investedTransactions); ?>
@@ -51,7 +51,7 @@ defined('_JEXEC') or die;
             <tr>
                 <th><?php echo JText::_("COM_CROWDFUNDING_RECEIVED_AMOUNT");?></th>
                 <td>
-                    <?php echo $this->currency->getAmountString($this->receivedAmount); ?>
+                    <?php echo $this->amount->setValue($this->receivedAmount)->formatCurrency(); ?>
                     <div class="small">
                         <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=transactions&filter_search=bid:" . $this->item->id); ?>">
                             <?php echo JText::sprintf("COM_CROWDFUNDING_TRANSACTIONS_N", $this->receivedTransactions); ?>

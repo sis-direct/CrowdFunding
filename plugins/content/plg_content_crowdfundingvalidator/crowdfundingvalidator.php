@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -12,17 +12,17 @@ defined('_JEXEC') or die;
 
 jimport('joomla.plugin.plugin');
 
-jimport('itprism.init');
-jimport('crowdfunding.init');
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 /**
  * This plugin validates data.
  * It works only on front-end.
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Plugins
  */
-class plgContentCrowdFundingValidator extends JPlugin
+class plgContentCrowdfundingValidator extends JPlugin
 {
     protected $allowedContexts = array("com_crowdfunding.basic", "com_crowdfunding.funding", "com_crowdfunding.story");
 
@@ -192,7 +192,7 @@ class plgContentCrowdFundingValidator extends JPlugin
 
         // It is not necessary to continue with validations if it is a process of unpublishing.
         // It is important to do following validation when someone publish his project.
-        if ($state == CrowdFundingConstants::UNPUBLISHED) {
+        if ($state == Prism\Constants::UNPUBLISHED) {
             $result = array("success" => true);
             return $result;
         }
@@ -208,7 +208,7 @@ class plgContentCrowdFundingValidator extends JPlugin
         }
 
         // Validate funding duration.
-        $fundingEnd = new ITPrismValidatorDate($item->funding_end);
+        $fundingEnd = new Prism\Validator\Date($item->funding_end);
         if (!$fundingEnd->isValid($item->funding_end) and !$item->funding_days) {
             $result["message"] = JText::_("PLG_CONTENT_CROWDFUNDINGVALIDATOR_ERROR_INVALID_FUNDING_DURATION");
             return $result;
@@ -258,7 +258,7 @@ class plgContentCrowdFundingValidator extends JPlugin
 
         // Validate minimum and maximum amount.
         if ($this->params->get("validate_amount", 1)) {
-            $goal      = JArrayHelper::getValue($data, "goal", 0, "float");
+            $goal      = Joomla\Utilities\ArrayHelper::getValue($data, "goal", 0, "float");
             $minAmount = $params->get("project_amount_minimum", 100);
             $maxAmount = $params->get("project_amount_maximum");
 
@@ -282,12 +282,12 @@ class plgContentCrowdFundingValidator extends JPlugin
             $minDays = (int)$params->get("project_days_minimum", 15);
             $maxDays = (int)$params->get("project_days_maximum", 0);
 
-            $fundingType = JArrayHelper::getValue($data, "funding_duration_type");
+            $fundingType = Joomla\Utilities\ArrayHelper::getValue($data, "funding_duration_type");
 
             // Validate funding type "days"
             if (strcmp("days", $fundingType) == 0) {
 
-                $days = JArrayHelper::getValue($data, "funding_days", 0, "integer");
+                $days = Joomla\Utilities\ArrayHelper::getValue($data, "funding_days", 0, "integer");
                 if ($days < $minDays) {
                     $result["message"] = JText::_('PLG_CONTENT_CROWDFUNDINGVALIDATOR_ERROR_INVALID_DAYS');
                     return $result;
@@ -300,9 +300,9 @@ class plgContentCrowdFundingValidator extends JPlugin
 
             } else { // Validate funding type "date"
 
-                $fundingEndDate = JArrayHelper::getValue($data, "funding_end");
+                $fundingEndDate = Joomla\Utilities\ArrayHelper::getValue($data, "funding_end");
 
-                $dateValidator = new ITPrismValidatorDate($fundingEndDate);
+                $dateValidator = new Prism\Validator\Date($fundingEndDate);
                 if (!$dateValidator->isValid()) {
                     $result["message"] = JText::_('PLG_CONTENT_CROWDFUNDINGVALIDATOR_ERROR_INVALID_DATE');
                     return $result;
@@ -314,7 +314,7 @@ class plgContentCrowdFundingValidator extends JPlugin
         if ($this->params->get("validate_funding_duration_approved", 1)) {
 
             // Get item and check it for active state ( published and approved ).
-            $itemId = JArrayHelper::getValue($data, "id");
+            $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
             $userId = JFactory::getUser()->get("id");
 
             $item   = $this->getItem($itemId, $userId);
@@ -325,26 +325,25 @@ class plgContentCrowdFundingValidator extends JPlugin
                 $minDays = (int)$params->get("project_days_minimum", 15);
                 $maxDays = (int)$params->get("project_days_maximum", 0);
 
-                $fundingType = JArrayHelper::getValue($data, "funding_duration_type");
+                $fundingType = Joomla\Utilities\ArrayHelper::getValue($data, "funding_duration_type");
 
                 // Generate funding end date from days.
                 if (strcmp("days", $fundingType) == 0) {
 
                     // Get funding days.
-                    $days = JArrayHelper::getValue($data, "funding_days", 0, "integer");
+                    $days = Joomla\Utilities\ArrayHelper::getValue($data, "funding_days", 0, "integer");
 
-                    $fundingStartDate = new CrowdFundingDate($item->funding_start);
+                    $fundingStartDate = new Crowdfunding\Date($item->funding_start);
                     $endDate          = $fundingStartDate->calculateEndDate($days);
                     $fundingEndDate   = $endDate->format("Y-m-d");
 
                 } else { // Get funding end date from request
-                    $fundingEndDate = JArrayHelper::getValue($data, "funding_end");
+                    $fundingEndDate = Joomla\Utilities\ArrayHelper::getValue($data, "funding_end");
                 }
 
                 // Validate the period.
-                $dateValidator = new CrowdFundingDate($item->funding_start);
-                if (!$dateValidator->isValidPeriod($fundingEndDate, $minDays, $maxDays)) {
-
+                $dateValidator = new Crowdfunding\Validator\Project\Period($item->funding_start, $fundingEndDate, $minDays, $maxDays);
+                if (!$dateValidator->isValid()) {
                     $result["message"] = (!empty($maxDays)) ?
                         JText::sprintf("PLG_CONTENT_CROWDFUNDINGVALIDATOR_ERROR_INVALID_ENDING_DATE_MIN_MAX_DAYS", $minDays, $maxDays) :
                         JText::sprintf("PLG_CONTENT_CROWDFUNDINGVALIDATOR_ERROR_INVALID_ENDING_DATE_MIN_DAYS", $minDays);

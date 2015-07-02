@@ -31,7 +31,6 @@ jQuery(document).ready(function() {
 		disableDays();
 	});
 	
-	
 	// Event for label days
 	jQuery("#jform_funding_days-lbl").on("click", function() {
 		jQuery('#js-funding-duration-days').prop("checked", true);
@@ -55,33 +54,6 @@ jQuery(document).ready(function() {
 		jQuery("#jform_funding_days").attr('disabled','disabled');
 		jQuery("#jform_funding_end_img").show();
 	}
-	
-	
-	// Remove image
-	jQuery('#js-extra-images-rows').on("click", ".js-extra-image-remove", function(event) {
-		event.preventDefault();
-		
-		var imageId = jQuery(this).data("image-id");
-		var userId  = jQuery(this).data("user-id");
-		
-		var _self   = this;
-		
-		jQuery.ajax({
-			url: "index.php?option=com_crowdfunding&task=project.removeExtraImage",
-			type: "POST",
-			data: { format: "raw", id: imageId, user_id: userId },
-			dataType: "text json"
-		}).done( function( response ) {
-			
-			if(!response.success) {
-                ITPrismUIHelper.displayMessageFailure(response.title, response.text);
-			} else {
-				jQuery(_self).parent().parent().remove();
-			}
-	    	
-		});
-		
-	});
 
     jQuery('#jform_location_preview').typeahead({
         ajax : {

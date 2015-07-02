@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -14,12 +14,12 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
 ?>
 <?php if (!empty($this->items)) { ?>
 <div id="cf-categories-grid">
-    <ul class="thumbnails">
+    <div class="row">
         <?php foreach ($this->items as $item) { ?>
 
-        <li class="span<?php echo $itemSpan; ?>">
+        <div class="col-md-<?php echo $itemSpan; ?>">
             <div class="thumbnail cf-category">
-                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>">
+                <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getCategoryRoute($item->slug)); ?>">
                     <?php if (!empty($item->image_link)) { ?>
                         <img src="<?php echo $item->image_link; ?>" alt="<?php echo $this->escape($item->title); ?>" />
                     <?php } else { ?>
@@ -31,7 +31,7 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
 
                 <div class="caption height-150px absolute-bottom">
                     <h3>
-                        <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getCategoryRoute($item->slug)); ?>">
+                        <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getCategoryRoute($item->slug)); ?>">
                             <?php echo $this->escape($item->title); ?>
                         </a>
                         <?php
@@ -45,8 +45,8 @@ $itemSpan = (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4;
                     <?php } ?>
                 </div>
             </div>
-        </li>
+        </div>
         <?php } ?>
-    </ul>
+    </div>
 </div>
 <?php } ?>

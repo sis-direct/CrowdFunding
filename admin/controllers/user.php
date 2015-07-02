@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,16 +10,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding user controller class.
+ * Crowdfunding user controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Components
  * @since          1.6
  */
-class CrowdFundingControllerUser extends ITPrismControllerFormBackend
+class CrowdfundingControllerUser extends Prism\Controller\Form\Backend
 {
 
 }

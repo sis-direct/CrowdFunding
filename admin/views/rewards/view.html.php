@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.validator.date');
-
-class CrowdFundingViewRewards extends JViewLegacy
+class CrowdfundingViewRewards extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -32,7 +30,7 @@ class CrowdFundingViewRewards extends JViewLegacy
     protected $items;
     protected $pagination;
 
-    protected $currency;
+    protected $amount;
     protected $projectTitle;
 
     protected $option;
@@ -59,15 +57,15 @@ class CrowdFundingViewRewards extends JViewLegacy
 
         $this->params     = $this->state->get("params");
 
-        jimport("crowdfunding.currency");
-        $currencyId     = $this->state->params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->state->params->get("project_currency"));
+        $this->amount = new Crowdfunding\Amount($this->params);
+        $this->amount->setCurrency($currency);
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu("projects");
+        CrowdfundingHelper::addSubmenu("projects");
 
         $projectId          = $this->state->get("project_id");
-        $this->projectTitle = CrowdFundingHelper::getProjectTitle($projectId);
+        $this->projectTitle = CrowdfundingHelper::getProjectTitle($projectId);
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -172,6 +170,6 @@ class CrowdFundingViewRewards extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
+        JHtml::_('prism.ui.joomlaList');
     }
 }

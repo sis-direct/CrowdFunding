@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,10 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-jimport('joomla.application.categories');
-
-class CrowdFundingViewTransactions extends JViewLegacy
+class CrowdfundingViewTransactions extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -33,6 +30,7 @@ class CrowdFundingViewTransactions extends JViewLegacy
     protected $items;
     protected $pagination;
 
+    protected $amount;
     protected $currencies;
     protected $enabledSpecificPlugins;
 
@@ -68,28 +66,29 @@ class CrowdFundingViewTransactions extends JViewLegacy
         $this->params = $this->state->get("params");
 
         // Get currencies
+        $currencies = array();
         foreach ($this->items as $item) {
             $currencies[] = $item->txn_currency;
-            $currencies   = array_unique($currencies);
         }
+        $currencies   = array_unique($currencies);
 
         if (!empty($currencies)) {
-            $options = new JRegistry;
+            $options = new Joomla\Registry\Registry;
             $options->set("locale_intl", $this->params->get("locale_intl"));
             $options->set("amount_format", $this->params->get("amount_format"));
 
-            jimport("crowdfunding.currencies");
-            $this->currencies = new CrowdFundingCurrencies(JFactory::getDbo(), $options);
-            $this->currencies->loadByAbbr($currencies);
+            $this->currencies = new Crowdfunding\Currencies(JFactory::getDbo(), $options);
+            $this->currencies->loadByCode($currencies);
         }
 
+        $this->amount = new Crowdfunding\Amount($this->params);
+
         // Get enabled specefic plugins.
-        jimport("itprism.extensions");
-        $extensions                   = new ITPrismExtensions(JFactory::getDbo(), $this->specificPlugins);
+        $extensions                   = new Prism\Extensions(JFactory::getDbo(), $this->specificPlugins);
         $this->enabledSpecificPlugins = $extensions->getEnabled();
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu($this->getName());
+        CrowdfundingHelper::addSubmenu($this->getName());
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -134,8 +133,7 @@ class CrowdFundingViewTransactions extends JViewLegacy
     protected function addSidebar()
     {
         // Create object Filters and load some filters options.
-        jimport("crowdfunding.filters");
-        $filters = new CrowdFundingFilters(JFactory::getDbo());
+        $filters = new Crowdfunding\Filters(JFactory::getDbo());
 
         // Get payment services.
         $paymentServices = $filters->getPaymentServices();
@@ -206,6 +204,6 @@ class CrowdFundingViewTransactions extends JViewLegacy
         JHtml::_('bootstrap.tooltip');
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
+        JHtml::_('prism.ui.joomlaList');
     }
 }

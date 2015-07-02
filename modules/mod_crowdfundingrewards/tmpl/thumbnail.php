@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Modules
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -18,7 +18,7 @@ $height = $componentParams->get("rewards_image_thumb_height", 200);
         <div class="reward_title center"><?php echo JText::_("MOD_CROWDFUNDINGREWARDS_PLEDGE_REWARDS"); ?></div>
         <?php foreach ($rewards as $reward) { ?>
             <div class="reward">
-                <a href="<?php echo JRoute::_(CrowdFundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug(), "default", $reward["id"])); ?>">
+                <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug(), "default", $reward["id"])); ?>">
     			    <span class="ramount">
                     <?php
                     $amount = $currency->getAmountString($reward["amount"]);
@@ -32,7 +32,7 @@ $height = $componentParams->get("rewards_image_thumb_height", 200);
                         <?php
                         $thumb = $rewardsImagesUri . "/" . $reward["image_thumb"];
                         $image = $rewardsImagesUri . "/" . $reward["image"];
-                        echo CrowdFundingRewardsModuleHelper::image($thumb, $image, $width, $height);
+                        echo CrowdfundingRewardsModuleHelper::image($thumb, $image, $width, $height);
                         ?>
                     </div>
                 <?php } ?>
@@ -57,7 +57,7 @@ $height = $componentParams->get("rewards_image_thumb_height", 200);
 
                     <?php
                     if ($params->get("display_delivery_date", 0)) {
-                        $deliveryDate = new ITPrismValidatorDate($reward["delivery"]);
+                        $deliveryDate = new Prism\Validator\Date($reward["delivery"]);
                         if ($deliveryDate->isValid()) {
                             echo '<div class="cf-rewards-delivery">' . JText::sprintf("MOD_CROWDFUNDINGREWARDS_ESTIMATED_DELIVERY", JHtml::_('date', $reward["delivery"], JText::_('DATE_FORMAT_LC3'))). '</div>';
                         }

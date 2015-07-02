@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelRewards extends JModelLegacy
+class CrowdfundingModelRewards extends JModelLegacy
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class CrowdFundingModelRewards extends JModelLegacy
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Reward', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Reward', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -79,11 +79,10 @@ class CrowdFundingModelRewards extends JModelLegacy
         /** @var  $params Joomla\Registry\Registry */
 
         // Create a currency object.
-        $currencyId     = $params->get("project_currency");
-        $currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get("project_currency"));
 
         // Create the object "amount".
-        $amount = new CrowdFundingAmount();
+        $amount = new Crowdfunding\Amount($params);
         $amount->setCurrency($currency);
 
         foreach ($data as $key => $item) {
@@ -96,16 +95,16 @@ class CrowdFundingModelRewards extends JModelLegacy
             }
 
             $item["title"] = $filter->clean($item["title"], "string");
-            $item["title"] = JString::trim($item["title"]);
-            $item["title"] = JString::substr($item["title"], 0, 128);
+            $item["title"] = Joomla\String\String::trim($item["title"]);
+            $item["title"] = Joomla\String\String::substr($item["title"], 0, 128);
 
             $item["description"] = $filter->clean($item["description"], "string");
-            $item["description"] = JString::trim($item["description"]);
-            $item["description"] = JString::substr($item["description"], 0, 500);
+            $item["description"] = Joomla\String\String::trim($item["description"]);
+            $item["description"] = Joomla\String\String::substr($item["description"], 0, 500);
 
             $item["number"] = (int)$item["number"];
 
-            $item["delivery"] = JString::trim($item["delivery"]);
+            $item["delivery"] = Joomla\String\String::trim($item["delivery"]);
             $item["delivery"] = $filter->clean($item["delivery"], "string");
 
             if (!empty($item["delivery"])) {
@@ -154,7 +153,7 @@ class CrowdFundingModelRewards extends JModelLegacy
 
             // Load a record from the database
             $row    = $this->getTable();
-            $itemId = JArrayHelper::getValue($item, "id", 0, "integer");
+            $itemId = Joomla\Utilities\ArrayHelper::getValue($item, "id", 0, "integer");
 
             if (!empty($itemId)) {
                 $keys = array("id" => $itemId, "project_id" => $projectId);
@@ -164,11 +163,11 @@ class CrowdFundingModelRewards extends JModelLegacy
                 }
             }
 
-            $amount      = JArrayHelper::getValue($item, "amount");
-            $title       = JArrayHelper::getValue($item, "title");
-            $description = JArrayHelper::getValue($item, "description");
-            $number      = JArrayHelper::getValue($item, "number");
-            $delivery    = JArrayHelper::getValue($item, "delivery");
+            $amount      = Joomla\Utilities\ArrayHelper::getValue($item, "amount");
+            $title       = Joomla\Utilities\ArrayHelper::getValue($item, "title");
+            $description = Joomla\Utilities\ArrayHelper::getValue($item, "description");
+            $number      = Joomla\Utilities\ArrayHelper::getValue($item, "number");
+            $delivery    = Joomla\Utilities\ArrayHelper::getValue($item, "delivery");
 
             $row->set("amount", $amount);
             $row->set("title", $title);
@@ -189,7 +188,7 @@ class CrowdFundingModelRewards extends JModelLegacy
     public function remove($rewardId, $imagesFolder)
     {
         // Get reward row.
-        /** @var $table CrowdFundingTableReward */
+        /** @var $table CrowdfundingTableReward */
         $table = $this->getTable();
         $table->load($rewardId);
 
@@ -222,13 +221,6 @@ class CrowdFundingModelRewards extends JModelLegacy
         $mediaParams = JComponentHelper::getParams("com_media");
         /** @var  $mediaParams Joomla\Registry\Registry */
 
-        jimport("itprism.file");
-        jimport("itprism.file.image");
-        jimport("itprism.file.uploader.local");
-        jimport("itprism.file.validator.size");
-        jimport("itprism.file.validator.image");
-        jimport("itprism.file.validator.server");
-
         $KB = 1024 * 1024;
 
         $uploadMaxSize   = $mediaParams->get("upload_maxsize") * $KB;
@@ -245,24 +237,24 @@ class CrowdFundingModelRewards extends JModelLegacy
                 continue;
             }
 
-            $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
-            $uploadedName = JString::trim(JArrayHelper::getValue($image, 'name'));
-            $errorCode    = JArrayHelper::getValue($image, 'error');
+            $uploadedFile = Joomla\Utilities\ArrayHelper::getValue($image, 'tmp_name');
+            $uploadedName = Joomla\String\String::trim(Joomla\Utilities\ArrayHelper::getValue($image, 'name'));
+            $errorCode    = Joomla\Utilities\ArrayHelper::getValue($image, 'error');
 
-            $file = new ITPrismFileImage();
+            $file = new Prism\File\Image();
 
             if (!empty($uploadedName)) {
                 // Prepare size validator.
-                $fileSize = (int)JArrayHelper::getValue($image, 'size');
+                $fileSize = (int)Joomla\Utilities\ArrayHelper::getValue($image, 'size');
 
                 // Prepare file size validator.
-                $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+                $sizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
 
                 // Prepare server validator.
-                $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
+                $serverValidator = new Prism\File\Validator\Server($errorCode, array(UPLOAD_ERR_NO_FILE));
 
                 // Prepare image validator.
-                $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
+                $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
 
                 // Get allowed mime types from media manager options
                 $imageValidator->setMimeTypes($mimeTypes);
@@ -281,16 +273,15 @@ class CrowdFundingModelRewards extends JModelLegacy
                 }
 
                 // Generate temporary file name
-                $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+                $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-                jimport("itprism.string");
-                $generatedName = new ITPrismString();
+                $generatedName = new Prism\String();
                 $generatedName->generateRandomString(12, "reward_");
 
                 $destFile = JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
                 // Prepare uploader object.
-                $uploader = new ITPrismFileUploaderLocal($uploadedFile);
+                $uploader = new Prism\File\Uploader\Local($uploadedFile);
                 $uploader->setDestination($destFile);
 
                 // Upload temporary file
@@ -352,13 +343,10 @@ class CrowdFundingModelRewards extends JModelLegacy
             throw new InvalidArgumentException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_IMAGES"));
         }
 
-        jimport("itprism.file");
-        jimport("itprism.file.remover.local");
-
         foreach ($images as $rewardId => $pictures) {
 
             // Get reward row.
-            /** @var $table CrowdFundingTableReward */
+            /** @var $table CrowdfundingTableReward */
             $table = $this->getTable();
             $table->load($rewardId);
 
@@ -370,9 +358,9 @@ class CrowdFundingModelRewards extends JModelLegacy
             $this->deleteImages($table, $imagesFolder);
 
             // Store the new one.
-            $image  = JArrayHelper::getValue($pictures, "image");
-            $thumb  = JArrayHelper::getValue($pictures, "thumb");
-            $square = JArrayHelper::getValue($pictures, "square");
+            $image  = Joomla\Utilities\ArrayHelper::getValue($pictures, "image");
+            $thumb  = Joomla\Utilities\ArrayHelper::getValue($pictures, "thumb");
+            $square = Joomla\Utilities\ArrayHelper::getValue($pictures, "square");
 
             $table->set("image", $image);
             $table->set("image_thumb", $thumb);
@@ -385,7 +373,7 @@ class CrowdFundingModelRewards extends JModelLegacy
     public function removeImage($rewardId, $imagesFolder)
     {
         // Get reward row.
-        /** @var $table CrowdFundingTableReward */
+        /** @var $table CrowdfundingTableReward */
         $table = $this->getTable();
         $table->load($rewardId);
 
@@ -406,7 +394,7 @@ class CrowdFundingModelRewards extends JModelLegacy
     /**
      * Remove images from the filesystem.
      *
-     * @param CrowdFundingTableReward $table
+     * @param CrowdfundingTableReward $table
      * @param string $imagesFolder
      */
     protected function deleteImages(&$table, $imagesFolder)

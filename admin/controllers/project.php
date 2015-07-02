@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,16 +10,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding project controller class.
+ * Crowdfunding project controller class.
  *
  * @package        ITPrism Components
- * @subpackage     CrowdFunding
+ * @subpackage     Crowdfunding
  * @since          1.6
  */
-class CrowdFundingControllerProject extends ITPrismControllerFormBackend
+class CrowdfundingControllerProject extends Prism\Controller\Form\Backend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -31,16 +29,13 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Project', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
     }
 
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -54,17 +49,17 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
         );
 
         // Parse formatted goal and funded amounts.
-        $data["goal"] = CrowdFundingHelper::parseAmount($data["goal"]);
-        $data["funded"] = CrowdFundingHelper::parseAmount($data["funded"]);
+        $data["goal"] = CrowdfundingHelper::parseAmount($data["goal"]);
+        $data["funded"] = CrowdfundingHelper::parseAmount($data["funded"]);
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelProject */
+        /** @var $model CrowdfundingModelProject */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -113,11 +108,11 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
         } catch (Exception $e) {
 
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
 
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_PROJECT_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_PROJECT_SAVED'), $redirectOptions);
     }
 
     /**
@@ -138,7 +133,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
 
         // Check for registered user
         if (!$itemId) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_INVALID_IMAGE'), $redirectOptions);
             return;
         }
 
@@ -163,7 +158,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         $redirectOptions = array(
@@ -172,6 +167,6 @@ class CrowdFundingControllerProject extends ITPrismControllerFormBackend
             "id"     => $itemId
         );
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_IMAGE_DELETED'), $redirectOptions);
     }
 }

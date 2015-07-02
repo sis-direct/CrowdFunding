@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
 /**
- * CrowdFunding rewards controller
+ * Crowdfunding rewards controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerRewards extends JControllerLegacy
+class CrowdfundingControllerRewards extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -27,10 +25,10 @@ class CrowdFundingControllerRewards extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    CrowdFundingModelRewards    The model.
+     * @return    CrowdfundingModelRewards    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Rewards', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Rewards', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -50,11 +48,10 @@ class CrowdFundingControllerRewards extends JControllerLegacy
         $pks    = $app->input->post->get('rid', array(), 'array');
         $userId = JFactory::getUser()->get("id");
 
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         // Sanitize the input
-        JArrayHelper::toInteger($pks);
+        Joomla\Utilities\ArrayHelper::toInteger($pks);
 
         // Validate user
         if (!$userId) {
@@ -78,11 +75,10 @@ class CrowdFundingControllerRewards extends JControllerLegacy
             JFactory::getApplication()->close();
         }
 
-        $rewardId = JArrayHelper::getValue($pks, 0);
+        $rewardId = Joomla\Utilities\ArrayHelper::getValue($pks, 0);
 
         // Validate reward owner.
-        jimport("crowdfunding.validator.reward.owner");
-        $validator = new CrowdFundingValidatorRewardOwner(JFactory::getDbo(), $rewardId, $userId);
+        $validator = new Crowdfunding\Validator\Reward\Owner(JFactory::getDbo(), $rewardId, $userId);
         if (!$rewardId or !$validator->isValid()) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
@@ -98,8 +94,7 @@ class CrowdFundingControllerRewards extends JControllerLegacy
 
         try {
 
-            jimport("crowdfunding.reward");
-            $reward = new CrowdFundingReward(JFactory::getDbo());
+            $reward = new Crowdfunding\Reward(JFactory::getDbo());
             $reward->load($rewardId);
 
             // If the reward is part of transaction,
@@ -109,7 +104,7 @@ class CrowdFundingControllerRewards extends JControllerLegacy
             } else {
 
                 // Get the folder where the images are stored
-                $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
+                $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
                 $model->remove($rewardId, $imagesFolder);
 
             }
@@ -160,8 +155,7 @@ class CrowdFundingControllerRewards extends JControllerLegacy
 
         $userId = JFactory::getUser()->get("id");
 
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         // Validate user
         if (!$userId) {
@@ -188,8 +182,7 @@ class CrowdFundingControllerRewards extends JControllerLegacy
         }
 
         // Validate reward owner.
-        jimport("crowdfunding.validator.reward.owner");
-        $validator = new CrowdFundingValidatorRewardOwner(JFactory::getDbo(), $rewardId, $userId);
+        $validator = new Crowdfunding\Validator\Reward\Owner(JFactory::getDbo(), $rewardId, $userId);
         if (!$rewardId or !$validator->isValid()) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
@@ -206,7 +199,7 @@ class CrowdFundingControllerRewards extends JControllerLegacy
         try {
 
             // Get the folder where the images will be stored
-            $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
+            $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
 
             $model->removeImage($rewardId, $imagesFolder);
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die();
 
-jimport("crowdfunding.log.files");
-
-class CrowdFundingModelLog extends JModelAdmin
+class CrowdfundingModelLog extends JModelAdmin
 {
     protected $item = array();
 
@@ -31,7 +29,7 @@ class CrowdFundingModelLog extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Log', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Log', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -65,7 +63,7 @@ class CrowdFundingModelLog extends JModelAdmin
      */
     public function loadLogFile($file)
     {
-        $files = new CrowdFundingLogFiles($this->includeFiles);
+        $files = new Crowdfunding\Log\Files($this->includeFiles);
         $files->load();
 
         $output = "";
@@ -93,7 +91,7 @@ class CrowdFundingModelLog extends JModelAdmin
      */
     public function deleteFile($file)
     {
-        $files = new CrowdFundingLogFiles($this->includeFiles);
+        $files = new Crowdfunding\Log\Files($this->includeFiles);
         $files->load();
 
         foreach ($files as $sourceFile) {

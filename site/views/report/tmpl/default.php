@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,23 +10,40 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<div class="row-fluid">
-	<div class="span12">
+<div class="row">
+	<div class="col-md-12">
 		<form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="reportForm" id="reportForm" autocomplete="off" >
 
-			<?php echo $this->form->getControlGroup('subject'); ?>
-			<?php echo $this->form->getControlGroup('description'); ?>
-			<?php echo $this->form->getControlGroup('email'); ?>
+            <div class="form-group">
+                <?php echo $this->form->getLabel('subject'); ?>
+                <?php echo $this->form->getInput('subject'); ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->form->getLabel('description'); ?>
+                <?php echo $this->form->getInput('description'); ?>
+            </div>
+            <div class="form-group">
+                <?php echo $this->form->getLabel('email'); ?>
+                <?php echo $this->form->getInput('email'); ?>
+            </div>
 
 			<?php if(!$this->item){ ?>
-				<?php echo $this->form->getControlGroup('project'); ?>
+                <div class="form-group">
+                    <?php echo $this->form->getLabel('project'); ?>
+                    <?php echo $this->form->getInput('project'); ?>
+                </div>
 			<?php } else { ?>
-				<?php echo $this->form->getControlGroup('title'); ?>
+                <div class="form-group">
+                    <?php echo $this->form->getLabel('title'); ?>
+                    <?php echo $this->form->getInput('title'); ?>
+                </div>
 			<?php } ?>
 
+            <div class="form-group">
 			<?php echo $this->form->getControlGroup('captcha'); ?>
-			<?php echo $this->form->getControlGroup('id'); ?>
+            </div>
 
+			<?php echo $this->form->getInput('id'); ?>
 			<?php echo JHtml::_('form.token'); ?>
 
 			<input type="hidden" name="task" value="report.send" />
@@ -37,4 +54,3 @@ defined('_JEXEC') or die;
 		</form>
 	</div>
 </div>
-<div class="clearfix">&nbsp;</div>

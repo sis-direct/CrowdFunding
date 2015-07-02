@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewFeatured extends JViewLegacy
+class CrowdfundingViewFeatured extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -30,16 +30,11 @@ class CrowdFundingViewFeatured extends JViewLegacy
     protected $items = null;
     protected $pagination = null;
 
-    /**
-     * @var CrowdFundingCurrency
-     */
-    protected $currency;
-
+    protected $amount;
     protected $numberInRow;
     protected $imageFolder;
     protected $displayCreator;
     protected $socialProfiles;
-    protected $layoutsBasePath;
     protected $layoutData;
 
     protected $option;
@@ -50,8 +45,6 @@ class CrowdFundingViewFeatured extends JViewLegacy
     {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->getCmd("option");
-
-        $this->layoutsBasePath = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . "/layouts");
     }
 
     public function display($tpl = null)
@@ -66,27 +59,36 @@ class CrowdFundingViewFeatured extends JViewLegacy
         /** @var  $this->params Joomla\Registry\Registry */
 
         $this->numberInRow = $this->params->get("featured_items_row", 3);
-        $this->items       = CrowdFundingHelper::prepareItems($this->items, $this->numberInRow);
+        $this->items       = CrowdfundingHelper::prepareItems($this->items, $this->numberInRow);
 
         // Get the folder with images
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
 
         // Get currency
-        jimport("crowdfunding.currency");
-        $currencyId     = $this->params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $this->amount = new Crowdfunding\Amount($this->params);
+        $this->amount->setCurrency($currency);
 
         $this->displayCreator = $this->params->get("integration_display_creator", true);
 
         // Prepare integration. Load avatars and profiles.
         if (!empty($this->displayCreator)) {
-            $this->socialProfiles = CrowdFundingHelper::prepareIntegrationGrid($this->items, $this->params);
+            $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
+                array(
+                    "social_platform" => $this->params->get("integration_social_platform"),
+                    "users_ids" => CrowdfundingHelper::fetchUserIds($this->items)
+                )
+            );
+
+            $socialProfilesBuilder->build();
+
+            $this->socialProfiles = $socialProfilesBuilder->getProfiles();
         }
 
         $this->layoutData = array(
             "items" => $this->items,
             "params" => $this->params,
-            "currency" => $this->currency,
+            "amount" => $this->amount,
             "socialProfiles" => $this->socialProfiles,
             "imageFolder" => $this->imageFolder,
             "titleLength" => $this->params->get("discover_title_length", 0),
@@ -122,14 +124,6 @@ class CrowdFundingViewFeatured extends JViewLegacy
         if ($this->params->get('menu-meta_keywords')) {
             $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
         }
-
-        // Styles
-
-        // Load bootstrap thumbnails styles
-        if ($this->params->get("bootstrap_thumbnails", false)) {
-            JHtml::_("itprism.ui.bootstrap_thumbnails");
-        }
-
     }
 
     private function preparePageHeading()

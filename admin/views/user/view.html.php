@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewUser extends JViewLegacy
+class CrowdfundingViewUser extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -31,7 +29,7 @@ class CrowdFundingViewUser extends JViewLegacy
 
     protected $item;
 
-    protected $currency;
+    protected $amount;
     protected $projects;
     protected $investedAmount;
     protected $investedTransactions;
@@ -70,14 +68,12 @@ class CrowdFundingViewUser extends JViewLegacy
         $this->params = JComponentHelper::getParams($this->option);
 
         // Get currency
-        jimport("crowdfunding.currency");
-        $currencyId     = $this->params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
-
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $this->amount = new Crowdfunding\Amount($this->params);
+        $this->amount->setCurrency($currency);
 
         // Get number of rewards.
-        jimport("crowdfunding.statistics.user");
-        $statistics = new CrowdFundingStatisticsUser(JFactory::getDbo(), $this->item->id);
+        $statistics = new Crowdfunding\Statistics\User(JFactory::getDbo(), $this->item->id);
         $this->projects  = $statistics->getProjectsNumber();
 
         $amounts   = $statistics->getAmounts();
@@ -101,17 +97,15 @@ class CrowdFundingViewUser extends JViewLegacy
                 "user_id" => $this->item->id
             );
 
-            jimport("itprism.integrate.profile.builder");
-            $profileBuilder = new ITPrismIntegrateProfileBuilder($options);
+            $profileBuilder = new Prism\Integration\Profile\Builder($options);
             $profileBuilder->build();
 
             $this->socialProfile = $profileBuilder->getProfile();
             $this->profileLink   = $this->socialProfile->getLink();
         }
 
-        jimport("crowdfunding.user.rewards");
-        $this->rewards = new CrowdFundingUserRewards(JFactory::getDbo());
-        $this->rewards->load($this->item->id);
+        $this->rewards = new Crowdfunding\User\Rewards(JFactory::getDbo());
+        $this->rewards->load(array("user_id" => $this->item->id));
 
         $this->returnUrl = base64_encode("index.php?option=com_crowdfunding&view=user&id=".$this->item->id);
 
@@ -157,6 +151,6 @@ class CrowdFundingViewUser extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

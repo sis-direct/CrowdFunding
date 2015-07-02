@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,16 +10,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding transaction controller class.
+ * Crowdfunding transaction controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Components
  * @since          1.6
  */
-class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend
+class CrowdfundingControllerTransaction extends Prism\Controller\Form\Backend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -31,16 +29,13 @@ class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Transaction', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Transaction', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
     }
 
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -54,13 +49,13 @@ class CrowdFundingControllerTransaction extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelTransaction */
+        /** @var $model CrowdfundingModelTransaction */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form data

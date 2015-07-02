@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.frontend');
-
 /**
- * CrowdFunding friend mail controller
+ * Crowdfunding friend mail controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerFriendMail extends ITPrismControllerFormFrontend
+class CrowdfundingControllerFriendMail extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerFriendMail extends ITPrismControllerFormFrontend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'FriendMail', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'FriendMail', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -55,20 +53,19 @@ class CrowdFundingControllerFriendMail extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id", 0, "uint");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "uint");
 
         // Get project
-        jimport("crowdfunding.project");
-        $item = CrowdFundingProject::getInstance(JFactory::getDbo(), $itemId);
+        $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         // Prepare redirect link
-        $link            = CrowdFundingHelperRoute::getEmbedRoute($item->getSlug(), $item->getCatSlug(), "email");
+        $link            = CrowdfundingHelperRoute::getEmbedRoute($item->getSlug(), $item->getCatSlug(), "email");
         $redirectOptions = array(
             "force_direction" => $link
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelFriendMail */
+        /** @var $model CrowdfundingModelFriendMail */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */

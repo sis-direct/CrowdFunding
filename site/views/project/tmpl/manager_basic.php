@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<h4 class="cf-m-0 pl5 cf-bg-color-yellow"><?php echo JText::_("COM_CROWDFUNDING_BASIC_INFORMATION"); ?></h4>
+<h4 class="m-0 pl-5 cf-bg-color-yellow"><?php echo JText::_("COM_CROWDFUNDING_BASIC_INFORMATION"); ?></h4>
 <table class="table table-striped">
     <tbody>
     <tr>

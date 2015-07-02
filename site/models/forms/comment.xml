@@ -2,7 +2,7 @@
 <form>
     <fieldset name="comment">
 
-        <field name="comment" type="textarea" class="span12"
+        <field name="comment" type="textarea" class="form-control"
                label="COM_CROWDFUNDING_COMMENT"
                filter="trim"
                rows="5"

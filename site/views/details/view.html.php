@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewDetails extends JViewLegacy
+class CrowdfundingViewDetails extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -40,7 +40,7 @@ class CrowdFundingViewDetails extends JViewLegacy
     protected $defaultAvatar;
     protected $onCommentAfterDisplay;
     protected $commentsEnabled;
-    protected $currency;
+    protected $amount;
     protected $displayAmounts;
 
     protected $option;
@@ -78,9 +78,12 @@ class CrowdFundingViewDetails extends JViewLegacy
         // Get the path to the images.
         $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
 
+        $this->defaultAvatar = JUri::base() . $this->params->get("integration_avatars_default");
+        $this->avatarsSize   = $this->params->get("integration_avatars_size", "small");
+
         // Prepare the link that points to project page.
         $host             = JUri::getInstance()->toString(array("scheme", "host"));
-        $this->item->link = $host . JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
+        $this->item->link = $host . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
 
         // Prepare the link that points to project image.
         $this->item->link_image = $host . "/" . $this->imageFolder . "/" . $this->item->image;
@@ -133,7 +136,7 @@ class CrowdFundingViewDetails extends JViewLegacy
 
     protected function prepareUpdatesScreen()
     {
-        $model       = JModelLegacy::getInstance("Updates", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model       = JModelLegacy::getInstance("Updates", "CrowdfundingModel", $config = array('ignore_request' => false));
         $this->items = $model->getItems();
         $this->form  = $model->getForm();
 
@@ -146,15 +149,15 @@ class CrowdFundingViewDetails extends JViewLegacy
             $usersIds[] = $item->user_id;
         }
 
-        // Prepare integration. Load avatars and profiles.
-        $this->prepareIntegration($usersIds, $this->params);
+        // Prepare social integration.
+        $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get("integration_social_platform"), $usersIds);
 
         // Scripts
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
-        JHtml::_('itprism.ui.pnotify');
+        JHtml::_('prism.ui.pnotify');
 
-        JHtml::_("itprism.ui.joomla_helper");
+        JHtml::_("prism.ui.joomlaHelper");
 
         $this->document->addScript('media/' . $this->option . '/js/site/updates.js');
     }
@@ -165,7 +168,7 @@ class CrowdFundingViewDetails extends JViewLegacy
 
         // Initialize default comments functionality.
         if ($this->commentsEnabled) {
-            $model       = JModelLegacy::getInstance("Comments", "CrowdFundingModel", $config = array('ignore_request' => false));
+            $model       = JModelLegacy::getInstance("Comments", "CrowdfundingModel", $config = array('ignore_request' => false));
             $this->items = $model->getItems();
             $this->form  = $model->getForm();
 
@@ -180,15 +183,15 @@ class CrowdFundingViewDetails extends JViewLegacy
 
             $usersIds = array_unique($usersIds);
 
-            // Prepare integration. Load avatars and profiles.
-            $this->prepareIntegration($usersIds, $this->params);
+            // Prepare social integration.
+            $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get("integration_social_platform"), $usersIds);
 
             // Scripts
             JHtml::_('behavior.keepalive');
             JHtml::_('behavior.formvalidation');
-            JHtml::_('itprism.ui.pnotify');
+            JHtml::_('prism.ui.pnotify');
 
-            JHtml::_("itprism.ui.joomla_helper");
+            JHtml::_("prism.ui.joomlaHelper");
 
             $this->document->addScript('media/' . $this->option . '/js/site/comments.js');
         }
@@ -202,7 +205,7 @@ class CrowdFundingViewDetails extends JViewLegacy
 
     protected function prepareFundersScreen()
     {
-        $model       = JModelLegacy::getInstance("Funders", "CrowdFundingModel", $config = array('ignore_request' => false));
+        $model       = JModelLegacy::getInstance("Funders", "CrowdfundingModel", $config = array('ignore_request' => false));
         $this->items = $model->getItems();
 
         // Get users IDs
@@ -211,16 +214,18 @@ class CrowdFundingViewDetails extends JViewLegacy
             $usersIds[] = $item->id;
         }
 
+        $usersIds = array_filter($usersIds);
+
         // Create a currency object if I have to display funders amounts.
         $this->displayAmounts = $this->params->get("funders_display_amounts", 0);
         if ($this->displayAmounts) {
-            jimport("crowdfunding.currency");
-            $currencyId = $this->params->get("project_currency");
-            $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+            $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+            $this->amount = new Crowdfunding\Amount($this->params);
+            $this->amount->setCurrency($currency);
         }
 
-        // Prepare integration. Load avatars and profiles.
-        $this->prepareIntegration($usersIds, $this->params);
+        // Prepare social integration.
+        $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get("integration_social_platform"), $usersIds);
     }
 
     /**
@@ -255,13 +260,6 @@ class CrowdFundingViewDetails extends JViewLegacy
         $pathway           = $app->getPathWay();
         $currentBreadcrumb = JHtmlString::truncate($this->item->title, 32);
         $pathway->addItem($currentBreadcrumb, '');
-
-        // Add styles
-
-        // Load bootstrap media styles
-        if ($this->params->get("bootstrap_mediacomponent", false)) {
-            JHtml::_("itprism.ui.bootstrap_mediacomponent");
-        }
 
         // Add scripts
         JHtml::_('jquery.framework');
@@ -321,41 +319,5 @@ class CrowdFundingViewDetails extends JViewLegacy
 
         $this->document->setTitle($title);
 
-    }
-
-    /**
-     * Prepare social profiles
-     *
-     * @param array     $usersIds
-     * @param Joomla\Registry\Registry $params
-     *
-     * @todo Move it to a trait when traits become mass.
-     */
-    protected function prepareIntegration($usersIds, $params)
-    {
-        $usersIds = array_filter($usersIds);
-
-        // Get a social platform for integration
-        $socialPlatform = $params->get("integration_social_platform");
-
-        $this->avatarsSize = $params->get("integration_avatars_size", 50);
-
-        $this->socialProfiles        = null;
-        $this->defaultAvatar         = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
-
-        // If there is now users, do not continue.
-        if (!$usersIds) {
-            return;
-        }
-
-        // Load the class
-        if (!empty($socialPlatform) or !empty($avatarsService)) {
-            jimport("itprism.integrate.profiles");
-        }
-
-        // Load the social profiles
-        if (!empty($socialPlatform)) {
-            $this->socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
-        }
     }
 }

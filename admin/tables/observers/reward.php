@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -15,12 +15,12 @@ defined('JPATH_PLATFORM') or die;
  * The classes extending this class should not be instanciated directly, as they
  * are automatically instanciated by the JObserverMapper
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Component
  * @link         http://docs.joomla.org/JTableObserver
  * @since        3.1.2
  */
-class CrowdFundingObserverReward extends JTableObserver
+class CrowdfundingObserverReward extends JTableObserver
 {
     /**
      * The pattern for this table's TypeAlias
@@ -37,7 +37,7 @@ class CrowdFundingObserverReward extends JTableObserver
      * @param   JObservableInterface $observableObject The subject object to be observed
      * @param   array                $params           ( 'typeAlias' => $typeAlias )
      *
-     * @return  CrowdFundingObserverReward
+     * @return  CrowdfundingObserverReward
      *
      * @since   3.1.2
      */
@@ -61,8 +61,8 @@ class CrowdFundingObserverReward extends JTableObserver
      */
     public function onBeforeDelete($pk)
     {
-        $userId       = CrowdFundingHelper::getUserIdByRewardId($this->table->id);
-        $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
+        $userId       = CrowdfundingHelper::getUserIdByRewardId($this->table->id);
+        $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
 
         // Remove image.
         if (!empty($this->table->image)) {

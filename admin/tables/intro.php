@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-class CrowdFundingTableIntro extends JTable
+class CrowdfundingTableIntro extends JTable
 {
     /**
      * @param JDatabaseDriver $db

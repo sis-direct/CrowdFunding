@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.frontend');
-
 /**
- * CrowdFunding project controller
+ * Crowdfunding project controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
+class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Project', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -56,8 +54,8 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id");
-        $terms  = JArrayHelper::getValue($data, "terms", false, "bool");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $terms  = Joomla\Utilities\ArrayHelper::getValue($data, "terms", false, "bool");
 
         $redirectOptions = array(
             "view" => "project",
@@ -65,7 +63,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelProject */
+        /** @var $model CrowdfundingModelProject */
 
         // Get component parameters
         $params = JComponentHelper::getParams($this->option);
@@ -89,8 +87,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
 
             $userId = JFactory::getUser()->get("id");
 
-            jimport("crowdfunding.validator.project.owner");
-            $validator = new CrowdFundingValidatorProjectOwner(JFactory::getDbo(), $itemId, $userId);
+            $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $itemId, $userId);
             if (!$validator->isValid()) {
                 $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
                 return;
@@ -117,7 +114,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
         // If there is an error, redirect to current step.
         foreach ($results as $result) {
             if ($result["success"] == false) {
-                $this->displayWarning(JArrayHelper::getValue($result, "message"), $redirectOptions);
+                $this->displayWarning(Joomla\Utilities\ArrayHelper::getValue($result, "message"), $redirectOptions);
                 return;
             }
         }
@@ -131,20 +128,20 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
             $redirectOptions["id"] = $itemId;
 
             // Get the images from the session.
-            $images = $app->getUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT);
+            $images = $app->getUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT);
 
             // Store the images to the project record.
             if (!empty($images) and !empty($itemId)) {
 
                 // Get the folder where the images will be stored
-                $temporaryFolder = CrowdFundingHelper::getTemporaryImagesFolder();
+                $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
 
                 // Move the pictures from the temporary folder to the images folder.
                 // Store the names of the pictures in project record.
                 $model->updateImages($itemId, $images, $temporaryFolder);
 
                 // Remove the pictures from the session.
-                $app->setUserState(CrowdFundingConstants::CROPPED_IMAGES_CONTEXT, null);
+                $app->setUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT, null);
             }
 
         } catch (RuntimeException $e) {
@@ -193,8 +190,7 @@ class CrowdFundingControllerProject extends ITPrismControllerFormFrontend
         );
 
         // Validate project owner.
-        jimport("crowdfunding.validator.project.owner");
-        $validator = new CrowdFundingValidatorProjectOwner(JFactory::getDbo(), $itemId, $userId);
+        $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemId or !$validator->isValid()) {
             $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
             return;

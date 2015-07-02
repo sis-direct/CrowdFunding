@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -22,15 +22,15 @@ defined('_JEXEC') or die;
 	<?php } ?>
 	
 	<?php if($this->item->event->beforeDisplayContent) {?>
-	<div class="row-fluid">
-		<div class="span12">
+	<div class="row">
+		<div class="col-md-12">
     		<div class="cf-details-block cf-border-bottom"><?php echo $this->item->event->beforeDisplayContent;?></div>
     	</div>
 	</div>
 	<?php }?>
 	
-	<div class="row-fluid">
-		<div class="span12">
+	<div class="row">
+		<div class="col-md-12">
         	<div class="cf-details-block">
         	<?php if(!$this->item->pitch_video) {
         	    if(!$this->item->pitch_image) {

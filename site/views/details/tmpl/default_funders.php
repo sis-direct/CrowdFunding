@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -13,24 +13,27 @@ defined('_JEXEC') or die;?>
 if (!empty($this->items)) {
     foreach ($this->items as $item) {
 
-        $socialProfile = (!$this->socialProfiles or !$item->id) ? null : $this->socialProfiles->getLink($item->id);
-        $socialAvatar  = (!$this->socialProfiles or !$item->id) ? $this->defaultAvatar : $this->socialProfiles->getAvatar($item->id, $this->avatarsSize);
-        $socialLocation  = (!$this->socialProfiles or !$item->id) ? null : $this->socialProfiles->getLocation($item->id);
-        $socialCountryCode  = (!$this->socialProfiles or !$item->id) ? null: $this->socialProfiles->getCountryCode($item->id);
-        ?>
-        <div class="row-fluid">
+        $socialProfile = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->id);
 
-            <div class="span12 cf-funder-row">
+        $socialAvatar  = (!$this->socialProfiles) ? $this->defaultAvatar : $this->socialProfiles->getAvatar($item->id, $this->avatarsSize);
+        if (!$socialAvatar) {
+            $socialAvatar = $this->defaultAvatar;
+        }
+
+        $socialLocation  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLocation($item->id);
+        $socialCountryCode  = (!$this->socialProfiles) ? null: $this->socialProfiles->getCountryCode($item->id);
+        ?>
+
+            <div class="cf-funder-row">
 
                 <div class="media">
-                    <a class="pull-left cf-funder-picture"
-                       href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile; ?>">
-                        <img class="media-object" src="<?php echo $socialAvatar; ?>"
-                             width="<?php echo $this->avatarsSize; ?>" height="<?php echo $this->avatarsSize; ?>">
-                    </a>
+                    <div class="media-left">
+                        <a class="cf-funder-picture" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile; ?>">
+                            <img class="media-object" src="<?php echo $socialAvatar; ?>" />
+                        </a>
+                    </div>
 
                     <div class="media-body">
-
                         <div class="pull-left cf-funder-info">
                             <h5 class="media-heading">
                                 <?php if (!empty($socialProfile)) { ?>
@@ -46,7 +49,7 @@ if (!empty($this->items)) {
 
                         <?php if(!empty($this->displayAmounts)) { ?>
                         <div class="pull-right cf-funder-amount">
-                            <?php echo $this->currency->getAmountString($item->txn_amount); ?>
+                            <?php echo $this->amount->setValue($item->txn_amount)->formatCurrency(); ?>
                         </div>
                         <?php } ?>
                     </div>
@@ -54,7 +57,6 @@ if (!empty($this->items)) {
 
             </div>
 
-        </div>
     <?php } ?>
 
 <?php } ?>

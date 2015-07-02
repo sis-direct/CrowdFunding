@@ -6,10 +6,10 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.11.3</version>
-    <creationDate>04 May, 2015</creationDate>
+    <version>2.0</version>
+    <creationDate>30 June, 2015</creationDate>
     <description><![CDATA[
-    <p>CrowdFunding Payment - PayPal is a plugin that provides ability for making payments via PayPal Payments Standard method.</p>
+    <p>Crowdfunding Payment - PayPal is a plugin that provides ability for making payments via PayPal Payments Standard method.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
     <p>Please, <a href='http://extensions.joomla.org/extensions/extension/e-commerce/donations/crowdfunding' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>
@@ -45,10 +45,10 @@
                 <field name="paypal_sandbox_url" type="text" size="80" default="https://www.sandbox.paypal.com/cgi-bin/webscr" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SANDBOX_URL_DESC" class="span6" />
             </fieldset>
 	            
-            <fieldset name="emails" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFICATION_EMAILS">
-                <field name="admin_mail_id" type="cfemails" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_ADMIN" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_ADMIN_DESC" class="btn-group" />
-                <field name="creator_mail_id" type="cfemails" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_CREATOR" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_CREATOR_DESC" class="btn-group" />
-                <field name="user_mail_id" type="cfemails" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_USER" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_USER_DESC" class="btn-group" />
+            <fieldset name="emails" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_NOTIFICATION_EMAILS" addfieldpath="/administrator/components/com_emailtemplates/models/fields">
+                <field name="admin_mail_id" type="emailtemplate" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_ADMIN" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_ADMIN_DESC" class="btn-group" />
+                <field name="creator_mail_id" type="emailtemplate" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_CREATOR" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_CREATOR_DESC" class="btn-group" />
+                <field name="user_mail_id" type="emailtemplate" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_USER" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_SEND_MAIL_USER_DESC" class="btn-group" />
                 
                 <field name="email_mode" type="list" default="html" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_EMAIL_MODE" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_EMAIL_MODE_DESC" >
                    <option value="plain">PLG_CROWDFUNDINGPAYMENT_PAYPAL_PLAIN</option>
@@ -56,7 +56,7 @@
                 </field>
             </fieldset>
             
-            <fieldset name="advanced" >
+            <fieldset name="advanced">
                 <field name="paypal_image_url" type="text" default="" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_LOGO_URL" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_LOGO_URL_DESC" size="80" class="span6" />
                 <field name="paypal_button_default" type="radio" default="0" label="PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEFAULT_BUTTON" description="PLG_CROWDFUNDINGPAYMENT_PAYPAL_DEFAULT_BUTTON_DESC" class="btn-group">
                     <option value="0">JNO</option>

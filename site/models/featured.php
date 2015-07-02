@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelFeatured extends JModelList
+class CrowdfundingModelFeatured extends JModelList
 {
     protected $items = null;
     protected $numbers = null;
@@ -145,7 +145,7 @@ class CrowdFundingModelFeatured extends JModelList
         if (!in_array($orderDirn, $allowedDirns)) {
             $orderDirn = "ASC";
         } else {
-            $orderDirn = JString::strtoupper($orderDirn);
+            $orderDirn = Joomla\String\String::strtoupper($orderDirn);
         }
 
         switch ($order) {
@@ -181,19 +181,19 @@ class CrowdFundingModelFeatured extends JModelList
                 // Calculate funding end date
                 if (!empty($item->funding_days)) {
 
-                    $fundingStartDate = new CrowdFundingDate($item->funding_start);
+                    $fundingStartDate = new Crowdfunding\Date($item->funding_start);
                     $fundingEndDate = $fundingStartDate->calculateEndDate($item->funding_days);
                     $result[$key]->funding_end = $fundingEndDate->format("Y-m-d");
 
                 }
 
                 // Calculate funded percentage.
-                $percent = new ITPrismMath();
+                $percent = new Prism\Math();
                 $percent->calculatePercentage($item->funded, $item->goal, 0);
                 $result[$key]->funded_percents = (string)$percent;
 
                 // Calculate days left
-                $today = new CrowdFundingDate();
+                $today = new Crowdfunding\Date();
                 $result[$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
 
             }

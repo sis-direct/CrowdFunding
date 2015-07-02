@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * These class contains methods using for upgrading the extension
  */
-class CrowdFundingInstallHelper
+class CrowdfundingInstallHelper
 {
     public static function startTable()
     {

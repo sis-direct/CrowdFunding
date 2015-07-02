@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-class CrowdFundingTableProject extends JTable
+class CrowdfundingTableProject extends JTable
 {
     public $id;
     public $alias;
@@ -60,7 +60,7 @@ class CrowdFundingTableProject extends JTable
         if (!$this->goal) {
             $this->fundedPercent = 0;
         } else {
-            $percentage = new ITPrismMath();
+            $percentage = new Prism\Math();
             $percentage->calculatePercentage($this->funded, $this->goal, 0);
             $this->fundedPercent = (string)$percentage;
         }
@@ -68,11 +68,11 @@ class CrowdFundingTableProject extends JTable
         // Calculate end date
         if (!empty($this->funding_days)) {
 
-            $fundingStartDateValidator = new ITPrismValidatorDate($this->funding_start);
+            $fundingStartDateValidator = new Prism\Validator\Date($this->funding_start);
             if (!$fundingStartDateValidator->isValid()) {
                 $this->funding_end = "0000-00-00";
             } else {
-                $fundingStartDate  = new CrowdFundingDate($this->funding_start);
+                $fundingStartDate  = new Crowdfunding\Date($this->funding_start);
                 $fundingEndDate    = $fundingStartDate->calculateEndDate($this->funding_days);
                 $this->funding_end = $fundingEndDate->toSql();
             }
@@ -80,7 +80,7 @@ class CrowdFundingTableProject extends JTable
         }
 
         // Calculate days left
-        $today = new CrowdFundingDate();
+        $today = new Crowdfunding\Date();
         $this->daysLeft = $today->calculateDaysLeft($this->funding_days, $this->funding_start, $this->funding_end);
 
         return true;
@@ -122,7 +122,7 @@ class CrowdFundingTableProject extends JTable
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
             $query
-                ->select($query->concatenate(array("a.id", "a.alias"), "-") . " AS catslug")
+                ->select($query->concatenate(array("a.id", "a.alias"), ":") . " AS catslug")
                 ->from($db->quoteName("#__categories", "a"))
                 ->where("a.id = " .(int)$this->catid);
 

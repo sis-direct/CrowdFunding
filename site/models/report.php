@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelReport extends JModelForm
+class CrowdfundingModelReport extends JModelForm
 {
     protected $items = array();
 
@@ -24,7 +24,7 @@ class CrowdFundingModelReport extends JModelForm
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Report', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Report', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -142,11 +142,11 @@ class CrowdFundingModelReport extends JModelForm
      */
     public function save($data)
     {
-        $projectId   = JArrayHelper::getValue($data, "id", 0, "int");
-        $subject     = JArrayHelper::getValue($data, "subject");
-        $description = JArrayHelper::getValue($data, "description");
-        $email       = JArrayHelper::getValue($data, "email");
-        $userId      = JArrayHelper::getValue($data, "user_id", 0, "int");
+        $projectId   = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
+        $subject     = Joomla\Utilities\ArrayHelper::getValue($data, "subject");
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
+        $email       = Joomla\Utilities\ArrayHelper::getValue($data, "email");
+        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
 
         if (!$projectId) {
             throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
@@ -161,7 +161,7 @@ class CrowdFundingModelReport extends JModelForm
 
         // Load a record from the database
         $row = $this->getTable();
-        /** @var $row CrowdFundingTableReport */
+        /** @var $row CrowdfundingTableReport */
 
         $row->set("subject", $subject);
         $row->set("description", $description);
@@ -180,7 +180,7 @@ class CrowdFundingModelReport extends JModelForm
     /**
      * This method executes the event onContentAfterSave.
      *
-     * @param CrowdFundingTableReport $table
+     * @param CrowdfundingTableReport $table
      *
      * @throws Exception
      */
@@ -188,7 +188,7 @@ class CrowdFundingModelReport extends JModelForm
     {
         // Get properties
         $report = $table->getProperties();
-        $report = JArrayHelper::toObject($report);
+        $report = Joomla\Utilities\ArrayHelper::toObject($report);
 
         // Generate context
         $context = $this->option . '.report';

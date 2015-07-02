@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * Get a list of items
  */
-class CrowdFundingModelCategories extends JModelList
+class CrowdfundingModelCategories extends JModelList
 {
     /**
      * Constructor.
@@ -155,7 +155,7 @@ class CrowdFundingModelCategories extends JModelList
         if (!in_array($orderDirn, $allowedDirns)) {
             $orderDirn = "ASC";
         } else {
-            $orderDirn = JString::strtoupper($orderDirn);
+            $orderDirn = Joomla\String\String::strtoupper($orderDirn);
         }
 
         switch ($order) {

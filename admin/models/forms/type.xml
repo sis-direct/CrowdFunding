@@ -30,8 +30,8 @@
 
         <fieldset name="basic">
 
-            <field name="rewards" type="radio" class="btn-group"
-                   label="COM_CROWDFUNDING_REWARDS"
+            <field name="rewards_enabled" type="radio" class="btn-group"
+                   label="COM_CROWDFUNDING_REWARDS_ENABLED"
                    description="COM_CROWDFUNDING_TYPE_PARAMS_REWARDS_DESC"
                    filter="intval"
                    default="1">

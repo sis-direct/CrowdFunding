@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewEmail extends JViewLegacy
+class CrowdfundingViewEmail extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -86,6 +84,6 @@ class CrowdFundingViewEmail extends JViewLegacy
         JHtml::_('behavior.formvalidation');
 
         // Add scripts
-        $this->document->addScript(JURI::root() . 'media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        $this->document->addScript(JURI::root() . 'media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

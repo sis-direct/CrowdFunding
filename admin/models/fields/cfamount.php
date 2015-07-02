@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -35,33 +35,59 @@ class JFormFieldCfAmount extends JFormField
         $readonly  = ((string)$this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
         $disabled  = ((string)$this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
         $class     = (!empty($this->element['class'])) ? ' class="' . (string)$this->element['class'] . '"' : "";
+        $required  = $this->required ? ' required aria-required="true"' : '';
+
+        $cssLayout  = $this->element['css_layout'] ? $this->element['css_layout'] : "Bootstrap 2";
 
         // Initialize JavaScript field attributes.
         $onchange = $this->element['onchange'] ? ' onchange="' . (string)$this->element['onchange'] . '"' : '';
 
-        // Prepare currency object.
-        $params     = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams("com_crowdfunding");
         /** @var  $params Joomla\Registry\Registry */
 
-        $currencyId = $params->get("project_currency");
-        $currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get("project_currency"));
 
         // Prepare amount object.
-        $amount = new CrowdFundingAmount($this->value);
+        $amount = new Crowdfunding\Amount($params, $this->value);
         $amount->setCurrency($currency);
 
-        if ($currency->getSymbol()) { // Prepended
-            $html = '<div class="input-prepend input-append"><span class="add-on">' . $currency->getSymbol() . '</span>';
-        } else { // Append
-            $html = '<div class="input-append">';
+        switch ($cssLayout) {
+
+            case "Bootstrap 3":
+
+                $html = array();
+                $html[] = '<div class="input-group">';
+
+                if ($currency->getSymbol()) { // Prepended
+                    $html[] = '<div class="input-group-addon">'.$currency->getSymbol().'</div>';
+                }
+
+                $html[] = '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . $amount->format() . '"' . $class . $size . $disabled . $readonly . $maxLength . $onchange . $required . '/>';
+
+                // Prepend
+                $html[] = '<div class="input-group-addon">'.$currency->getCode().'</div>';
+
+                $html[] = '</div>';
+
+                break;
+
+            default: // Bootstrap 2
+
+                $html = array();
+                if ($currency->getSymbol()) { // Prepended
+                    $html[] = '<div class="input-prepend input-append"><span class="add-on">' . $currency->getSymbol() . '</span>';
+                } else { // Append
+                    $html[] = '<div class="input-append">';
+                }
+
+                $html[] = '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . $amount->format() . '"' . $class . $size . $disabled . $readonly . $maxLength . $onchange . $required . '/>';
+
+                // Appended
+                $html[] = '<span class="add-on">' . $currency->getCode() . '</span></div>';
+
+                break;
         }
 
-        $html .= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' . $amount->format() . '"' .
-            $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
-
-        // Appended
-        $html .= '<span class="add-on">' . $currency->getAbbr() . '</span></div>';
-
-        return $html;
+        return implode("\n", $html);
     }
 }

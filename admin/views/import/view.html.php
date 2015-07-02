@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewImport extends JViewLegacy
+class CrowdfundingViewImport extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -72,7 +70,7 @@ class CrowdFundingViewImport extends JViewLegacy
         }
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu($this->importType);
+        CrowdfundingHelper::addSubmenu($this->importType);
 
         // Prepare actions
         $this->addToolbar();
@@ -111,8 +109,8 @@ class CrowdFundingViewImport extends JViewLegacy
         JHtml::_('behavior.formvalidation');
 
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('itprism.ui.bootstrap_fileuploadstyle');
+        JHtml::_('prism.ui.bootstrapFileUploadStyle');
 
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

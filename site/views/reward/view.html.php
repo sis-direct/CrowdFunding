@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewReward extends JViewLegacy
+class CrowdfundingViewReward extends JViewLegacy
 {
 
     /**
@@ -32,7 +32,7 @@ class CrowdFundingViewReward extends JViewLegacy
     protected $pagination;
 
     /**
-     * @var CrowdFundingCurrency
+     * @var CrowdfundingCurrency
      */
     protected $currency;
 
@@ -69,11 +69,10 @@ class CrowdFundingViewReward extends JViewLegacy
         $rewardId = $app->input->getInt("id");
 
         // Validate reward owner
-        jimport("crowdfunding.validator.reward.owner");
-        $validator = new CrowdFundingValidatorRewardOwner(JFactory::getDbo(), $rewardId, $this->userId);
+        $validator = new Crowdfunding\Validator\Reward\Owner(JFactory::getDbo(), $rewardId, $this->userId);
         if (!$validator->isValid()) {
             $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARD"), "notice");
-            $app->redirect(JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()));
+            $app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
         }
 
@@ -95,16 +94,15 @@ class CrowdFundingViewReward extends JViewLegacy
         $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
 
         // Load reward data.
-        jimport("crowdfunding.reward");
-        $this->reward = new CrowdFundingReward(JFactory::getDbo());
+        $this->reward = new Crowdfunding\Reward(JFactory::getDbo());
         $this->reward->load($rewardId);
 
         // Prepare reward delivery date.
-        $dateValidator = new ITPrismValidatorDate($this->reward->getDeliveryDate());
+        $dateValidator = new Prism\Validator\Date($this->reward->getDeliveryDate());
         $this->deliveryDate = ($dateValidator->isValid()) ? JHtml::_('date', $this->reward->getDeliveryDate(), JText::_('DATE_FORMAT_LC3')) : "--";
 
         // Get images folder.
-        $this->imagesFolder = CrowdFundingHelper::getImagesFolderUri($this->userId);
+        $this->imagesFolder = CrowdfundingHelper::getImagesFolderUri($this->userId);
 
         // Get social profile
         $socialPlatform = $this->params->get("integration_social_platform");
@@ -203,8 +201,7 @@ class CrowdFundingViewReward extends JViewLegacy
             "users_ids" => $usersIds
         );
 
-        jimport("itprism.integrate.profiles.builder");
-        $profileBuilder = new ITPrismIntegrateProfilesBuilder($options);
+        $profileBuilder = new Prism\Integration\Profiles\Builder($options);
         $profileBuilder->build();
 
         $this->socialProfiles = $profileBuilder->getProfiles();

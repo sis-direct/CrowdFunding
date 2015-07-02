@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,11 +10,9 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-jimport("itprism.init");
-jimport("crowdfunding.init");
+jimport("Prism.init");
+jimport("Crowdfunding.init");
 
-jimport('joomla.application.component.controller');
-
-$controller = JControllerLegacy::getInstance('CrowdFunding');
+$controller = JControllerLegacy::getInstance('Crowdfunding');
 $controller->execute(JFactory::getApplication()->input->getCmd('task'));
 $controller->redirect();

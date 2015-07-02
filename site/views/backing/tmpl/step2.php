@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -15,13 +15,13 @@ defined('_JEXEC') or die;
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 	
-	<div class="row-fluid">
-		<div class="span12">
+	<div class="row">
+		<div class="col-md-12">
     		<?php 
         	  if(strcmp("three_steps", $this->wizardType) == 0) {
-        		  $layout      = new JLayoutFile('payment_wizard', $this->layoutsBasePath);
+        		  $layout      = new JLayoutFile('payment_wizard');
     		  } else {
-        		  $layout      = new JLayoutFile('payment_wizard_four_steps', $this->layoutsBasePath);
+        		  $layout      = new JLayoutFile('payment_wizard_four_steps');
     		  }
         	  echo $layout->render($this->layoutData);
     		?>	

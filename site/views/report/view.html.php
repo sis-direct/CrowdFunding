@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewReport extends JViewLegacy
+class CrowdfundingViewReport extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -42,9 +42,6 @@ class CrowdFundingViewReport extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Get model state.
         $this->state = $this->get('State');
         $this->item  = $this->get("Item");
@@ -55,7 +52,7 @@ class CrowdFundingViewReport extends JViewLegacy
 
         // Set a link to project page
 //        $uri  = JUri::getInstance();
-//        $this->link = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdFundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
+//        $this->link = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
 
         $this->prepareDocument();
 
@@ -107,9 +104,8 @@ class CrowdFundingViewReport extends JViewLegacy
 
         // Add scripts
         JHtml::_('jquery.framework');
-        JHtml::_('bootstrap.framework');
-        JHtml::_('itprism.ui.bootstrap_maxlength');
-        JHtml::_('itprism.ui.bootstrap_typeahead');
+        JHtml::_('prism.ui.bootstrapMaxlength');
+        JHtml::_('prism.ui.bootstrapTypeahead3');
 
         $this->document->addScript('media/' . $this->option . '/js/site/report.js');
     }

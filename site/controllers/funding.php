@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.frontend');
-
 /**
- * CrowdFunding funding controller
+ * Crowdfunding funding controller
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  */
-class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
+class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,9 +28,9 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Funding', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Funding', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
-        JLoader::register("CrowdFundingModelProject", JPATH_COMPONENT . DIRECTORY_SEPARATOR . "models" . DIRECTORY_SEPARATOR . "project.php");
+        JLoader::register("CrowdfundingModelProject", JPATH_COMPONENT . DIRECTORY_SEPARATOR . "models" . DIRECTORY_SEPARATOR . "project.php");
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
@@ -54,7 +52,7 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
 
         $redirectOptions = array(
             "view"   => "project",
@@ -63,10 +61,10 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
         );
 
         // Parse formatted amount.
-        $data["goal"] = CrowdFundingHelper::parseAmount($data["goal"]);
+        $data["goal"] = CrowdfundingHelper::parseAmount($data["goal"]);
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelFunding */
+        /** @var $model CrowdfundingModelFunding */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
@@ -85,8 +83,7 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
         }
 
         // Validate project owner.
-        jimport("crowdfunding.validator.project.owner");
-        $validator = new CrowdFundingValidatorProjectOwner(JFactory::getDbo(), $itemId, $userId);
+        $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemId or !$validator->isValid()) {
             $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
             return;
@@ -107,7 +104,7 @@ class CrowdFundingControllerFunding extends ITPrismControllerFormFrontend
         // If there is an error, redirect to current step.
         foreach ($results as $result) {
             if ($result["success"] == false) {
-                $this->displayWarning(JArrayHelper::getValue($result, "message"), $redirectOptions);
+                $this->displayWarning(Joomla\Utilities\ArrayHelper::getValue($result, "message"), $redirectOptions);
                 return;
             }
         }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -22,8 +22,8 @@ defined('_JEXEC') or die;
                     <div class="controls"><?php echo $this->form->getInput('title'); ?></div>
                 </div>
                 <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('abbr'); ?></div>
-                    <div class="controls"><?php echo $this->form->getInput('abbr'); ?></div>
+                    <div class="control-label"><?php echo $this->form->getLabel('code'); ?></div>
+                    <div class="controls"><?php echo $this->form->getInput('code'); ?></div>
                 </div>
                 <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('symbol'); ?></div>

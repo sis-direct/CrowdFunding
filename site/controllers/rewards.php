@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.admin');
-
 /**
- * CrowdFunding rewards controller
+ * Crowdfunding rewards controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerRewards extends ITPrismControllerAdmin
+class CrowdfundingControllerRewards extends Prism\Controller\Admin
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,10 +28,9 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Rewards', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Rewards', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -83,15 +80,14 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
         );
 
         // Validate project owner.
-        jimport("crowdfunding.validator.project.owner");
-        $validator = new CrowdFundingValidatorProjectOwner(JFactory::getDbo(), $projectId, $userId);
+        $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $projectId, $userId);
         if (!$projectId or !$validator->isValid()) {
             $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
             return;
         }
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelRewards */
+        /** @var $model CrowdfundingModelRewards */
 
         try {
 
@@ -105,11 +101,11 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
             if ($imagesAllowed and !empty($images) and !empty($rewardsIds)) {
 
                 // Get the folder where the images will be stored
-                $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
+                $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
 
                 jimport("joomla.filesystem.folder");
                 if (!JFolder::exists($imagesFolder)) {
-                    CrowdFundingHelper::createFolder($imagesFolder);
+                    CrowdfundingHelper::createFolder($imagesFolder);
                 }
 
                 $images = $model->uploadImages($images, $imagesFolder, $rewardsIds);
@@ -175,9 +171,8 @@ class CrowdFundingControllerRewards extends ITPrismControllerAdmin
             "receiver_id" => $userId
         );
 
-        jimport("crowdfunding.transaction");
-        /** @var $transaction CrowdFundingTransaction */
-        $transaction = new CrowdFundingTransaction(JFactory::getDbo());
+        /** @var $transaction Crowdfunding\Transaction */
+        $transaction = new Crowdfunding\Transaction(JFactory::getDbo());
         $transaction->load($keys);
 
         if (!$transaction->getId()) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -11,10 +11,9 @@
 defined('_JEXEC') or die;
 
 /**
- * It is CrowdFunding helper class
- *
+ * It is Crowdfunding helper class
  */
-abstract class CrowdFundingHelper
+abstract class CrowdfundingHelper
 {
     protected static $extension = "com_crowdfunding";
 
@@ -127,14 +126,14 @@ abstract class CrowdFundingHelper
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select("title")
+        $query
+            ->select("title")
             ->from("#__crowdf_projects")
             ->where("id = " . (int)$projectId);
 
         $db->setQuery($query);
 
         return $db->loadResult();
-
     }
 
     public static function getProject($projectId, $fields = array("id"))
@@ -202,7 +201,7 @@ abstract class CrowdFundingHelper
      * @param int    $fundingDays  This is period in days.
      *
      * @return string
-     * @deprecated since v1.8. Use CrowdFundingDate->calculateEndDate();
+     * @deprecated since v1.8. Use Crowdfunding\Date->calculateEndDate();
      */
     public static function calcualteEndDate($fundingStart, $fundingDays)
     {
@@ -223,7 +222,7 @@ abstract class CrowdFundingHelper
      */
     public static function isValidDate($string)
     {
-        $string = JString::trim($string);
+        $string = Joomla\String\String::trim($string);
 
         try {
             $date = new DateTime($string);
@@ -309,113 +308,6 @@ abstract class CrowdFundingHelper
         }
 
         return self::$statistics[$projectId];
-    }
-
-    /**
-     * This method validates the period between minimum and maximum days.
-     *
-     * @param string  $fundingStart
-     * @param string  $fundingEnd
-     * @param integer $minDays
-     * @param integer $maxDays
-     *
-     * @return boolean
-     * @deprecated since v1.8
-     */
-    public static function isValidPeriod($fundingStart, $fundingEnd, $minDays, $maxDays)
-    {
-        // Get only date and remove the time
-        $date         = new DateTime($fundingStart);
-        $fundingStart = $date->format("Y-m-d");
-        $date         = new DateTime($fundingEnd);
-        $fundingEnd   = $date->format("Y-m-d");
-
-        // Get interval between starting and ending date
-        $startingDate = new DateTime($fundingStart);
-        $endingDate   = new DateTime($fundingEnd);
-        $interval     = $startingDate->diff($endingDate);
-
-        $days = $interval->format("%r%a");
-
-        // Validate minimum dates
-        if ($days < $minDays) {
-            return false;
-        }
-
-        if (!empty($maxDays) and $days > $maxDays) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $userId
-     * @param $type
-     *
-     * @return ITPrismIntegrateInterfaceProfile|null
-     */
-    public static function getSocialProfile($userId, $type)
-    {
-        $profile = null;
-
-        switch ($type) {
-
-            case "socialcommunity":
-
-                if (!defined("SOCIALCOMMUNITY_PATH_COMPONENT_SITE")) {
-                    define("SOCIALCOMMUNITY_PATH_COMPONENT_SITE", JPATH_SITE . DIRECTORY_SEPARATOR . "components" . DIRECTORY_SEPARATOR . "com_socialcommunity");
-                }
-
-                JLoader::register("SocialCommunityHelperRoute", SOCIALCOMMUNITY_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "route.php");
-
-                jimport("itprism.integrate.profile.socialcommunity");
-
-                $profile = ITPrismIntegrateProfileSocialCommunity::getInstance($userId);
-
-                // Set path to pictures
-                /** @var  $params Joomla\Registry\Registry */
-                $params = JComponentHelper::getParams("com_socialcommunity");
-                $path   = $params->get("images_directory", "images/profiles") . "/";
-
-                $profile->setPath($path);
-
-                break;
-
-            case "gravatar":
-
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = ITPrismIntegrateProfileGravatar::getInstance($userId);
-
-                break;
-
-            case "kunena":
-
-                jimport("itprism.integrate.profile.kunena");
-                $profile = ITPrismIntegrateProfileKunena::getInstance($userId);
-
-                break;
-
-            case "jomsocial":
-
-                jimport("itprism.integrate.profile.jomsocial");
-                $profile = ITPrismIntegrateProfileJomSocial::getInstance($userId);
-
-                break;
-
-            case "easysocial":
-
-                jimport("itprism.integrate.profile.easysocial");
-                $profile = ITPrismIntegrateProfileEasySocial::getInstance($userId);
-
-                break;
-
-            default:
-
-                break;
-        }
-
-        return $profile;
     }
 
     /**
@@ -537,19 +429,29 @@ abstract class CrowdFundingHelper
     /**
      * Prepare date format.
      *
-     * @param string $calendar
+     * @param bool $calendar
      *
      * @return string
      */
-    public static function getDateFormat($calendar = "")
+    public static function getDateFormat($calendar = false)
     {
         $params = JComponentHelper::getParams("com_crowdfunding");
         /** @var  $params Joomla\Registry\Registry */
 
-        $dateFormat = $params->get("project_date_format", "%Y-%m-%d");
+        $dateFormat = $params->get("project_date_format", "Y-m-d");
 
-        if (!$calendar) {
-            $dateFormat = str_replace("%", "", $dateFormat);
+        if ($calendar) {
+            switch($dateFormat) {
+                case "Y-m-d":
+                    $dateFormat = "YYYY-MM-DD";
+                    break;
+                case "d-m-Y":
+                    $dateFormat = "DD-MM-YYYY";
+                    break;
+                case "m-d-Y":
+                    $dateFormat = "MM-DD-YYYY";
+                    break;
+            }
         }
 
         return $dateFormat;
@@ -569,11 +471,10 @@ abstract class CrowdFundingHelper
         /** @var  $params Joomla\Registry\Registry */
 
         // Get currency
-        $currencyId     = $params->get("project_currency");
-        $currency       = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $params);
+        $currency       = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get("project_currency"));
 
         // Parse the goal amount.
-        $amount = new CrowdFundingAmount($value);
+        $amount = new Crowdfunding\Amount($params, $value);
         $amount->setCurrency($currency);
 
         return $amount->parse();
@@ -593,7 +494,7 @@ abstract class CrowdFundingHelper
 
                     // Generate a link to the picture.
                     if (is_array($item->params)) {
-                        $image = JArrayHelper::getValue($item->params, "image");
+                        $image = Joomla\Utilities\ArrayHelper::getValue($item->params, "image");
                         if (!empty($image)) {
                             $item->image_link = JUri::base().$image;
                         }
@@ -618,19 +519,19 @@ abstract class CrowdFundingHelper
                 // Calculate funding end date
                 if (!empty($item->funding_days)) {
 
-                    $fundingStartDate = new CrowdFundingDate($item->funding_start);
+                    $fundingStartDate = new Crowdfunding\Date($item->funding_start);
                     $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
                     $item->funding_end = $endDate->format("Y-m-d");
 
                 }
 
                 // Calculate funded percentage.
-                $percent = new ITPrismMath();
+                $percent = new Prism\Math();
                 $percent->calculatePercentage($item->funded, $item->goal, 0);
                 $item->funded_percents = (string)$percent;
 
                 // Calculate days left
-                $today = new CrowdFundingDate();
+                $today = new Crowdfunding\Date();
                 $item->days_left = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
 
                 $result[$key] = $item;
@@ -640,100 +541,37 @@ abstract class CrowdFundingHelper
         return $result;
     }
 
-    /**
-     * Prepare social profiles for a grid view.
-     *
-     * @param array     $items
-     * @param Joomla\Registry\Registry $params
-     *
-     * @return null|array
-     *
-     * @deprecated
-     * @todo remove it in version 1.12
-     */
-    public static function prepareIntegrationGrid($items, $params)
+    public static function fetchUserIds($items)
     {
-        // Get users IDs
-        $usersIds = array();
-        foreach ($items as $item) {
-            $usersIds[] = $item->user_id;
+        $result = array();
+
+        if (!empty($items)) {
+            foreach ($items as $key => $item) {
+                if (is_object($item) and isset($item->user_id)) {
+                    $result[] = $item->user_id;
+                } elseif (is_array($item) and isset($item["user_id"])) {
+                    $result[] = $item["user_id"];
+                } else {
+                    continue;
+                }
+            }
         }
 
-        // If there is now users, do not continue.
-        if (!$usersIds) {
-            return null;
-        }
-
-        $socialProfiles = null;
-
-        // Get a social platform for integration
-        $socialPlatform = $params->get("integration_social_platform");
-
-        // Load the class
-        if (!empty($socialPlatform)) {
-            jimport("itprism.integrate.profiles");
-            $socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
-            $socialProfiles->load($usersIds);
-        }
-
-        return $socialProfiles;
+        return $result;
     }
 
-    public static function intentionPaymentSessionExists($intentionId)
+    public static function prepareIntegrations($socialPlatform, array $usersIds)
     {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        // Prepare social integration.
+        $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
+            array(
+                "social_platform" => $socialPlatform,
+                "users_ids" => $usersIds
+            )
+        );
 
-        $query
-            ->select("COUNT(*)")
-            ->from($db->quoteName("#__crowdf_payment_sessions", "a"))
-            ->where("a.intention_id = ". (int)$intentionId);
+        $socialProfilesBuilder->build();
 
-        $db->setQuery($query);
-        $result = (int)$db->loadResult();
-
-        return (!$result) ? false : true;
-    }
-
-    public static function removeIntention($intentionId)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->delete($db->quoteName("#__crowdf_intentions"))
-            ->where($db->quoteName("id"). " = ". (int)$intentionId);
-
-        $db->setQuery($query);
-        $db->execute();
-    }
-
-    public static function paymentSessionIntentionExists($intentionId)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->select("COUNT(*)")
-            ->from($db->quoteName("#__crowdf_payment_sessions", "a"))
-            ->where("a.intention_id = ". (int)$intentionId);
-
-        $db->setQuery($query);
-        $result = (int)$db->loadResult();
-
-        return (!$result) ? false : true;
-    }
-
-    public static function removePaymentSession($intentionId)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->delete($db->quoteName("#__crowdf_payment_sessions"))
-            ->where($db->quoteName("intention_id"). " = ". (int)$intentionId);
-
-        $db->setQuery($query);
-        $db->execute();
+        return $socialProfilesBuilder->getProfiles();
     }
 }

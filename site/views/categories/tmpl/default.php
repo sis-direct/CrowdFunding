@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -9,7 +9,7 @@
 
 // no direct access
 defined('_JEXEC') or die;?>
-<div class="cfunding<?php echo $this->pageclass_sfx;?>">
+<div class="cfcategories<?php echo $this->pageclass_sfx;?>">
     <?php if ($this->params->get('show_page_heading', 1)) { ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
@@ -21,13 +21,10 @@ defined('_JEXEC') or die;?>
     <?php echo $this->loadTemplate($this->templateView); ?>
 
 </div>
-<div class="clearfix"></div>
-<div class="pagination">
+<?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>
+    <div class="pagination">
     <?php if ($this->params->def('show_pagination_results', 1)) { ?>
-        <p class="counter">
-            <?php echo $this->pagination->getPagesCounter(); ?>
-        </p>
+        <p class="counter pull-right"> <?php echo $this->pagination->getPagesCounter(); ?> </p>
     <?php } ?>
-    <?php echo $this->pagination->getPagesLinks(); ?>
-</div>
-<div class="clearfix"></div>
+    <?php echo $this->pagination->getPagesLinks(); ?> </div>
+<?php } ?>

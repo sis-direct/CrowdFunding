@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,11 +10,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewProjects extends JViewLegacy
+class CrowdfundingViewProjects extends JViewLegacy
 {
-
     /**
      * @var JDocumentHtml
      */
@@ -33,7 +30,7 @@ class CrowdFundingViewProjects extends JViewLegacy
     protected $items;
     protected $pagination;
 
-    protected $currency;
+    protected $amount;
     protected $rewards;
 
     protected $option;
@@ -60,9 +57,12 @@ class CrowdFundingViewProjects extends JViewLegacy
 
         $this->params = $this->state->get("params");
 
-        jimport("crowdfunding.currency");
-        $currencyId     = $this->state->params->get("project_currency");
-        $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+        // Get currency
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->state->params->get("project_currency"));
+
+        // Create object "Amount".
+        $this->amount   = new Crowdfunding\Amount($this->params);
+        $this->amount->setCurrency($currency);
 
         // Get projects IDs
         $projectsIds = array();
@@ -71,12 +71,11 @@ class CrowdFundingViewProjects extends JViewLegacy
         }
 
         // Get number of rewards.
-        jimport("crowdfunding.projects");
-        $projects = new CrowdFundingProjects(JFactory::getDbo());
+        $projects = new Crowdfunding\Projects(JFactory::getDbo());
         $this->rewards = $projects->getRewardsNumber($projectsIds);
 
         // Add submenu
-        CrowdFundingHelper::addSubmenu($this->getName());
+        CrowdfundingHelper::addSubmenu($this->getName());
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -164,8 +163,7 @@ class CrowdFundingViewProjects extends JViewLegacy
             JHtml::_('select.options', JHtml::_('category.options', 'com_crowdfunding'), 'value', 'text', $this->state->get('filter.category_id'))
         );
 
-        jimport("crowdfunding.filters");
-        $filters      = new CrowdFundingFilters(JFactory::getDbo());
+        $filters      = new Crowdfunding\Filters(JFactory::getDbo());
         $typesOptions = $filters->getProjectsTypes();
 
         JHtmlSidebar::addFilter(
@@ -222,6 +220,6 @@ class CrowdFundingViewProjects extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
+        JHtml::_('prism.ui.joomlaList');
     }
 }

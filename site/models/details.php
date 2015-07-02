@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelDetails extends JModelItem
+class CrowdfundingModelDetails extends JModelItem
 {
 
     protected $item;
@@ -32,7 +32,7 @@ class CrowdFundingModelDetails extends JModelItem
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Project', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -86,7 +86,7 @@ class CrowdFundingModelDetails extends JModelItem
                     "a.funding_start, a.funding_end, a.funding_days, a.funding_type,  " .
                     "a.catid, a.user_id, a.published, a.approved, a.hits, " .
                     $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
-                    $query->concatenate(array("b.id", "a.alias"), "-") . ' AS catslug'
+                    $query->concatenate(array("b.id", "b.alias"), ":") . ' AS catslug'
                 )
                 ->from($db->quoteName("#__crowdf_projects", "a"))
                 ->innerJoin($db->quoteName("#__categories", "b") . " ON a.catid = b.id")
@@ -101,11 +101,11 @@ class CrowdFundingModelDetails extends JModelItem
                 // Calculate end date
                 if (!empty($result->funding_days)) {
 
-                    $fundingStartDateValidator = new ITPrismValidatorDate($result->funding_start);
+                    $fundingStartDateValidator = new Prism\Validator\Date($result->funding_start);
                     if (!$fundingStartDateValidator->isValid()) {
                         $result->funding_end = "0000-00-00";
                     } else {
-                        $fundingStartDate = new CrowdFundingDate($result->funding_start);
+                        $fundingStartDate = new Crowdfunding\Date($result->funding_start);
                         $fundingEndDate = $fundingStartDate->calculateEndDate($result->funding_days);
                         $result->funding_end = $fundingEndDate->format("Y-m-d");
                     }
@@ -113,12 +113,12 @@ class CrowdFundingModelDetails extends JModelItem
                 }
 
                 // Calculate funded percentage.
-                $math = new ITPrismMath();
+                $math = new Prism\Math();
                 $math->calculatePercentage($result->funded, $result->goal, 0);
                 $result->funded_percents = (string)$math;
 
                 // Calculate days left.
-                $today = new CrowdFundingDate();
+                $today = new Crowdfunding\Date();
                 $result->days_left = $today->calculateDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
 
                 $this->item[$storedId] = $result;

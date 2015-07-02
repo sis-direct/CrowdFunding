@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewTransactions extends JViewLegacy
+class CrowdfundingViewTransactions extends JViewLegacy
 {
-
     /**
      * @var JDocumentHtml
      */
@@ -31,11 +30,8 @@ class CrowdFundingViewTransactions extends JViewLegacy
     protected $items;
     protected $pagination;
 
-    /**
-     * @var CrowdFundingCurrency
-     */
-    protected $currency;
 
+    protected $amount;
     protected $listOrder;
     protected $listDirn;
     protected $saveOrder;
@@ -77,9 +73,10 @@ class CrowdFundingViewTransactions extends JViewLegacy
         $this->params = $params;
 
         if (!empty($this->items)) {
-            jimport("crowdfunding.currency");
-            $currencyId     = $this->params->get("project_currency");
-            $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+            // Get currency
+            $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+            $this->amount = new Crowdfunding\Amount($this->params);
+            $this->amount->setCurrency($currency);
         }
 
         // Prepare filters
@@ -89,7 +86,7 @@ class CrowdFundingViewTransactions extends JViewLegacy
 
         $this->userId = JFactory::getUser()->get("id");
 
-        $this->redirectUrl = CrowdFundingHelperRoute::getTransactionsRoute();
+        $this->redirectUrl = CrowdfundingHelperRoute::getTransactionsRoute();
 
         $this->prepareDocument();
 

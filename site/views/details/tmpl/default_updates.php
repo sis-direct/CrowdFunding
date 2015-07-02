@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -12,24 +12,34 @@ defined('_JEXEC') or die;
 ?>
 <?php if($this->isOwner) {?>
 <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="updatesForm" id="crowdf-updates-form" class="form-validate" autocomplete="off">
-            
+
+    <div class="form-group">
         <?php echo $this->form->getLabel('title'); ?>
         <?php echo $this->form->getInput('title'); ?>
-        
+    </div>
+
+    <div class="form-group">
         <?php echo $this->form->getLabel('description'); ?>
         <?php echo $this->form->getInput('description'); ?>
+    </div>
         
-        <?php echo $this->form->getInput('id'); ?>
-        <?php echo $this->form->getInput('project_id'); ?>
-        
-        <input type="hidden" name="task" value="update.save" />
-        <?php echo JHtml::_('form.token'); ?>
-        
-        <div class="clearfix"></div>
-        <button type="submit" class="btn btn-primary"><?php echo JText::_("JSAVE")?></button>
-        <button type="submit" class="btn" id="js-cfupdates-btn-reset"><?php echo JText::_("COM_CROWDFUNDING_RESET")?></button>
+    <?php echo $this->form->getInput('id'); ?>
+    <?php echo $this->form->getInput('project_id'); ?>
+
+    <input type="hidden" name="task" value="update.save" />
+    <?php echo JHtml::_('form.token'); ?>
+
+    <div class="clearfix"></div>
+    <button type="submit" class="btn btn-primary">
+        <span class="glyphicon glyphicon-floppy-saved"></span>
+        <?php echo JText::_("JSAVE")?>
+    </button>
+    <button type="submit" class="btn btn-default" id="js-cfupdates-btn-reset">
+        <span class="glyphicon glyphicon-refresh"></span>
+        <?php echo JText::_("COM_CROWDFUNDING_RESET")?>
+    </button>
 </form>
-<div class="hr mtb_15_0"></div>
+<div class="hr mtb-15-0"></div>
 <?php }?>
 <?php if(!empty($this->items)) {
     $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id); 
@@ -39,9 +49,11 @@ defined('_JEXEC') or die;
     <div class="row-fluid cf-update-item" id="update<?php echo $item->id;?>">
     
         <div class="media">
-            <a class="pull-left" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
-                <img class="media-object" src="<?php echo $socialAvatar;?>" width="<?php echo $this->avatarsSize;?>" height="<?php echo $this->avatarsSize;?>">
-            </a>
+            <div class="media-left">
+                <a href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
+                    <img class="media-object" src="<?php echo $socialAvatar;?>" />
+                </a>
+            </div>
             
             <div class="media-body">
             	<div class="cf-info-bar"> 
@@ -50,14 +62,20 @@ defined('_JEXEC') or die;
             		</div>
                 	<?php if($this->userId == $item->user_id ) {?>
                 	<div class="pull-right">
-                		<a href="javascript: void(0);" class="btn btn-mini js-cfupdates-btn-edit" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_EDIT");?></a>
-                		<a href="javascript: void(0);" class="btn btn-mini btn-danger js-cfupdates-btn-remove" data-id="<?php echo $item->id;?>"><?php echo JText::_("COM_CROWDFUNDING_DELETE");?></a>
+                		<a href="javascript: void(0);" class="btn btn-mini btn-default js-cfupdates-btn-edit" data-id="<?php echo $item->id;?>">
+                            <span class="glyphicon glyphicon-edit"></span>
+                            <?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
+                        </a>
+                		<a href="javascript: void(0);" class="btn btn-mini btn-danger js-cfupdates-btn-remove" data-id="<?php echo $item->id;?>">
+                            <span class="glyphicon glyphicon-trash"></span>
+                            <?php echo JText::_("COM_CROWDFUNDING_DELETE");?>
+                        </a>
                 	</div>
                 	<?php }?>
                 	<div class="clearfix"></div>
             	</div>
-            	<h3><?php echo $item->title?></h3>
-            	<p><?php echo nl2br($item->description);?></p>
+            	<h3><?php echo $this->escape($item->title); ?></h3>
+            	<p><?php echo nl2br($this->escape($item->description));?></p>
         	</div>
     	</div>
     	

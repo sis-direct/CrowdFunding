@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
 /**
- * CrowdFunding backing controller
+ * Crowdfunding backing controller
  *
  * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @subpackage  Crowdfunding
  */
-class CrowdFundingControllerBacking extends JControllerLegacy
+class CrowdfundingControllerBacking extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Backing', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Backing', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -52,15 +50,14 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         $user   = JFactory::getUser();
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelBacking */
+        /** @var $model CrowdfundingModelBacking */
 
         // Get the item
         $item = $model->getItem($itemId);
 
-        $returnUrl = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
+        $returnUrl = CrowdfundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
 
         if (!$this->isAuthorisedStep2($item, $params, $user)) {
-
             $this->setRedirect(
                 JRoute::_($returnUrl, false),
                 JText::_('COM_CROWDFUNDING_ERROR_NO_PERMISSIONS'),
@@ -68,7 +65,6 @@ class CrowdFundingControllerBacking extends JControllerLegacy
             );
 
             return;
-
         }
 
         $app = JFactory::getApplication();
@@ -76,21 +72,21 @@ class CrowdFundingControllerBacking extends JControllerLegacy
 
         // Get the payment process object and
         // store the selected data from the user.
-        $paymentSessionContext    = CrowdFundingConstants::PAYMENT_SESSION_CONTEXT . $item->id;
-        $paymentSession           = $app->getUserState($paymentSessionContext);
+        $paymentSessionContext    = Crowdfunding\Constants::PAYMENT_SESSION_CONTEXT . $item->id;
+        $paymentSessionLocal      = $app->getUserState($paymentSessionContext);
 
-        $paymentSession->amount   = $this->input->getFloat("amount", 0.0);
-        $paymentSession->rewardId = $this->input->getInt('rid', 0);
+        $paymentSessionLocal->amount   = $this->input->getFloat("amount", 0.0);
+        $paymentSessionLocal->rewardId = $this->input->getInt('rid', 0);
 
         // Set the value of terms to the session.
         if ($params->get("backing_terms", 0)) {
-            $paymentSession->terms = $this->input->getInt('terms', 0);
+            $paymentSessionLocal->terms = $this->input->getInt('terms', 0);
         }
 
-        $app->setUserState($paymentSessionContext, $paymentSession);
+        $app->setUserState($paymentSessionContext, $paymentSessionLocal);
         
         // Redirect to next page
-        $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "step2");
+        $link = CrowdfundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "step2");
         $this->setRedirect(JRoute::_($link, false));
     }
 
@@ -144,7 +140,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         $rewardId = $this->input->getInt('rid', 0);
 
         // Get amount
-        $amount = CrowdFundingHelper::parseAmount($this->input->getString("amount"));
+        $amount = CrowdfundingHelper::parseAmount($this->input->getString("amount"));
 
         // Get user ID
         $user   = JFactory::getUser();
@@ -154,12 +150,12 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         $aUserId = "";
 
         $model   = $this->getModel();
-        /** @var $model CrowdFundingModelBacking */
+        /** @var $model CrowdfundingModelBacking */
 
         // Get the item
         $item    = $model->getItem($itemId);
 
-        $returnUrl = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
+        $returnUrl = CrowdfundingHelperRoute::getBackingRoute($item->slug, $item->catslug);
 
         // Authorise the user
         if (!$user->authorise("crowdfunding.donate", "com_crowdfunding")) {
@@ -174,16 +170,16 @@ class CrowdFundingControllerBacking extends JControllerLegacy
         // Check for valid project
         if (empty($item->id)) {
             $this->setRedirect(
-                JRoute::_(CrowdFundingHelperRoute::getDiscoverRoute()),
+                JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()),
                 JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'),
                 "notice"
             );
             return;
         }
 
-        // Check for maintenance (debug) state
+        // Check for maintenance (debug) state.
         if ($params->get("debug_payment_disabled", 0)) {
-            $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
+            $msg = Joomla\String\String::trim($params->get("debug_disabled_functionality_msg"));
             if (!$msg) {
                 $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
             }
@@ -192,7 +188,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy
             return;
         }
 
-        // Check for agreed conditions from the user
+        // Check for agreed conditions from the user.
         if ($params->get("backing_terms", 0)) {
             $terms = $this->input->get("terms", 0, "int");
             if (!$terms) {
@@ -205,7 +201,7 @@ class CrowdFundingControllerBacking extends JControllerLegacy
             }
         }
 
-        // Check for valid amount
+        // Check for valid amount.
         if (!$amount) {
             $this->setRedirect(
                 JRoute::_($returnUrl, false),
@@ -219,14 +215,12 @@ class CrowdFundingControllerBacking extends JControllerLegacy
 
         // Get the payment process object and
         // store the selected data from the user.
-        $paymentSessionContext    = CrowdFundingConstants::PAYMENT_SESSION_CONTEXT . $item->id;
-        $paymentSession           = $app->getUserState($paymentSessionContext);
-        $paymentSession->step1    = true;
-        $paymentSession->amount   = $amount;
-        $paymentSession->rewardId = $rewardId;
-        $app->setUserState($paymentSessionContext, $paymentSession);
-
-        // Create an intention.
+        $paymentSessionContext    = Crowdfunding\Constants::PAYMENT_SESSION_CONTEXT . $item->id;
+        $paymentSessionLocal      = $app->getUserState($paymentSessionContext);
+        $paymentSessionLocal->step1    = true;
+        $paymentSessionLocal->amount   = $amount;
+        $paymentSessionLocal->rewardId = $rewardId;
+        $app->setUserState($paymentSessionContext, $paymentSessionLocal);
 
         // Generate hash user ID used for anonymous payment.
         if (!$userId) {
@@ -234,57 +228,60 @@ class CrowdFundingControllerBacking extends JControllerLegacy
             $aUserId = $app->getUserState("auser_id");
             if (!$aUserId) {
                 // Generate a hash ID for anonymous user.
-                jimport("itprism.string");
-                $anonymousUserId = new ITPrismString();
+                $anonymousUserId = new Prism\String();
                 $anonymousUserId->generateRandomString(32);
 
                 $aUserId = (string)$anonymousUserId;
                 $app->setUserState("auser_id", $aUserId);
             }
 
-            $intentionKeys = array(
-                "auser_id"   => $aUserId,
-                "project_id" => $item->id
-            );
+        }
 
-        } else {
+        $date   = new JDate();
+
+        // Create an intention record.
+        $intentionId = 0;
+        if (!empty($userId)) {
 
             $intentionKeys = array(
                 "user_id"    => $userId,
                 "project_id" => $item->id
             );
 
+            $intention = new Crowdfunding\Intention(JFactory::getDbo());
+            $intention->load($intentionKeys);
+
+            $intentionData = array(
+                "user_id"     => $userId,
+                "project_id"  => $item->id,
+                "reward_id"   => $rewardId,
+                "record_date" => $date->toSql()
+            );
+
+            $intention->bind($intentionData);
+            $intention->store();
+
+            $intentionId = $intention->getId();
         }
 
-        jimport("crowdfunding.intention");
-        $intention = new CrowdFundingIntention(JFactory::getDbo());
-        $intention->load($intentionKeys);
+        // Create a payment session.
+        $paymentSessionDatabase = new Crowdfunding\Payment\Session(JFactory::getDbo());
 
-        $date   = new JDate();
-        $custom = array(
-            "user_id"     => $userId,
-            "auser_id"    => $aUserId, // Anonymous user hash ID
-            "project_id"  => $item->id,
-            "reward_id"   => $rewardId,
-            "record_date" => $date->toSql(),
-            "session_id"  => $paymentSession->session_id
+        $paymentSessionData = array(
+            "user_id"      => $userId,
+            "auser_id"     => $aUserId, // Anonymous user hash ID
+            "project_id"   => $item->id,
+            "reward_id"    => $rewardId,
+            "record_date"  => $date->toSql(),
+            "session_id"   => $paymentSessionLocal->session_id,
+            "intention_id" => $intentionId
         );
 
-        $intention->bind($custom);
-
-        // Check for existing intention ID in payment session database.
-        // @todo remove this in CF v2.0.
-        $intentionId = $intention->getId();
-        if (!empty($intentionId) and CrowdFundingHelper::intentionPaymentSessionExists($intentionId)) {
-            CrowdFundingHelper::removeIntention($intentionId);
-            $intention->setId(0);
-        }
-
-        // Store the intention data.
-        $intention->store();
+        $paymentSessionDatabase->bind($paymentSessionData);
+        $paymentSessionDatabase->store();
 
         // Redirect to next page
-        $link = CrowdFundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "payment");
+        $link = CrowdfundingHelperRoute::getBackingRoute($item->slug, $item->catslug, "payment");
         $this->setRedirect(JRoute::_($link, false));
     }
 }

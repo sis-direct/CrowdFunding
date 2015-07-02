@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding reward controller class.
+ * Crowdfunding reward controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Components
  */
-class CrowdFundingControllerReward extends ITPrismControllerFormBackend
+class CrowdfundingControllerReward extends Prism\Controller\Form\Backend
 {
 
     /**
@@ -28,18 +26,15 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    CrowdFundingModelReward    The model.
+     * @return    CrowdfundingModelReward    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Reward', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Reward', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
     }
 
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -48,7 +43,8 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
         $itemId = JArrayHelper::getValue($data, "id");
 
         $dataFile  = $this->input->files->get('jform', array(), 'array');
-        $image = JArrayHelper::getValue($dataFile, "image");
+        $image     = JArrayHelper::getValue($dataFile, "image", array(), "array");
+        $imageName = Joomla\String\String::trim(JArrayHelper::getValue($image, 'name'));
 
         $redirectOptions = array(
             "task" => $this->getTask(),
@@ -56,16 +52,16 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
         );
 
         // Parse formatted amount.
-        $data["amount"] = CrowdFundingHelper::parseAmount($data["amount"]);
+        $data["amount"] = CrowdfundingHelper::parseAmount($data["amount"]);
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelReward */
+        /** @var $model CrowdfundingModelReward */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -77,7 +73,7 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
             return;
         }
 
-        $params        = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams("com_crowdfunding");
         /** @var  $params Joomla\Registry\Registry */
 
         try {
@@ -90,22 +86,20 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
             $imagesAllowed = $params->get("rewards_images", 0);
             
             // Upload images.
-            if ($imagesAllowed and !empty($image) and !empty($itemId)) {
+            if ($imagesAllowed and !empty($imageName) and !empty($itemId)) {
 
-                jimport("crowdfunding.reward");
-                $reward = new CrowdFundingReward(JFactory::getDbo());
+                $reward = new Crowdfunding\Reward(JFactory::getDbo());
                 $reward->load($itemId);
 
                 // Get the folder where the images will be stored
-                $imagesFolder = CrowdFundingHelper::getImagesFolder($reward->getUserId());
+                $imagesFolder = CrowdfundingHelper::getImagesFolder($reward->getUserId());
 
                 jimport("joomla.filesystem.folder");
                 if (!JFolder::exists($imagesFolder)) {
-                    CrowdFundingHelper::createFolder($imagesFolder);
+                    CrowdfundingHelper::createFolder($imagesFolder);
                 }
 
                 $images = $model->uploadImage($image, $imagesFolder);
-
                 if (!empty($images)) {
                     $model->storeImage($images, $imagesFolder, $itemId);
                 }
@@ -119,11 +113,11 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
         } catch (Exception $e) {
 
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
 
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_REWARD_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_REWARD_SAVED'), $redirectOptions);
     }
 
     /**
@@ -144,17 +138,16 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
         );
 
         // Create an reward object.
-        jimport("crowdfunding.reward");
-        $reward = new CrowdFundingReward(JFactory::getDbo());
+        $reward = new Crowdfunding\Reward(JFactory::getDbo());
         $reward->load($itemId);
 
         // Check for registered user
         if (!$reward->getId()) {
-            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_INVALID_IMAGE'), $redirectOptions);
             return;
         }
 
-        $imagesFolder = CrowdFundingHelper::getImagesFolder($reward->getUserId());
+        $imagesFolder = CrowdfundingHelper::getImagesFolder($reward->getUserId());
 
         try {
 
@@ -168,10 +161,10 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_Crowdfunding_IMAGE_DELETED'), $redirectOptions);
     }
 
     /**
@@ -195,29 +188,29 @@ class CrowdFundingControllerReward extends ITPrismControllerFormBackend
         $transactionId = $this->input->get->getInt("txn_id");
         $state         = $this->input->get->getInt('state');
 
-        $state = (!$state) ? 0 : 1;
+        $state = (!$state) ? Prism\Constants::UNPUBLISHED : Prism\Constants::PUBLISHED;
 
         if (!$transactionId) {
-            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION"), $redirectOptions);
+            $this->displayWarning(JText::_("COM_Crowdfunding_ERROR_INVALID_TRANSACTION"), $redirectOptions);
             return;
         }
 
         try {
 
             $model = $this->getModel();
-            /** @var $model CrowdFundingModelReward */
+            /** @var $model CrowdfundingModelReward */
 
             $model->updateRewardState($transactionId, $state);
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         if (!$state) {
-            $msg = JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_NOT_SENT");
+            $msg = JText::_("COM_Crowdfunding_REWARD_HAS_BEEN_SET_AS_NOT_SENT");
         } else {
-            $msg = JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_SENT");
+            $msg = JText::_("COM_Crowdfunding_REWARD_HAS_BEEN_SET_AS_SENT");
         }
 
         $this->displayMessage($msg, $redirectOptions);

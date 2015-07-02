@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelReward extends JModelAdmin
+class CrowdfundingModelReward extends JModelAdmin
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class CrowdFundingModelReward extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Reward', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Reward', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -107,7 +107,8 @@ class CrowdFundingModelReward extends JModelAdmin
         $row->set("published", $published);
         $row->set("project_id", $projectId);
 
-        $row->store(true);
+
+        $row->store();
 
         return $row->get("id");
     }
@@ -132,13 +133,6 @@ class CrowdFundingModelReward extends JModelAdmin
         $mediaParams = JComponentHelper::getParams("com_media");
         /** @var  $mediaParams Joomla\Registry\Registry */
 
-        jimport("itprism.file");
-        jimport("itprism.file.image");
-        jimport("itprism.file.uploader.local");
-        jimport("itprism.file.validator.size");
-        jimport("itprism.file.validator.image");
-        jimport("itprism.file.validator.server");
-
         $names           = array("image" => "", "thumb" => "", "square" => "");
 
         $KB = 1024 * 1024;
@@ -148,23 +142,23 @@ class CrowdFundingModelReward extends JModelAdmin
         $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
-        $uploadedName = JString::trim(JArrayHelper::getValue($image, 'name'));
+        $uploadedName = Joomla\String\String::trim(JArrayHelper::getValue($image, 'name'));
         $errorCode    = JArrayHelper::getValue($image, 'error');
 
-        $file = new ITPrismFileImage();
+        $file = new Prism\File\Image();
 
         if (!empty($uploadedName)) {
             // Prepare size validator.
             $fileSize = (int)JArrayHelper::getValue($image, 'size');
 
             // Prepare file size validator.
-            $sizeValidator = new ITPrismFileValidatorSize($fileSize, $uploadMaxSize);
+            $sizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
 
             // Prepare server validator.
-            $serverValidator = new ITPrismFileValidatorServer($errorCode, array(UPLOAD_ERR_NO_FILE));
+            $serverValidator = new Prism\File\Validator\Server($errorCode, array(UPLOAD_ERR_NO_FILE));
 
             // Prepare image validator.
-            $imageValidator = new ITPrismFileValidatorImage($uploadedFile, $uploadedName);
+            $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
 
             // Get allowed mime types from media manager options
             $imageValidator->setMimeTypes($mimeTypes);
@@ -183,16 +177,15 @@ class CrowdFundingModelReward extends JModelAdmin
             }
 
             // Generate temporary file name
-            $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+            $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-            jimport("itprism.string");
-            $generatedName = new ITPrismString();
+            $generatedName = new Prism\String();
             $generatedName->generateRandomString(12, "reward_");
 
             $destFile = JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
             // Prepare uploader object.
-            $uploader = new ITPrismFileUploaderLocal($uploadedFile);
+            $uploader = new Prism\File\Uploader\Local($uploadedFile);
             $uploader->setDestination($destFile);
 
             // Upload temporary file
@@ -251,11 +244,8 @@ class CrowdFundingModelReward extends JModelAdmin
             throw new InvalidArgumentException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_IMAGES"));
         }
 
-        jimport("itprism.file");
-        jimport("itprism.file.remover.local");
-
         // Get reward row.
-        /** @var $table CrowdFundingTableReward */
+        /** @var $table CrowdfundingTableReward */
         $table = $this->getTable();
         $table->load($rewardId);
 
@@ -281,7 +271,7 @@ class CrowdFundingModelReward extends JModelAdmin
     public function removeImage($rewardId, $imagesFolder)
     {
         // Get reward row.
-        /** @var $table CrowdFundingTableReward */
+        /** @var $table CrowdfundingTableReward */
         $table = $this->getTable();
         $table->load($rewardId);
 
@@ -302,7 +292,7 @@ class CrowdFundingModelReward extends JModelAdmin
     /**
      * Remove images from the filesystem.
      *
-     * @param CrowdFundingTableReward $table
+     * @param CrowdfundingTableReward $table
      * @param string $imagesFolder
      */
     protected function deleteImages(&$table, $imagesFolder)

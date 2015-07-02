@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.admin');
-
 /**
- * CrowdFunding projects controller
+ * Crowdfunding projects controller
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  */
-class CrowdFundingControllerProjects extends ITPrismControllerAdmin
+class CrowdfundingControllerProjects extends Prism\Controller\Admin
 {
     public function __construct($config = array())
     {
@@ -33,11 +31,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         $this->registerTask('unfeatured', 'featured');
     }
 
-    /**
-     * Proxy for getModel.
-     * @since   1.6
-     */
-    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Project', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -52,8 +46,8 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         // Get items to publish from the request.
         $cid  = $this->input->get('cid', array(), 'array');
         $data = array(
-            'approve'    => 1,
-            'disapprove' => 0
+            'approve'    => Prism\Constants::APPROVED,
+            'disapprove' => Prism\Constants::NOT_APPROVED
         );
 
         $task  = $this->getTask();
@@ -85,7 +79,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         if ($value == 1) {
@@ -112,8 +106,8 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         $ids = $this->input->get('cid', array(), 'array');
 
         $values = array(
-            'featured'   => 1,
-            'unfeatured' => 0
+            'featured'   => Prism\Constants::FEATURED,
+            'unfeatured' => Prism\Constants::NOT_FEATURED
         );
 
         $task  = $this->getTask();
@@ -140,7 +134,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         if ($value == 1) {
@@ -167,9 +161,9 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
         $ids = $this->input->get('cid', array(), 'array');
 
         $values = array(
-            'publish'   => 1,
-            'unpublish' => 0,
-            'trash'     => -2,
+            'publish'   => Prism\Constants::PUBLISHED,
+            'unpublish' => Prism\Constants::UNPUBLISHED,
+            'trash'     => Prism\Constants::TRASHED,
         );
 
         $task  = $this->getTask();
@@ -199,7 +193,7 @@ class CrowdFundingControllerProjects extends ITPrismControllerAdmin
             return;
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         if ($value == 1) {

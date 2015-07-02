@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelTransaction extends JModelAdmin
+class CrowdfundingModelTransaction extends JModelAdmin
 {
     protected $event_transaction_change_state = null;
 
@@ -36,7 +36,7 @@ class CrowdFundingModelTransaction extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Transaction', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Transaction', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }

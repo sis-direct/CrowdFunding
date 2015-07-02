@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.frontend');
-
 /**
- * CrowdFunding report controller
+ * Crowdfunding report controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerReport extends ITPrismControllerFormFrontend
+class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerReport extends ITPrismControllerFormFrontend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Report', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Report', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -43,26 +41,25 @@ class CrowdFundingControllerReport extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('cfreport', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
 
         if (!$itemId) {
             $redirectOptions = array(
-                "force_direction" => CrowdFundingHelperRoute::getReportRoute()
+                "force_direction" => CrowdfundingHelperRoute::getReportRoute()
             );
             $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), $redirectOptions);
             return;
         }
 
         // Get project
-        jimport("crowdfunding.project");
-        $item = CrowdFundingProject::getInstance(JFactory::getDbo(), $itemId);
+        $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         $redirectOptions = array(
-            "force_direction" => CrowdFundingHelperRoute::getReportRoute($item->getId())
+            "force_direction" => CrowdfundingHelperRoute::getReportRoute($item->getId())
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelReport */
+        /** @var $model CrowdfundingModelReport */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
@@ -103,6 +100,6 @@ class CrowdFundingControllerReport extends ITPrismControllerFormFrontend
         }
 
         // Redirect to next page
-        $this->displayNotice(JText::_("COM_CROWDFUNDING_REPORT_SENT_SUCCESSFULLY"), $redirectOptions);
+        $this->displayMessage(JText::_("COM_CROWDFUNDING_REPORT_SENT_SUCCESSFULLY"), $redirectOptions);
     }
 }

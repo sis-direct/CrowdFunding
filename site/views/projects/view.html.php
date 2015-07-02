@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingViewProjects extends JViewLegacy
+class CrowdfundingViewProjects extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -29,11 +29,7 @@ class CrowdFundingViewProjects extends JViewLegacy
 
     protected $items;
 
-    /**
-     * @var CrowdFundingCurrency
-     */
-    protected $currency;
-
+    protected $amount;
     protected $listOrder;
     protected $listDirn;
     protected $saveOrder;
@@ -71,9 +67,10 @@ class CrowdFundingViewProjects extends JViewLegacy
         $this->params = $this->state->get('params');
 
         if (!empty($this->items)) {
-            jimport("crowdfunding.currency");
-            $currencyId     = $this->params->get("project_currency");
-            $this->currency = CrowdFundingCurrency::getInstance(JFactory::getDbo(), $currencyId, $this->params);
+            // Get currency
+            $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+            $this->amount = new Crowdfunding\Amount($this->params);
+            $this->amount->setCurrency($currency);
         }
 
         // Prepare filters

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -18,7 +18,7 @@ JFormHelper::loadFieldClass('list');
  * Form field class that loads countries as options,
  * using code with 4 letters for ID.
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @since        1.6
  */

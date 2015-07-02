@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelReport extends JModelAdmin
+class CrowdfundingModelReport extends JModelAdmin
 {
     protected $items = array();
 
@@ -24,7 +24,7 @@ class CrowdFundingModelReport extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Report', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Report', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -61,7 +61,7 @@ class CrowdFundingModelReport extends JModelAdmin
         $data = JFactory::getApplication()->getUserState($this->option . '.edit.report.data', array());
         if (empty($data)) {
             $data = $this->getItem();
-            $data->title = CrowdFundingHelper::getProjectTitle($data->project_id);
+            $data->title = CrowdfundingHelper::getProjectTitle($data->project_id);
         }
 
         return $data;

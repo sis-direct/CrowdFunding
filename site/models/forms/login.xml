@@ -3,7 +3,8 @@
     <fieldset name="credentials">
 
         <field name="username" type="text"
-               class="validate-username"
+               labelclass="col-sm-2 control-label"
+               class="validate-username col-sm-10 form-control"
                filter="username"
                label="COM_CROWDFUNDING_USERNAME"
                size="25"
@@ -12,7 +13,8 @@
                 />
 
         <field name="password" type="password"
-               class="validate-password"
+               labelclass="col-sm-2 control-label"
+               class="validate-password col-sm-10 form-control"
                required="true"
                filter="raw"
                label="JGLOBAL_PASSWORD"

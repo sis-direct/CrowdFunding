@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport("crowdfunding.init");
+jimport("Crowdfunding.init");
 
 /**
  * Component Route Helper that help to find a menu item.
@@ -20,10 +20,10 @@ jimport("crowdfunding.init");
  *
  * @static
  * @package        ITPrism Components
- * @subpackage     CrowdFunding
+ * @subpackage     Crowdfunding
  * @since          1.5
  */
-abstract class CrowdFundingHelperRoute
+abstract class CrowdfundingHelperRoute
 {
     protected static $projects = array();
     protected static $projectsAliases = array();
@@ -63,7 +63,7 @@ abstract class CrowdFundingHelperRoute
 
             $options = array("published" => 2);
 
-            $categories = CrowdFundingCategories::getInstance('CrowdFunding', $options);
+            $categories = Crowdfunding\Categories::getInstance('crowdfunding', $options);
             $category   = $categories->get($catid);
 
             if ($category) {
@@ -341,7 +341,7 @@ abstract class CrowdFundingHelperRoute
         $link = 'index.php?option=com_crowdfunding&view=discover';
 
         if (!empty($params)) {
-            $link .= CrowdFundingHelper::generateUrlParams($params);
+            $link .= CrowdfundingHelper::generateUrlParams($params);
         }
 
         // Looking for menu item (Itemid)
@@ -368,7 +368,7 @@ abstract class CrowdFundingHelperRoute
             $category = $categoryId;
         } else {
             $id       = (int) $categoryId;
-            $category = JCategories::getInstance('CrowdFunding')->get($id);
+            $category = JCategories::getInstance('Crowdfunding')->get($id);
         }
 
         if ($id < 1 or !($category instanceof JCategoryNode)) {
@@ -460,7 +460,7 @@ abstract class CrowdFundingHelperRoute
     /**
      *
      * Prepare categories path to the segments.
-     * We use this method in the router "CrowdFundingParseRoute".
+     * We use this method in the router "CrowdfundingParseRoute".
      *
      * @param integer $categoryId Category Id
      * @param array   $segments
@@ -477,7 +477,7 @@ abstract class CrowdFundingHelperRoute
             $menuCategoryId = 0;
         }
 
-        $categories = CrowdFundingCategories::getInstance('CrowdFunding');
+        $categories = Crowdfunding\Categories::getInstance('Crowdfunding');
         $category   = $categories->get($categoryId);
 
         if (!$category) {
@@ -514,7 +514,7 @@ abstract class CrowdFundingHelperRoute
 
     /**
      * Load data about project.
-     * We use this method in the router "CrowdFundingParseRoute".
+     * We use this method in the router "CrowdfundingParseRoute".
      *
      * @param int $id
      *
@@ -539,7 +539,7 @@ abstract class CrowdFundingHelperRoute
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.id, a.alias, a.catid," . $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug")
+            ->select("a.id, a.alias, a.catid," . $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug")
             ->from($query->quoteName("#__crowdf_projects", "a"))
             ->where("a.id = " . (int)$id);
 
@@ -557,7 +557,7 @@ abstract class CrowdFundingHelperRoute
 
     /**
      * Load the project alias from database.
-     * We use this method in the router "CrowdFundingParseRoute".
+     * We use this method in the router "CrowdfundingParseRoute".
      *
      * @param int $id
      *
@@ -596,9 +596,5 @@ abstract class CrowdFundingHelperRoute
         self::$projectsAliases[$id] = $result;
 
         return self::$projectsAliases[$id];
-    }
-
-    public function prepareParameters() {
-
     }
 }

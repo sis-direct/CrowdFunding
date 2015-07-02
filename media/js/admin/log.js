@@ -38,9 +38,9 @@ jQuery(document).ready(function() {
 					
 			});
 		});
-	    
-		
-		jQuery.pnotify.defaults.history = false;
+
+
+        PNotify.prototype.options.history = false;
 		jQuery(".js-log-file-remove-btn").on("click", function(event) {
 			
 			event.preventDefault();
@@ -53,8 +53,8 @@ jQuery(document).ready(function() {
 				
 				var fields = {
 					file: filename,
-					format: "raw",
-				}
+					format: "raw"
+				};
 			
 				// Destroy the tooltip from this element.
 				jQuery(this).tooltip('destroy');
@@ -73,13 +73,13 @@ jQuery(document).ready(function() {
 							// Set data
 							jQuery("#js-file-preview").html("");
 
-                            ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+                            PrismUIHelper.displayMessageSuccess(response.title, response.text);
 							
 							// Remove the row.
 							jQuery("#"+rowId).remove();
 							
 						} else {
-                            ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                            PrismUIHelper.displayMessageFailure(response.title, response.text);
 						}
 					}
 				

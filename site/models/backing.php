@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelBacking extends JModelLegacy
+class CrowdfundingModelBacking extends JModelLegacy
 {
     protected $item;
 
@@ -32,7 +32,7 @@ class CrowdFundingModelBacking extends JModelLegacy
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Project', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Project', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -119,18 +119,18 @@ class CrowdFundingModelBacking extends JModelLegacy
 
                 // Calculate ending date by days left.
                 if (!empty($result->funding_days)) {
-                    $fundingStartDate = new CrowdFundingDate($result->funding_start);
+                    $fundingStartDate = new Crowdfunding\Date($result->funding_start);
                     $fundingEndDate = $fundingStartDate->calculateEndDate($result->funding_days);
                     $result->funding_end = $fundingEndDate->format("Y-m-d");
                 }
 
                 // Calculate funded percent
-                $percent = new ITPrismMath();
+                $percent = new Prism\Math();
                 $percent->calculatePercentage($result->funded, $result->goal, 0);
                 $result->funded_percents = (string)$percent;
 
                 // Calculate days left.
-                $today = new CrowdFundingDate();
+                $today = new Crowdfunding\Date();
                 $result->days_left       = $today->calculateDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
 
                 $this->item              = $result;

@@ -6,9 +6,6 @@ jQuery(document).ready(function () {
         projectId = 0;
     }
 
-    var aspectWidth  = cfImageWidth * 2;
-    var aspectHeight = cfImageHeight + 50;
-
     // Initialize symbol length indicator
     var shortDesc = jQuery('#jform_short_desc');
     shortDesc.attr("maxlength", 255);
@@ -17,38 +14,46 @@ jQuery(document).ready(function () {
         placement: 'bottom-right'
     });
 
-    // Set picture wrapper size.
-    var $pictureWrapper = jQuery("#js-fixed-dragger-cropper");
-    $pictureWrapper.css({
-        width: aspectWidth,
-        height: aspectHeight
-    });
-
     // Load locations from the server
-    jQuery('#jform_location_preview').typeahead({
+    var $inputTypeahead = jQuery('#jform_location_preview');
+    $inputTypeahead.typeahead({
+        minLength: 3,
+        hint: false
+    }, {
+        source: function(query, syncResults, asyncResults) {
 
-        ajax: {
-            url: "index.php?option=com_crowdfunding&format=raw&task=project.loadLocation",
-            method: "get",
-            triggerLength: 3,
-            preProcess: function (response) {
+            jQuery.ajax({
+                url: "index.php?option=com_crowdfunding&format=raw&task=project.loadLocation",
+                type: "GET",
+                data: {query: query},
+                dataType: "text json",
+                async: true,
+                beforeSend : function() {
+                    // Show ajax loader.
+                    //$loader.show();
+                }
+            }).done(function(response){
+                // Hide ajax loader.
+                //$loader.hide();
 
                 if (response.success === false) {
                     return false;
                 }
 
-                return response.data;
-            }
+                return asyncResults(response.data);
+            });
+
         },
-        onSelect: function (item) {
-
-            jQuery("#jform_location_id").attr("value", item.value);
-
-        }
-
+        async: true,
+        limit: 5,
+        display: "name"
     });
 
-    // Validation plugin
+    $inputTypeahead.bind('typeahead:select', function(event, suggestion) {
+        jQuery("#jform_location_id").attr("value", suggestion.id);
+    });
+
+    // Validate the fields.
     jQuery('#js-cf-project-form').parsley({
         uiEnabled: false,
         messages: {
@@ -57,6 +62,16 @@ jQuery(document).ready(function () {
     });
 
     /** Image Tools **/
+
+    var aspectWidth  = cfImageWidth * 2;
+    var aspectHeight = cfImageHeight + 50;
+
+    // Set picture wrapper size.
+    var $pictureWrapper = jQuery("#js-fixed-dragger-cropper");
+    $pictureWrapper.css({
+        width: aspectWidth,
+        height: aspectHeight
+    });
 
     var $image       = $pictureWrapper.find("img");
     var currentImage = $image.attr("src");
@@ -71,7 +86,7 @@ jQuery(document).ready(function () {
     tokenObject[tokenArray[0].name] = tokenArray[0].value;
 
     // Prepare form fields.
-    var formData = extend({}, {id: projectId}, tokenObject);
+    var formData = PrismUIHelper.extend({}, {id: projectId}, tokenObject);
 
     // Get the loader.
     var $loader  = jQuery("#js-thumb-fileupload-loader");
@@ -90,7 +105,7 @@ jQuery(document).ready(function () {
         done: function (event, response) {
 
             if(!response.result.success) {
-                ITPrismUIHelper.displayMessageFailure(response.result.title, response.result.text);
+                PrismUIHelper.displayMessageFailure(response.result.title, response.result.text);
             } else {
 
                 if ($image.cropperInitialized) {
@@ -105,12 +120,12 @@ jQuery(document).ready(function () {
                         multiple: false,
                         dragCrop: false,
                         dashed: false,
-                        movable: true,
+                        movable: false,
                         resizable: true,
                         zoomable: false,
                         minWidth: cfImageWidth,
                         minHeight: cfImageHeight,
-                        done: function () {
+                        built: function() {
                             jQuery("#js-image-tools").show();
                             $image.cropperInitialized = true;
                         }
@@ -132,7 +147,7 @@ jQuery(document).ready(function () {
         jQuery("#js-image-tools").hide();
 
         // Add the token.
-        var fields = extend({}, tokenObject);
+        var fields = PrismUIHelper.extend({}, tokenObject);
 
         jQuery.ajax({
             url: "index.php?option=com_crowdfunding&format=raw&task=project.cancelImageCrop",
@@ -163,7 +178,7 @@ jQuery(document).ready(function () {
         };
 
         // Add the token.
-        var fields = extend({}, data, tokenObject);
+        var fields = PrismUIHelper.extend({}, data, tokenObject);
 
         jQuery.ajax({
             url: "index.php?option=com_crowdfunding&format=raw&task=project.cropImage",
@@ -178,7 +193,7 @@ jQuery(document).ready(function () {
         }).done(function(response) {
 
             if(!response.success) {
-                ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                PrismUIHelper.displayMessageFailure(response.title, response.text);
             } else {
                 $image.cropper("destroy");
                 $image.attr("src", response.data);
@@ -212,13 +227,4 @@ jQuery(document).ready(function () {
         }
 
     });
-
-    // Custom function that prevent conflict between Mootools and jQuery.
-    function extend(){
-        for(var i=1; i<arguments.length; i++)
-            for(var key in arguments[i])
-                if(arguments[i].hasOwnProperty(key))
-                    arguments[0][key] = arguments[i][key];
-        return arguments[0];
-    }
 });

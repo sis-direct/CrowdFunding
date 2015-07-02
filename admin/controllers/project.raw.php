@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
 /**
- * CrowdFunding project controller
+ * Crowdfunding project controller
  *
- * @package     CrowdFunding
+ * @package     Crowdfunding
  * @subpackage  Components
  */
-class CrowdFundingControllerProject extends JControllerLegacy
+class CrowdfundingControllerProject extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,56 +28,11 @@ class CrowdFundingControllerProject extends JControllerLegacy
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Project', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Project', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
-    }
-
-    /**
-     * Deletes extra image.
-     */
-    public function removeExtraImage()
-    {
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
-
-        $userId  = $this->input->post->getInt("user_id");
-        $imageId = $this->input->post->getInt("id");
-
-        // Get the folder where the images are stored.
-        $imagesFolder = CrowdFundingHelper::getImagesFolder($userId);
-
-        try {
-
-            jimport('joomla.filesystem.file');
-
-            // Get the model
-            $model = $this->getModel();
-            $model->removeExtraImage($imageId, $imagesFolder);
-
-        } catch (Exception $e) {
-
-            JLog::add($e->getMessage());
-
-            $response
-                ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
-                ->setText(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'))
-                ->failure();
-
-            echo $response;
-            JFactory::getApplication()->close();
-        }
-
-        $response
-            ->setTitle(JText::_('COM_CROWDFUNDING_SUCCESS'))
-            ->setText(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'))
-            ->setData(array("item_id" => $imageId))
-            ->success();
-
-        echo $response;
-        JFactory::getApplication()->close();
     }
 
     /**
@@ -93,24 +46,18 @@ class CrowdFundingControllerProject extends JControllerLegacy
         // Get the input
         $query = $this->input->get->get('query', "", 'string');
 
-        jimport('itprism.response.json');
-        $response = new ITPrismResponseJson();
-
-        // Get the model
-        $model = $this->getModel();
-        /** @var $model CrowdFundingModelProject */
+        $response = new Prism\Response\Json();
 
         try {
 
-            jimport("crowdfunding.locations");
-            $locations = new CrowdFundingLocations(JFactory::getDbo());
+            $locations = new Crowdfunding\Locations(JFactory::getDbo());
             $locations->loadByString($query);
             
             $locationData = $locations->toOptions();
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
         }
 
         $response

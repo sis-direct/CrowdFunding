@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelFriendMail extends JModelForm
+class CrowdfundingModelFriendMail extends JModelForm
 {
     /**
      * Method to auto-populate the model state.
@@ -79,11 +79,11 @@ class CrowdFundingModelFriendMail extends JModelForm
     public function send($data)
     {
         // Send email to the administrator
-        $subject   = JArrayHelper::getValue($data, "subject");
-        $body      = JArrayHelper::getValue($data, "message");
-        $from      = JArrayHelper::getValue($data, "sender");
-        $fromName  = JArrayHelper::getValue($data, "sender_name");
-        $recipient = JArrayHelper::getValue($data, "receiver");
+        $subject   = Joomla\Utilities\ArrayHelper::getValue($data, "subject");
+        $body      = Joomla\Utilities\ArrayHelper::getValue($data, "message");
+        $from      = Joomla\Utilities\ArrayHelper::getValue($data, "sender");
+        $fromName  = Joomla\Utilities\ArrayHelper::getValue($data, "sender_name");
+        $recipient = Joomla\Utilities\ArrayHelper::getValue($data, "receiver");
 
         $return = JFactory::getMailer()->sendMail($from, $fromName, $recipient, $subject, $body);
 

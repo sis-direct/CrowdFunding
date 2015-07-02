@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,16 +10,14 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.form.backend');
-
 /**
- * CrowdFunding log controller class.
+ * Crowdfunding log controller class.
  *
- * @package        CrowdFunding
+ * @package        Crowdfunding
  * @subpackage     Components
  * @since          1.6
  */
-class CrowdFundingControllerLog extends ITPrismControllerFormBackend
+class CrowdfundingControllerLog extends Prism\Controller\Form\Backend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -31,7 +29,7 @@ class CrowdFundingControllerLog extends ITPrismControllerFormBackend
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Log', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Log', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 

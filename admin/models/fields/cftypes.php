@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -14,12 +14,10 @@ jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 
-jimport("crowdfunding.filters");
-
 /**
  * Form Field class for the Joomla Framework.
  *
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Component
  * @since        1.6
  */
@@ -45,7 +43,7 @@ class JFormFieldCfTypes extends JFormFieldList
         $options = array();
 
         // Get types
-        $filters = new CrowdFundingFilters(JFactory::getDbo());
+        $filters = new Crowdfunding\Filters(JFactory::getDbo());
 
         $typesOptions = $filters->getProjectsTypes();
 

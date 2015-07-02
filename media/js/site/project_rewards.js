@@ -1,11 +1,15 @@
 jQuery(document).ready(function() {
     "use strict";
 
+    var $rewardsWrapperElement = jQuery("#rewards_wrapper");
+
 	jQuery("#cf_add_new_reward").bind("click", function(event) {
 		event.preventDefault();
-		
+
+        var $itemsNumberElement = jQuery("#items_number");
+
 		var item 		= jQuery("#reward_tmpl").clone();
-		var itemsNumber = parseInt(jQuery("#items_number").attr("value"));
+		var itemsNumber = parseInt($itemsNumberElement.attr("value"));
 		itemsNumber 	= itemsNumber + 1;
 		
 		// Clone element
@@ -50,7 +54,7 @@ jQuery(document).ready(function() {
 		jQuery("#reward_id_d", "#rewards_wrapper").removeAttr("id");
 		
 		// Number of elements
-		jQuery("#items_number").attr("value", itemsNumber);
+        $itemsNumberElement.attr("value", itemsNumber);
 		
 		// The button "remove"
 		var elementRemove = jQuery("#reward_remove_d", "#rewards_wrapper");
@@ -62,22 +66,14 @@ jQuery(document).ready(function() {
 		
 		// Calendar 
 		jQuery("#reward_delivery_d_img", "#rewards_wrapper").attr("id", "reward_delivery_"+itemsNumber+"_img");
-		Calendar.setup({
-			// Id of the input field
-			inputField: "reward_delivery_"+itemsNumber,
-			// Format of the input field
-			ifFormat: projectWizard.dateFormat,
-			// Trigger for the calendar (button ID)
-			button: "reward_delivery_"+itemsNumber+"_img",
-			// Alignment (defaults to "Bl")
-			align: "Tl",
-			singleClick: true,
-			firstDay: 0
-		});
+        jQuery("#reward_delivery_"+itemsNumber).datetimepicker({
+            format: projectWizard.dateFormat,
+            locale: projectWizard.locale
+        });
 		
 	});
-	
-	jQuery("#rewards_wrapper").on("click", ".btn_remove_reward", function(event) {
+
+    $rewardsWrapperElement.on("click", ".js-btn-remove-reward", function(event) {
 		event.preventDefault();
 		
 		var index    = jQuery(this).data("index-id");
@@ -106,9 +102,9 @@ jQuery(document).ready(function() {
 					
 					if(response.success) {
 						jQuery("#reward_box_"+index).remove();
-                        ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+                        PrismUIHelper.displayMessageSuccess(response.title, response.text);
 					} else {
-                        ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                        PrismUIHelper.displayMessageFailure(response.title, response.text);
 					}
 					
 				}
@@ -126,10 +122,16 @@ jQuery(document).ready(function() {
     var imageWrappers = jQuery(".js-reward-image-wrapper");
     if (imageWrappers.length > 0) {
         // Style file input
-        jQuery(".js-reward-image").filestyle({buttonText: Joomla.JText._('COM_CROWDFUNDING_SELECT_IMAGE')});
+        jQuery(".js-reward-image").fileinput({
+            browseLabel: Joomla.JText._('COM_CROWDFUNDING_PICK_IMAGE'),
+            browseClass: "btn btn-success",
+            showUpload: false,
+            showPreview: false,
+            removeLabel: ""
+        });
     }
-	
-	jQuery("#rewards_wrapper").on("click", ".js-btn-remove-reward-image", function(event) {
+
+    $rewardsWrapperElement.on("click", ".js-btn-remove-reward-image", function(event) {
 		event.preventDefault();
 		
 		var rewardId = jQuery(this).data("reward-id");
@@ -146,16 +148,14 @@ jQuery(document).ready(function() {
 		// Delete the reward image.
 		if(rewardId) { 
 			
-			var data = {
-				rid:rewardId,
-				format: "raw",
-				task: "rewards.removeImage"
-			};
-			
 			jQuery.ajax({
 				url: "index.php?option=com_crowdfunding",
 				type: "POST",
-				data: data,
+				data: {
+                    rid: rewardId,
+                    format: "raw",
+                    task: "rewards.removeImage"
+                },
 				dataType: "text json",
 				success: function(response) {
 					
@@ -163,9 +163,9 @@ jQuery(document).ready(function() {
 						jQuery("#js-reward-image-"+rewardId).attr("src", "media/com_crowdfunding/images/no_image.png");
 						jQuery(self).remove();
 
-                        ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+                        PrismUIHelper.displayMessageSuccess(response.title, response.text);
 					} else {
-                        ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+                        PrismUIHelper.displayMessageFailure(response.title, response.text);
 					}
 					
 				}

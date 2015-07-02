@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,9 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.view');
-
-class CrowdFundingViewLog extends JViewLegacy
+class CrowdfundingViewLog extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -42,9 +40,6 @@ class CrowdFundingViewLog extends JViewLegacy
         $this->option = JFactory::getApplication()->input->get("option");
     }
 
-    /**
-     * Display the view
-     */
     public function display($tpl = null)
     {
         $this->state = $this->get('State');
@@ -58,14 +53,12 @@ class CrowdFundingViewLog extends JViewLegacy
                 break;
 
             case "files":
-                jimport("crowdfunding.log.files");
-                $this->files = new CrowdFundingLogFiles($this->includeFiles);
+                $this->files = new Crowdfunding\Log\Files($this->includeFiles);
                 $this->files->load();
                 break;
 
         }
 
-        // Prepare actions, behaviors, scritps and document
         $this->addToolbar();
         $this->setDocument();
 
@@ -117,18 +110,17 @@ class CrowdFundingViewLog extends JViewLegacy
         $layout = $this->getLayout();
 
         // Scripts
+        JHtml::_('jquery.framework');
         JHtml::_('bootstrap.tooltip');
-
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
 
         switch ($layout) {
 
             case "files":
 
                 // HTML Helpers
-                JHtml::_('itprism.ui.pnotify');
+                JHtml::_('prism.ui.pnotify');
 
-                JHtml::_("itprism.ui.joomla_helper");
+                JHtml::_("prism.ui.joomlaHelper");
 
                 // Load language string in JavaScript
                 JText::script('COM_CROWDFUNDING_DELETE_FILE_QUESTION');
@@ -136,5 +128,7 @@ class CrowdFundingViewLog extends JViewLegacy
                 break;
 
         }
+
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }
 }

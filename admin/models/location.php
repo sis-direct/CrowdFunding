@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-class CrowdFundingModelLocation extends JModelAdmin
+class CrowdfundingModelLocation extends JModelAdmin
 {
     /**
      * @var     string  The prefix to use with controller messages.
@@ -28,7 +28,7 @@ class CrowdFundingModelLocation extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Location', $prefix = 'CrowdFundingTable', $config = array())
+    public function getTable($type = 'Location', $prefix = 'CrowdfundingTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }

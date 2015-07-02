@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -11,13 +11,13 @@
 defined('_JEXEC') or die;
 
 /**
- * CrowdFunding Html Helper
+ * Crowdfunding Html Helper
  *
  * @package        ITPrism Components
- * @subpackage     CrowdFunding
+ * @subpackage     Crowdfunding
  * @since          1.6
  */
-abstract class JHtmlCrowdFundingBackend
+abstract class JHtmlCrowdfundingBackend
 {
     public static function approved($i, $value, $prefix, $checkbox = 'cb')
     {
@@ -158,7 +158,7 @@ abstract class JHtmlCrowdFundingBackend
             1 => array('featured', 'projects.unfeatured', 'COM_CROWDFUNDING_FEATURED', 'COM_CROWDFUNDING_TOGGLE_TO_UNFEATURE'),
         );
 
-        $state = JArrayHelper::getValue($states, (int)$value, $states[1]);
+        $state = Joomla\Utilities\ArrayHelper::getValue($states, (int)$value, $states[1]);
         $icon  = $state[0];
         if ($canChange) {
             $html = '<a href="#" onclick="return listItemTask(\'cb' . $i . '\',\'' . $state[1] . '\')" class="btn btn-micro hasTooltip' . ($value == 1 ? ' active' : '') . '" title="' . JText::_($state[3]) . '"><i class="icon-' . $icon . '"></i></a>';
@@ -186,6 +186,12 @@ abstract class JHtmlCrowdFundingBackend
         return implode("\n", $html);
     }
 
+    /**
+     * @param null|Prism\Integration\Profile\ProfileInterface $socialProfile
+     * @param int $userId
+     *
+     * @return string
+     */
     public static function profileIcon($socialProfile, $userId)
     {
         $html = array();
@@ -206,6 +212,13 @@ abstract class JHtmlCrowdFundingBackend
         return implode("\n", $html);
     }
 
+    /**
+     * @param null|Prism\Integration\Profile\ProfileInterface $socialProfile
+     * @param string $name
+     * @param int $userId
+     *
+     * @return string
+     */
     public static function profileLink($socialProfile, $name, $userId)
     {
         $html = array();
@@ -243,8 +256,7 @@ abstract class JHtmlCrowdFundingBackend
                 $output = JText::sprintf("COM_CROWDFUNDING_TRACK_ID", htmlentities($trackId, ENT_QUOTES, "UTF-8"));
             } else {
 
-                jimport("itprism.validator.date");
-                $validator = new ITPrismValidatorDate($trackId);
+                $validator = new Prism\Validator\Date($trackId);
 
                 if (!$validator->isValid()) {
                     $output = JText::sprintf("COM_CROWDFUNDING_DATE_AND_TIME", "---");
@@ -263,26 +275,28 @@ abstract class JHtmlCrowdFundingBackend
      * Generates information about transaction amount.
      *
      * @param object $item
-     * @param CrowdFundingCurrencies $currencies
+     * @param Crowdfunding\Amount $amount
+     * @param Crowdfunding\Currencies $currencies
      *
      * @return string
      */
-    public static function transactionAmount($item, $currencies)
+    public static function transactionAmount($item, $amount, $currencies)
     {
-        $currency = $currencies->getCurrencyByAbbr($item->txn_currency);
+        $currency = $currencies->getCurrencyByCode($item->txn_currency);
+        $amount->setCurrency($currency);
 
         $item->txn_amount = floatval($item->txn_amount);
         $item->fee = floatval($item->fee);
 
-        $output = (!empty($currency)) ? $currency->getAmountString($item->txn_amount) : $item->txn_amount;
+        $output = (!empty($currency)) ? $amount->setValue($item->txn_amount)->formatCurrency() : $item->txn_amount;
 
         if (!empty($item->fee)) {
 
-            $fee = (!empty($currency)) ? $currency->getAmountString($item->fee) : $item->fee;
+            $fee = (!empty($currency)) ? $amount->setValue($item->fee)->formatCurrency() : $item->fee;
 
             // Prepare project owner amount.
             $projectOwnerAmount = round($item->txn_amount - $item->fee, 2);
-            $projectOwnerAmount = (!empty($currency)) ? $currency->getAmountString($projectOwnerAmount) : $projectOwnerAmount;
+            $projectOwnerAmount = (!empty($currency)) ? $amount->setValue($projectOwnerAmount)->formatCurrency() : $projectOwnerAmount;
 
             JHtml::_('bootstrap.tooltip');
 

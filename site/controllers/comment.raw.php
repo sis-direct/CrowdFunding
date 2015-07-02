@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -10,15 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
-
 /**
- * CrowdFunding comment controller
+ * Crowdfunding comment controller
  *
  * @package     ITPrism Components
- * @subpackage  CrowdFunding
+ * @subpackage  Crowdfunding
  */
-class CrowdFundingControllerComment extends JControllerLegacy
+class CrowdfundingControllerComment extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -30,7 +28,7 @@ class CrowdFundingControllerComment extends JControllerLegacy
      * @return    object    The model.
      * @since    1.5
      */
-    public function getModel($name = 'CommentItem', $prefix = 'CrowdFundingModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'CommentItem', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -47,12 +45,11 @@ class CrowdFundingControllerComment extends JControllerLegacy
         $itemId = $app->input->get('id', 0, 'int');
         $userId = JFactory::getUser()->id;
 
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         // Get the model
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelCommentItem * */
+        /** @var $model CrowdfundingModelCommentItem * */
 
         try {
 
@@ -80,10 +77,13 @@ class CrowdFundingControllerComment extends JControllerLegacy
             JFactory::getApplication()->close();
         }
 
-        $data = array(
-            "id"      => $item->id,
-            "comment" => $item->comment
-        );
+        $data = array();
+        if (isset($item) and is_object($item)) {
+            $data = array(
+                "id"      => $item->id,
+                "comment" => $item->comment
+            );
+        }
 
         $response
             ->setData($data)
@@ -106,12 +106,11 @@ class CrowdFundingControllerComment extends JControllerLegacy
         $itemId = $app->input->post->get('id', 0, 'int');
         $userId = JFactory::getUser()->get("id");
 
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         // Get the model
         $model = $this->getModel();
-        /** @var $model CrowdFundingModelCommentItem */
+        /** @var $model CrowdfundingModelCommentItem */
 
         try {
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      CrowdFunding
+ * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-jimport("crowdfunding.init");
+jimport("Crowdfunding.init");
 
 /**
  * Method to build Route
@@ -18,7 +18,7 @@ jimport("crowdfunding.init");
  *
  * @return array
  */
-function CrowdFundingBuildRoute(&$query)
+function CrowdfundingBuildRoute(&$query)
 {
     $segments = array();
 
@@ -32,7 +32,7 @@ function CrowdFundingBuildRoute(&$query)
         $menuItemGiven = false;
     } else {
         $menuItem      = $menu->getItem($query['Itemid']);
-        $menuItemGiven = true;
+        $menuItemGiven = (isset($menuItem->query)) ? true : false ;
     }
 
     // Check again
@@ -70,7 +70,7 @@ function CrowdFundingBuildRoute(&$query)
 
         return $segments;
     }
-
+    
     // Views
     if (isset($view)) {
 
@@ -90,7 +90,7 @@ function CrowdFundingBuildRoute(&$query)
                     return $segments;
                 }
 
-                $segments = CrowdFundingHelperRoute::prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven);
+                $segments = CrowdfundingHelperRoute::prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven);
 
                 unset($query['id']);
 
@@ -115,7 +115,7 @@ function CrowdFundingBuildRoute(&$query)
                         $categoryId = (int)$query['catid'];
 
                         if (false === strpos($query['id'], ":")) {
-                            $alias       = CrowdFundingHelperRoute::getProjectAlias($query['id']);
+                            $alias       = CrowdfundingHelperRoute::getProjectAlias($query['id']);
                             $query['id'] = $query['id'] . ":" . $alias;
                         }
                     } else {
@@ -123,7 +123,7 @@ function CrowdFundingBuildRoute(&$query)
                         return $segments;
                     }
 
-                    $segments = CrowdFundingHelperRoute::prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven);
+                    $segments = CrowdfundingHelperRoute::prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven);
 
                     $segments[] = $query['id'];
                 }
@@ -197,7 +197,7 @@ function CrowdFundingBuildRoute(&$query)
  *
  * @return array
  */
-function CrowdFundingParseRoute($segments)
+function CrowdfundingParseRoute($segments)
 {
     $total = count($segments);
     $vars = array();
@@ -239,7 +239,7 @@ function CrowdFundingParseRoute($segments)
                 case "embed":
 
                     $id = $item->query["id"];
-                    $project = CrowdFundingHelperRoute::getProject($id);
+                    $project = CrowdfundingHelperRoute::getProject($id);
 
                     $vars['view']   = $segments[0];
                     $vars['catid']  = (int)$project["catid"];
@@ -260,7 +260,7 @@ function CrowdFundingParseRoute($segments)
         $alias = str_replace(":", "-", $alias);
 
         // first we check if it is a category
-        $category = JCategories::getInstance('CrowdFunding')->get($id);
+        $category = JCategories::getInstance('Crowdfunding')->get($id);
 
         if ($category and (strcmp($category->alias, $alias) == 0)) {
             $vars['view'] = 'category';
@@ -268,7 +268,7 @@ function CrowdFundingParseRoute($segments)
 
             return $vars;
         } else {
-            $project = CrowdFundingHelperRoute::getProject($id);
+            $project = CrowdfundingHelperRoute::getProject($id);
             if (!empty($project)) {
                 if ($project["alias"] == $alias) {
 
