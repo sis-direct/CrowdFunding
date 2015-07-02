@@ -4,9 +4,9 @@ Crowdfunding Release Notes
 ###v2.0
 * Improved Crowdfunding library.
 * Improved code quality.
-* Removed Email templates section. You have to use the new extension (Email Templates) [http://itprism.com/free-joomla-extensions/others/email-templates-manager].
+* Removed Email templates section. You have to use the new extension [Email Templates] (http://itprism.com/free-joomla-extensions/others/email-templates-manager).
 * Integrated with Easy Profile.
-* Built over (Twitter Bootstrap 3) [http://getbootstrap.com/].
+* Built over [Twitter Bootstrap 3] (http://getbootstrap.com/).
 * Renamed the plugin "Content - CrowdFunding Share" to "Content - CrowdFunding Social Share".
 * Removed extra images. This functionality will be implemented as third-party extension.
 * Added functionality users to subscribe to campaigns following them.
