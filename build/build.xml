@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="crowdfunding" default="build" basedir=".">
-	<description>CrowdFunding Lite Ant Build File</description>
+	<description>Crowdfunding Ant Build File</description>
 
 	<!-- load variables from config file -->
 	<property name="cfg.configFile" location="antconfig_j3.txt" />
@@ -65,7 +65,7 @@
 		
 		<!-- plug-ins -->
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingnav" />
-		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingshare" />
+		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingsocialshare" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingadminmail" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingusermail" />
 		<mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_crowdfundingvalidator" />
@@ -135,11 +135,11 @@
 			</fileset>
 		</copy>
 		
-		<!-- CONTENT/CROWDFUNDINGSHARE -->
+		<!-- CONTENT/CROWDFUNDINGSOCIALSHARE -->
 		
-		<!-- copy plugins files of content/crowdfundingshare -->
-		<copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare">
-			<fileset dir="${cfg.pluginsSourceDir}/content/crowdfundingshare">
+		<!-- copy plugins files of content/crowdfundingsocialshare -->
+		<copy todir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingsocialshare">
+			<fileset dir="${cfg.pluginsSourceDir}/content/crowdfundingsocialshare">
 				<include name="**/*" />
 			</fileset>
 		</copy>
@@ -227,7 +227,7 @@
 		
 		<!-- build content plug-ins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingnav.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingnav" />
-		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingshare.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingshare" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingsocialshare.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingsocialshare" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingadminmail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingadminmail" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingusermail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingusermail" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_content_crowdfundingvalidator.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_crowdfundingvalidator" />
