@@ -46,7 +46,7 @@
 			<fileset dir="${cfg.pkgDir}/packages" includes="*"/>
 			
 			<fileset dir="${cfg.pkgDir}" includes="CHANGELOG.md"/>
-			<fileset dir="${cfg.pkgDir}" includes="${cfg.comName}.xml"/>
+			<fileset dir="${cfg.pkgDir}" includes="${cfg.name}.xml"/>
 			<fileset dir="${cfg.pkgDir}" includes="install.php"/>
 			<fileset dir="${cfg.pkgDir}" includes="${cfg.pkgName}.xml"/>
 			<fileset dir="${cfg.pkgDir}" includes="README.md"/>
