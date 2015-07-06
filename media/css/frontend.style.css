@@ -425,15 +425,6 @@ div.reward:hover  {
 	font-size: smaller;
 }
 
-
-.cf-bg-color-yellow {
-	background-color: #fffacd;
-}
-
-.cf-bg-color-brown {
-	background-color: #deb887;
-}
-
 .thumbnail > a > img {
     display: block;
     margin-left: auto;
@@ -608,4 +599,14 @@ div.reward:hover  {
   align-items: center;     /* Align the flex-items vertically */
   justify-content: center; /* Optional, to align inner flex-items 
                               horizontally within the column  */
+}
+
+.panel-brown > .panel-heading {
+    background-color: #deb887;
+    border-color: #deb887;
+    color: #000;
+}
+
+.panel-brown {
+    border-color: #deb887;
 }

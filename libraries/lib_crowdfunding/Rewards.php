@@ -176,19 +176,13 @@ class Rewards extends Prism\Database\ArrayObject
             ->where("a.reward_id IN ( " . implode(",", $keys) . " )");
 
         $this->db->setQuery($query);
-        $result = $this->db->loadAssocList("reward_id");
+        $result = (array)$this->db->loadAssocList("reward_id");
 
-        // Set the number of receivers to rewards object.
-        if (!empty($result)) {
-            foreach ($this->items as &$item) {
-                $item["funders"] = (!isset($result[$item["id"]])) ? 0 : $result[$item["id"]]["funders"];
-            }
-
-            unset($item);
-
-        } else {
-            $result = array();
+        foreach ($this->items as &$item) {
+            $item["funders"] = (!isset($result[$item["id"]])) ? 0 : $result[$item["id"]]["funders"];
         }
+
+        unset($item);
 
         return $result;
     }

@@ -68,7 +68,7 @@ echo $layout->render($this->layoutData);
             </div>
     </div>
 
-    <div class="col-md-4 cf-project-manager-box">
+    <div class="col-md-4">
         <?php echo $this->loadTemplate("basic"); ?>
     </div>
 
@@ -78,7 +78,7 @@ echo $layout->render($this->layoutData);
 </div>
 
 <div class="row">
-    <div class="col-md-12 cf-project-manager-box">
+    <div class="col-md-12">
         <?php echo $this->loadTemplate("rewards"); ?>
     </div>
 </div>

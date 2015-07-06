@@ -104,7 +104,7 @@ class Project extends Prism\Database\Table
      * <code>
      * $projectId = 1;
      *
-     * $project   = Crowdfunding\Project::getInstance(\JFactory::getDbo());
+     * $project   = new Crowdfunding\Project(\JFactory::getDbo());
      * $project->load($projectId);
      * </code>
      *

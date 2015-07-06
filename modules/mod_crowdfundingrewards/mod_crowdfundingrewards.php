@@ -26,7 +26,6 @@ $view   = $app->input->get("view");
 // do not display anything.
 if ((strcmp($option, "com_crowdfunding") != 0) or (strcmp($view, "details") != 0)) {
     echo JText::_("MOD_CROWDFUNDINGREWARDS_ERROR_INVALID_VIEW");
-
     return;
 }
 

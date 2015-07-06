@@ -21,8 +21,7 @@ $height = $componentParams->get("rewards_image_thumb_height", 200);
                 <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getBackingRoute($project->getSlug(), $project->getCatSlug(), "default", $reward["id"])); ?>">
     			    <span class="ramount">
                     <?php
-                    $amount = $currency->getAmountString($reward["amount"]);
-                    echo JText::sprintf("MOD_CROWDFUNDINGREWARDS_INVEST_MORE", $amount); ?>
+                    echo JText::sprintf("MOD_CROWDFUNDINGREWARDS_INVEST_MORE", $amount->setValue($reward["amount"])->formatCurrency()); ?>
                     </span>
                     <span class="rtitle"><?php echo htmlspecialchars($reward["title"], ENT_QUOTES, "UTF-8"); ?></span>
                     <span class="rdesc"><?php echo htmlspecialchars($reward["description"], ENT_QUOTES, "UTF-8"); ?></span>
