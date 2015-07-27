@@ -39,7 +39,7 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->id;
+        $userId = JFactory::getUser()->get("id");
         if (!$userId) {
             $redirectOptions = array(
                 "force_direction" => "index.php?option=com_users&view=login"
@@ -53,13 +53,23 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         /** @var  $params Joomla\Registry\Registry */
 
         // Get the data from the form POST
-        $data         = $this->input->post->get('rewards', array(), 'array');
         $projectId    = $this->input->post->get('id', 0, 'int');
+
+        // Check if rewards are enabled.
+        if (!$params->get("rewards_enabled", 1)) {
+            $redirectOptions = array(
+                "view"   => "project",
+                "layout" => "manager",
+                "id"     => $projectId
+            );
+            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_REWARDS_DISABLED"), $redirectOptions);
+            return;
+        }
+
+        $data         = $this->input->post->get('rewards', array(), 'array');
         $actionSubmit = $this->input->post->getCmd('btn_submit', 'save');
 
-        $images = $this->input->files->get('images', array(), 'array');
-
-        $userId = JFactory::getUser()->get("id");
+        $images       = $this->input->files->get('images', array(), 'array');
 
         // Get wizard type
         $wizardType   = $params->get("project_wizard_type", "five_steps");

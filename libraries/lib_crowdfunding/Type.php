@@ -28,22 +28,6 @@ class Type extends Prism\Database\TableImmutable
     protected $params = array();
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $type    = new Crowdfunding\Type(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     *
-     * @return self
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db       = $db;
-    }
-
-    /**
      * Load a data about a type from database.
      *
      * <code>

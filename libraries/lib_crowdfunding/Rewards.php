@@ -25,20 +25,6 @@ class Rewards extends Prism\Database\ArrayObject
     protected static $instances = array();
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $rewards   = new Crowdfunding\Rewards(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Create and initialize an object.
      *
      * <code>

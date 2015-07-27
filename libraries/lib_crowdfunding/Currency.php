@@ -9,6 +9,8 @@
 
 namespace Crowdfunding;
 
+use Prism;
+
 defined('JPATH_PLATFORM') or die;
 
 /**
@@ -17,7 +19,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Currencies
  */
-class Currency
+class Currency extends Prism\Database\TableImmutable
 {
     protected $id;
     protected $title;
@@ -25,30 +27,7 @@ class Currency
     protected $symbol;
     protected $position;
 
-    /**
-     * Database driver.
-     *
-     * @var \JDatabaseDriver
-     */
-    protected $db;
-
     protected static $instances = array();
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $currencyId = 1;
-     * $currency   = new Crowdfunding\Currency(\JFactory::getDbo());
-     * $currency->load($currencyId);
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db = null)
-    {
-        $this->db = $db;
-    }
 
     /**
      * Create an object or return existing one.
@@ -80,86 +59,37 @@ class Currency
      * Load currency data from database by ID.
      *
      * <code>
-     * $currencyId = 1;
+     * $keys = array(
+     *     "id" => 1,
+     *     "code" => "EUR"
+     * );
      *
      * $currency   = new Crowdfunding\Currency(\JFactory::getDbo());
      * $currency->load($currencyId);
      * </code>
      *
-     * @param int $id
+     * @param int|array $keys
+     * @param array $options
      */
-    public function load($id)
+    public function load($keys, $options = array())
     {
         $query = $this->db->getQuery(true);
         $query
             ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"))
-            ->where("a.id = " . (int)$id);
+            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
 
-        $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
-
-        if (!$result) {
-            $result = array();
-        }
-
-        $this->bind($result);
-    }
-
-    /**
-     * Load currency data from database.
-     *
-     * <code>
-     * $currencyCode = "EUR";
-     *
-     * $currency   = new Crowdfunding\Currency(\JFactory::getDbo());
-     * $currency->loadByCode($currencyCode);
-     * </code>
-     *
-     * @param string $code
-     */
-    public function loadByCode($code)
-    {
-        $query = $this->db->getQuery(true);
-        $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"))
-            ->where("a.code = " . $this->db->quote($code));
-
-        $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
-
-        if (!$result) {
-            $result = array();
-        }
-
-        $this->bind($result);
-    }
-
-    /**
-     * Set data about currency to object parameters.
-     *
-     * <code>
-     * $data = array(
-     *  "title"  => "Pound sterling",
-     *  "symbol" => "£"
-     * );
-     *
-     * $currency   = new Crowdfunding\Currency(\JFactory::getDbo());
-     * $currency->bind($data);
-     * </code>
-     *
-     * @param array $data
-     * @param array $ignored
-     *
-     */
-    public function bind($data, $ignored = array())
-    {
-        foreach ($data as $key => $value) {
-            if (!in_array($key, $ignored)) {
-                $this->$key = $value;
+        if (is_array($keys)) {
+            foreach ($keys as $key => $value) {
+                $query->where($this->db->quoteName($key) ." = " . $this->db->quote($value));
             }
+        } else {
+            $query->where("a.id = " . (int)$keys);
         }
+
+        $this->db->setQuery($query);
+        $result = (array)$this->db->loadAssoc();
+
+        $this->bind($result);
     }
 
     /**

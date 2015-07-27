@@ -38,27 +38,6 @@ class Reward extends Prism\Database\Table
     protected $available = 0;
 
     /**
-     * Database driver.
-     *
-     * @var \JDatabaseDriver
-     */
-    protected $db;
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $reward    = new Crowdfunding\Reward(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver  $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load reward data from database by reward ID or combination of keys ( id, project_id,...).
      *
      * <code>

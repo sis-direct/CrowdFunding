@@ -10,9 +10,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.helper');
-jimport('joomla.plugin.plugin');
-
 jimport('Prism.init');
 jimport('Crowdfunding.init');
 
@@ -76,18 +73,14 @@ class plgSystemCrowdfundingModules extends JPlugin
 
         // Module Crowdfunding Rewards (mod_crowdfundingrewards).
         if (!$isDetailsPage) {
-
             $this->hideModule("mod_crowdfundingrewards");
-
         } else { // Check project type. If the rewards are disable, hide the module.
 
             $projectId = $app->input->getInt("id");
             if (!empty($projectId)) {
-                $project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
-                $type    = $project->getType();
 
-                // Hide the module Crowdfunding Rewards, if rewards are disabled for this type.
-                if (!is_null($type) and !$type->isRewardsEnabled()) {
+                // Hide the module Crowdfunding Rewards, if rewards are disabled.
+                if (!CrowdfundingHelper::isRewardsEnabled($projectId)) {
                     $this->hideModule("mod_crowdfundingrewards");
                 }
             }

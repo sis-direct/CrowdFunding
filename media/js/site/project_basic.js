@@ -7,9 +7,7 @@ jQuery(document).ready(function () {
     }
 
     // Initialize symbol length indicator
-    var shortDesc = jQuery('#jform_short_desc');
-    shortDesc.attr("maxlength", 255);
-    shortDesc.maxlength({
+    jQuery('#jform_short_desc').maxlength({
         alwaysShow: true,
         placement: 'bottom-right'
     });
@@ -55,10 +53,7 @@ jQuery(document).ready(function () {
 
     // Validate the fields.
     jQuery('#js-cf-project-form').parsley({
-        uiEnabled: false,
-        messages: {
-            required: Joomla.JText._('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED')
-        }
+        uiEnabled: false
     });
 
     /** Image Tools **/

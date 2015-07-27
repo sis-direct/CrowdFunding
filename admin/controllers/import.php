@@ -56,7 +56,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
             return;
         }
 
-        $fileData = JArrayHelper::getValue($data, "data");
+        $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
             $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
@@ -66,8 +66,8 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
             $filePath = $model->uploadFile($fileData, "currencies");
 
-            $resetId   = JArrayHelper::getValue($data, "reset_id", false, "bool");
-            $removeOld = JArrayHelper::getValue($data, "remove_old", false, "bool");
+            $resetId   = Joomla\Utilities\ArrayHelper::getValue($data, "reset_id", false, "bool");
+            $removeOld = Joomla\Utilities\ArrayHelper::getValue($data, "remove_old", false, "bool");
             if (!empty($removeOld)) {
                 $model->removeAll("currencies");
             }
@@ -115,7 +115,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
             return;
         }
 
-        $fileData = JArrayHelper::getValue($data, "data");
+        $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
             $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
@@ -125,10 +125,10 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
             $filePath = $model->uploadFile($fileData, "locations");
 
-            $resetId       = JArrayHelper::getValue($data, "reset_id", false, "bool");
-            $minPopulation = JArrayHelper::getValue($data, "minimum_population", 0, "int");
+            $resetId       = Joomla\Utilities\ArrayHelper::getValue($data, "reset_id", false, "bool");
+            $minPopulation = Joomla\Utilities\ArrayHelper::getValue($data, "minimum_population", 0, "int");
 
-            $removeOld = JArrayHelper::getValue($data, "remove_old", false, "bool");
+            $removeOld = Joomla\Utilities\ArrayHelper::getValue($data, "remove_old", false, "bool");
             if (!empty($removeOld)) {
                 $model->removeAll("locations");
             }
@@ -175,7 +175,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
             return;
         }
 
-        $fileData = JArrayHelper::getValue($data, "data");
+        $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
             $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
@@ -185,8 +185,8 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
             $filePath = $model->uploadFile($fileData, "countries");
 
-            $resetId   = JArrayHelper::getValue($data, "reset_id", false, "bool");
-            $removeOld = JArrayHelper::getValue($data, "remove_old", false, "bool");
+            $resetId   = Joomla\Utilities\ArrayHelper::getValue($data, "reset_id", false, "bool");
+            $removeOld = Joomla\Utilities\ArrayHelper::getValue($data, "remove_old", false, "bool");
             if (!empty($removeOld)) {
                 $model->removeAll("countries");
             }
@@ -233,7 +233,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
             return;
         }
 
-        $fileData = JArrayHelper::getValue($data, "data");
+        $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
             $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
 

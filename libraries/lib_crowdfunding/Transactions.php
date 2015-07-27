@@ -20,22 +20,8 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Transactions
  */
-class Transactions extends Prism\Database\ArrayObject 
+class Transactions extends Prism\Database\ArrayObject
 {
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $transactions    = new Crowdfunding\Transactions(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db Database object.
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
     /**
      * Load transactions from database.
      *

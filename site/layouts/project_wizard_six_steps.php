@@ -63,6 +63,7 @@ switch($displayData["layout"]) {
                     <?php }?>
                 </li>
 
+                <?php if ($displayData["rewards_enabled"]) { ?>
                 <li <?php echo ($active["rewards"]) ? 'class="active"' : '';?>>
                     <?php if(!empty($displayData["item_id"])){?>
                         <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=rewards".$id);?>"><?php echo JText::_("COM_CROWDFUNDING_STEP_REWARDS");?></a>
@@ -70,6 +71,7 @@ switch($displayData["layout"]) {
                         <a href="javascript: void(0);" class="disabled"><?php echo JText::_("COM_CROWDFUNDING_STEP_REWARDS");?></a>
                     <?php }?>
                 </li>
+                <?php }?>
 
                 <li <?php echo ($active["extras"]) ? 'class="active"' : '';?>>
                     <?php if(!empty($displayData["item_id"])){?>

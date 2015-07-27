@@ -32,10 +32,10 @@ class CrowdfundingControllerCurrency extends Prism\Controller\Form\Backend
         );
 
         $model = $this->getModel();
-        /** @var $model CrowdfundingModelCurrency * */
+        /** @var $model CrowdfundingModelCurrency */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
             throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);

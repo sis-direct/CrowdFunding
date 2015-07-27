@@ -1,6 +1,6 @@
 Crowdfunding for Joomla!
 ==========================
-( Version 2.0 )
+( Version 2.1 )
 - - -
 
 Crowdfunding is a platform that provides functionality for creating collective funding websites, powered by Joomla! CMS.

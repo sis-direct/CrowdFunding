@@ -23,26 +23,15 @@ defined('JPATH_PLATFORM') or die;
 class Currencies extends Prism\Database\ArrayObject
 {
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db       = $db;
-    }
-
-    /**
      * Load currencies data by ID from database.
      *
      * <code>
-     * $ids = array(1,2,3,4,5);
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5),  // Use this option to load the currencies by IDs.
+     *     "codes" => array("USD", "GBP") // Use this option to load the currencies by code.
+     * );
      * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->load($ids);
+     * $currencies->load($options);
      *
      * foreach($currencies as $currency) {
      *   echo $currency["title"];
@@ -50,83 +39,53 @@ class Currencies extends Prism\Database\ArrayObject
      * }
      * </code>
      *
-     * @param array $ids
+     * @param array $options
      */
-    public function load($ids = array())
+    public function load($options = array())
     {
-        // Load project data
-        $query = $this->db->getQuery(true);
+        // Get IDs.
+        $ids = (!isset($options["ids"])) ? array() : $options["ids"];
+        ArrayHelper::toInteger($ids);
 
-        $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
+        // Get codes.
+        $codes = (!isset($options["codes"])) ? array() : $options["codes"];
 
-        if (!empty($ids)) {
-            ArrayHelper::toInteger($ids);
-            $query->where("a.id IN ( " . implode(",", $ids) . " )");
-        }
+        if (!empty($ids) or !empty($codes)) {
 
-        $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
+            $query = $this->db->getQuery(true);
 
-        if (!$results) {
-            $results = array();
-        }
+            $query
+                ->select("a.id, a.title, a.code, a.symbol, a.position")
+                ->from($this->db->quoteName("#__crowdf_currencies", "a"));
 
-        $this->items = $results;
-    }
+            if (!empty($ids)) { // Load by IDs
+                $query->where("a.id IN ( " . implode(",", $ids) . " )");
 
-    /**
-     * Load currencies data by abbreviation from database.
-     *
-     * <code>
-     * $ids = array("GBP", "EUR", "USD");
-     * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->loadByCode($ids);
-     *
-     * foreach($currencies as $currency) {
-     *   echo $currency["title"];
-     *   echo $currency["code"];
-     * }
-     * </code>
-     *
-     * @param array $ids
-     */
-    public function loadByCode($ids = array())
-    {
-        // Load project data
-        $query = $this->db->getQuery(true);
+            } elseif (!empty($codes)) { // Load by codes
+                foreach ($codes as $key => $value) {
+                    $codes[$key] = $this->db->quote($value);
+                }
 
-        $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
-
-        if (!empty($ids)) {
-
-            foreach ($ids as $key => $value) {
-                $ids[$key] = $this->db->quote($value);
+                $query->where("a.code IN ( " . implode(",", $codes) . " )");
             }
 
-            $query->where("a.code IN ( " . implode(",", $ids) . " )");
+            $this->db->setQuery($query);
+            $this->items = (array)$this->db->loadAssocList();
+
         }
-
-        $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
     }
 
     /**
      * Create a currency object by abbreviation and return it.
      *
      * <code>
-     * $ids = array(1,2,3,4,5);
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5),
+     *     "codes" => array("USD", "GBP")
+     * );
+     *
      * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->load($ids);
+     * $currencies->load($options);
      *
      * $currency = $currencies->getCurrencyByCode("EUR");
      * </code>
@@ -160,9 +119,13 @@ class Currencies extends Prism\Database\ArrayObject
      * Create a currency object and return it.
      *
      * <code>
-     * $ids = array(1,2,3,4,5);
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5),
+     *     "codes" => array("USD", "GBP")
+     * );
+     *
      * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->load($ids);
+     * $currencies->load($options);
      *
      * $currencyId = 1;
      * $currency = $currencies->getCurrency($currencyId);

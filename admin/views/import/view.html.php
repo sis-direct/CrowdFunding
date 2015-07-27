@@ -109,7 +109,7 @@ class CrowdfundingViewImport extends JViewLegacy
         JHtml::_('behavior.formvalidation');
 
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('prism.ui.bootstrapFileUploadStyle');
+        JHtml::_('prism.ui.bootstrap2FileInput');
 
         $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
     }

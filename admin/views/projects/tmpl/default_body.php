@@ -9,6 +9,12 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+$appSite    = JApplicationCms::getInstance('site');
+$routerSite = $appSite->getRouter('site');
+
+$uri        = JUri::getInstance();
+$website    = $uri->toString(array("scheme", "host"));
 ?>
 <?php foreach ($this->items as $i => $item) {
     $ordering = ($this->listOrder == 'a.ordering');
@@ -42,6 +48,9 @@ defined('_JEXEC') or die;
         <td class="has-context">
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=edit&id=" . $item->id); ?>">
                 <?php echo $this->escape($item->title); ?>
+            </a>&nbsp;&nbsp;
+            <a href="<?php echo JHtml::_('crowdfundingbackend.siteRoute', $item, $website, $routerSite); ?>" target="_blank">
+                <i class="icon-link"></i>
             </a>
             <div class="small">
                 <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=rewards&pid=" . $item->id); ?>">
@@ -55,15 +64,15 @@ defined('_JEXEC') or die;
         <td class="hidden-phone"><?php echo $this->amount->setValue($item->goal)->formatCurrency(); ?></td>
         <td class="hidden-phone"><?php echo $this->amount->setValue($item->funded)->formatCurrency(); ?></td>
         <td class="hidden-phone"><?php echo JHtml::_("crowdfunding.percent", $item->funded_percents); ?></td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone">
             <?php echo JHtml::_("crowdfunding.date", $item->funding_start, JText::_('DATE_FORMAT_LC3')); ?>
         </td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone">
             <?php echo JHtml::_("crowdfunding.duration", $item->funding_end, $item->funding_days, JText::_('DATE_FORMAT_LC3')); ?>
         </td>
-        <td class="center hidden-phone"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></td>
-        <td class="center hidden-phone"><?php echo $this->escape($item->type); ?></td>
-        <td class="center">
+        <td class="hidden-phone"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></td>
+        <td class="hidden-phone"><?php echo $this->escape($item->type); ?></td>
+        <td>
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=users&filter_search=id:" . $item->user_id); ?>">
                 <?php echo $this->escape($item->username); ?>
             </a>

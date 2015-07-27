@@ -171,7 +171,7 @@ class CrowdfundingViewReward extends JViewLegacy
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
-        JHtml::_('prism.ui.bootstrapFileUploadStyle');
+        JHtml::_('prism.ui.bootstrap2FileInput');
 
         JHtml::_('formbehavior.chosen', 'select');
 

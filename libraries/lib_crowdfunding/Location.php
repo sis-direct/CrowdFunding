@@ -9,6 +9,8 @@
 
 namespace Crowdfunding;
 
+use Prism;
+
 defined('JPATH_PLATFORM') or die;
 
 /**
@@ -17,7 +19,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Locations
  */
-class Location
+class Location extends Prism\Database\TableImmutable
 {
     protected $id;
     protected $name;
@@ -29,82 +31,41 @@ class Location
     protected $published;
 
     /**
-     * Database driver.
-     *
-     * @var \JDatabaseDriver
-     */
-    protected $db;
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $location   = new Crowdfunding\Location(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load location data from database.
      *
      * <code>
-     * $locationId = 1;
+     * $keys = array(
+     *     "id" => 1,
+     *     "country_code" => "UK"
+     * );
      *
      * $location   = new Crowdfunding\Location(\JFactory::getDbo());
-     * $location->load($locationId);
+     * $location->load($keys);
      * </code>
      *
-     * @param int $id
+     * @param int|array $keys
+     * @param array $options
      */
-    public function load($id)
+    public function load($keys, $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
             ->select("a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published")
-            ->from($this->db->quoteName("#__crowdf_locations", "a"))
-            ->where("a.id = " . (int)$id);
+            ->from($this->db->quoteName("#__crowdf_locations", "a"));
+
+        if (is_array($keys)) {
+            foreach ($keys as $key => $value) {
+                $query->where($this->db->quoteName($key) ." = " . $this->db->quote($value));
+            }
+        } else {
+            $query->where("a.id = " . (int)$keys);
+        }
 
         $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
+        $result = (array)$this->db->loadAssoc();
 
-        if (!empty($result)) {
-            $this->bind($result);
-        }
-    }
-
-    /**
-     * Set data to object properties.
-     *
-     * <code>
-     * $data = (
-     *  "id"    => 1,
-     *  "name"  => "Plovdiv",
-     *  "code4" => "GB"
-     * );
-     *
-     * // Ignore the data for index key "id".
-     * $ignored = array("code");
-     *
-     * $location   = new Crowdfunding\Location(\JFactory::getDbo());
-     * $location->bind($data, $ignored);
-     * </code>
-     *
-     * @param array $data
-     * @param array $ignored
-     */
-    public function bind($data, $ignored = array())
-    {
-        foreach ($data as $key => $value) {
-            if (!in_array($key, $ignored)) {
-                $this->$key = $value;
-            }
-        }
+        $this->bind($result);
     }
 
     /**
@@ -114,7 +75,7 @@ class Location
      * $locationId  = 1;
      *
      * $location    = new Crowdfunding\Location(\JFactory::getDbo());
-     * $location->load($typeId);
+     * $location->load($locationId);
      *
      * if (!$location->getId()) {
      * ....

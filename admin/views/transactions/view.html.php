@@ -78,7 +78,7 @@ class CrowdfundingViewTransactions extends JViewLegacy
             $options->set("amount_format", $this->params->get("amount_format"));
 
             $this->currencies = new Crowdfunding\Currencies(JFactory::getDbo(), $options);
-            $this->currencies->loadByCode($currencies);
+            $this->currencies->load(array("codes" => $currencies));
         }
 
         $this->amount = new Crowdfunding\Amount($this->params);

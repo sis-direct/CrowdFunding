@@ -36,20 +36,6 @@ class Intention extends Prism\Database\Table
     protected $unique_key;
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $intention    = new Crowdfunding\Intention(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver  $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load intention data from database.
      *
      * <code>

@@ -16,6 +16,7 @@
                filter="trim"
                required="true"
                placement="left"
+               maxlength="255"
                />
 
         <field name="catid" type="category" class="cf-advanced-select"

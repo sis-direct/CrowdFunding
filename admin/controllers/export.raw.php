@@ -92,18 +92,20 @@ class CrowdfundingControllerExport extends JControllerLegacy
 
         $filesize = filesize($destination);
 
-        JResponse::setHeader('Content-Type', 'application/octet-stream', true);
-        JResponse::setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
-        JResponse::setHeader('Content-Transfer-Encoding', 'binary', true);
-        JResponse::setHeader('Pragma', 'no-cache', true);
-        JResponse::setHeader('Expires', '0', true);
-        JResponse::setHeader('Content-Disposition', 'attachment; filename=' . $archiveFile, true);
-        JResponse::setHeader('Content-Length', $filesize, true);
+        $app = JFactory::getApplication();
+        
+        $app->setHeader('Content-Type', 'application/octet-stream', true);
+        $app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
+        $app->setHeader('Content-Transfer-Encoding', 'binary', true);
+        $app->setHeader('Pragma', 'no-cache', true);
+        $app->setHeader('Expires', '0', true);
+        $app->setHeader('Content-Disposition', 'attachment; filename=' . $archiveFile, true);
+        $app->setHeader('Content-Length', $filesize, true);
 
         $doc = JFactory::getDocument();
         $doc->setMimeEncoding('application/octet-stream');
 
-        JResponse::sendHeaders();
+        $app->sendHeaders();
 
         echo file_get_contents($destination);
         JFactory::getApplication()->close();

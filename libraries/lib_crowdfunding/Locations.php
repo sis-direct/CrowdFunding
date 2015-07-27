@@ -23,20 +23,6 @@ defined('JPATH_PLATFORM') or die;
 class Locations extends Prism\Database\ArrayObject
 {
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $locations   = new Crowdfunding\Locations(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load locations data by ID from database.
      *
      * <code>

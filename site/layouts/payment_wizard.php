@@ -34,7 +34,7 @@ switch ($displayData->layout) {
             <ul class="nav navbar-nav">
                 <li <?php echo ($active["rewards"]) ? 'class="active"' : ''; ?>>
                     <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getBackingRoute($displayData->item->slug, $displayData->item->catslug)); ?>">
-                        (1) <?php echo JText::_("COM_CROWDFUNDING_STEP_PLEDGE_REWARDS"); ?>
+                        (1) <?php echo (!$displayData->rewards_enabled) ? JText::_("COM_CROWDFUNDING_STEP_PLEDGE") : JText::_("COM_CROWDFUNDING_STEP_PLEDGE_REWARDS"); ?>
                     </a>
                 </li>
 

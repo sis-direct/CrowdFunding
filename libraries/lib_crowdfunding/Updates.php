@@ -25,20 +25,6 @@ class Updates extends Prism\Database\ArrayObject
     protected $allowedStates = array(Prism\Constants::SENT, Prism\Constants::NOT_SENT);
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $updates   = new Crowdfunding\Updates(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load data about updates from database by project ID.
      *
      * <code>

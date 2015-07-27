@@ -59,20 +59,6 @@ class Project extends Prism\Database\Table
     protected static $instance;
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $project   = new Crowdfunding\Project(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Create an object.
      *
      * <code>

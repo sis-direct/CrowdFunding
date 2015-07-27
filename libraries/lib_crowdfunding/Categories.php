@@ -228,9 +228,7 @@ class Categories extends \JCategories
 
         $this->db->setQuery($query, (int)$offset, (int)$limit);
 
-        $results = (array)$this->db->loadAssocList("id");
-
-        $this->data = $results;
+        $this->data = (array)$this->db->loadAssocList("id");
     }
 
     /**

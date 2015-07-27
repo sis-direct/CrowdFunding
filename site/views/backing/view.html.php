@@ -148,17 +148,7 @@ class CrowdfundingViewBacking extends JViewLegacy
         }
 
         // Get project type and check for enabled rewards.
-        $this->rewardsEnabled = true;
-
-        if (!empty($this->item->type_id)) {
-            $type = new Crowdfunding\Type(JFactory::getDbo());
-
-            $type->load($this->item->type_id);
-
-            if ($type->getId() and !$type->isRewardsEnabled()) {
-                $this->rewardsEnabled = false;
-            }
-        }
+        $this->rewardsEnabled = CrowdfundingHelper::isRewardsEnabled($this->item->id);
 
         // Check days left. If there is no days, disable the button.
         $this->disabledButton = "";
@@ -173,6 +163,7 @@ class CrowdfundingViewBacking extends JViewLegacy
             "layout"         => $this->layout,
             "item"           => $this->item,
             "paymentSession" => $paymentSession,
+            "rewards_enabled" => $this->rewardsEnabled
         ));
 
         $this->prepareDebugMode($paymentSession);

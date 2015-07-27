@@ -227,11 +227,12 @@ class Plugin extends \JPlugin
     /**
      * Send emails to the administrator, project owner and the user who have made a donation.
      *
-     * @param object                   $project
-     * @param object                   $transaction
+     * @param object   $project
+     * @param object   $transaction
      * @param Registry $params
+     * @param object   $reward
      */
-    protected function sendMails($project, $transaction, $params)
+    protected function sendMails($project, $transaction, $params, $reward = null)
     {
         $app = \JFactory::getApplication();
         /** @var $app \JApplicationSite */
@@ -255,8 +256,21 @@ class Plugin extends \JPlugin
             "item_title"     => $project->title,
             "item_url"       => $website . \JRoute::_(\CrowdfundingHelperRoute::getDetailsRoute($project->slug, $project->catslug)),
             "amount"         => $amount->setValue($transaction->txn_amount)->formatCurrency(),
-            "transaction_id" => $transaction->txn_id
+            "transaction_id" => $transaction->txn_id,
+            "reward_title"   => "",
+            "delivery_date"  => "",
+            "payer_name"     => "",
+            "payer_email"    => ""
         );
+
+        // Set reward data.
+        if (!empty($reward)) {
+            $data["reward_title"] = $reward->title;
+            if ($reward->delivery != "0000-00-00") {
+                $date = new \JDate($reward->delivery);
+                $data["delivery_date"] = $date->format("d F Y");
+            }
+        }
 
         // Prepare data about payer if he is NOT anonymous ( is registered user with profile ).
         if (!empty($transaction->investor_id)) {

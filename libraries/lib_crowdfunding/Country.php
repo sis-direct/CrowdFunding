@@ -9,6 +9,8 @@
 
 namespace Crowdfunding;
 
+use Prism;
+
 defined('JPATH_PLATFORM') or die;
 
 /**
@@ -17,7 +19,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Countries
  */
-class Country
+class Country extends Prism\Database\TableImmutable
 {
     protected $id;
     protected $name;
@@ -29,27 +31,6 @@ class Country
     protected $timezone;
 
     /**
-     * Database driver.
-     *
-     * @var \JDatabaseDriver
-     */
-    protected $db;
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $country   = new Crowdfunding\Country(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load country data from database.
      *
      * <code>
@@ -59,52 +40,29 @@ class Country
      * $country->load($countryId);
      * </code>
      *
-     * @param int $id
+     * @param int|array $keys
+     * @param array $options
      */
-    public function load($id)
+    public function load($keys, $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
             ->select("a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.currency, a.code")
-            ->from($this->db->quoteName("#__crowdf_countries", "a"))
-            ->where("a.id = " . (int)$id);
+            ->from($this->db->quoteName("#__crowdf_countries", "a"));
+
+        if (is_array($keys)) {
+            foreach ($keys as $key => $value) {
+                $query->where($this->db->quoteName($key) ." = " . $this->db->quote($value));
+            }
+        } else {
+            $query->where("a.id = " . (int)$keys);
+        }
 
         $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
+        $result = (array)$this->db->loadAssoc();
 
-        if (!empty($result)) {
-            $this->bind($result);
-        }
-    }
-
-    /**
-     * Set data to object properties.
-     *
-     * <code>
-     * $data = (
-     *  "id"    => 1,
-     *  "name"  => "United Kingdom",
-     *  "code4" => "gb_GB"
-     * );
-     *
-     * // Ignore the data for index key "id".
-     * $ignored = array("id");
-     *
-     * $country   = new Crowdfunding\Country(\JFactory::getDbo());
-     * $country->bind($data, $ignored);
-     * </code>
-     *
-     * @param array $data
-     * @param array $ignored
-     */
-    public function bind($data, $ignored = array())
-    {
-        foreach ($data as $key => $value) {
-            if (!in_array($key, $ignored)) {
-                $this->$key = $value;
-            }
-        }
+        $this->bind($result);
     }
 
     /**

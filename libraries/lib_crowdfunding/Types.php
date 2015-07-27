@@ -24,20 +24,6 @@ class Types extends Prism\Database\ArrayObject
     protected static $instance;
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $types    = new Crowdfunding\Types(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db Database object.
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Initialize and create an object.
      *
      * <code>

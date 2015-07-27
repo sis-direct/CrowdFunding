@@ -41,20 +41,6 @@ class Transaction extends Prism\Database\Table
     protected $allowedStatuses = array('pending', 'completed', 'canceled', 'refunded', 'failed');
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $transaction    = new Crowdfunding\Transaction(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver  $db
-     */
-    public function __construct(\JDatabaseDriver $db = null)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Set the database object.
      *
      * <code>
@@ -147,9 +133,7 @@ class Transaction extends Prism\Database\Table
                     $this->$key = $value;
                 }
             }
-
         }
-
     }
 
     /**

@@ -23,14 +23,13 @@ defined('_JEXEC') or die;
                     <div class="controls">
 
                         <div class="fileupload fileupload-new" data-provides="fileupload">
-                        <span class="btn btn-file">
-                            <span class="fileupload-new"><?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE"); ?></span>
-                            <span class="fileupload-exists"><?php echo JText::_("COM_CROWDFUNDING_CHANGE"); ?></span>
-                            <?php echo $this->form->getInput('data'); ?>
-                        </span>
+                            <span class="btn btn-file">
+                                <span class="fileupload-new"><i class="icon-folder-open"></i> <?php echo JText::_("COM_CROWDFUNDING_SELECT_FILE"); ?></span>
+                                <span class="fileupload-exists"><i class="icon-edit"></i> <?php echo JText::_("COM_CROWDFUNDING_CHANGE"); ?></span>
+                                <?php echo $this->form->getInput('data'); ?>
+                            </span>
                             <span class="fileupload-preview"></span>
-                            <a href="#" class="close fileupload-exists" data-dismiss="fileupload"
-                               style="float: none">×</a>
+                            <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
                         </div>
                     </div>
                 </div>

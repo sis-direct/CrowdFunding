@@ -127,7 +127,8 @@ jQuery(document).ready(function() {
             browseClass: "btn btn-success",
             showUpload: false,
             showPreview: false,
-            removeLabel: ""
+            removeLabel: "",
+            removeClass: "btn btn-danger"
         });
     }
 

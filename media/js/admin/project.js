@@ -9,7 +9,7 @@ jQuery(document).ready(function() {
         }
     };
     
-    jQuery('.fileupload').fileuploadstyle();
+    jQuery('.fileupload').fileinput();
     
     // Disable input of date and hide calendar icon
 	if(jQuery('#js-funding-duration-days').is(':checked')) {

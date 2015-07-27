@@ -328,4 +328,27 @@ abstract class JHtmlCrowdfundingBackend
 
         return implode("\n", $output);
     }
+
+    /**
+     * Route URI to front-end.
+     *
+     * @param object  $item
+     * @param string  $website
+     * @param JRouter $routerSite
+     *
+     * @return string
+     */
+    public static function siteRoute($item, $website, $routerSite)
+    {
+        $routedUri = $routerSite->build(CrowdfundingHelperRoute::getDetailsRoute($item->slug, $item->catslug));
+        if ($routedUri instanceof JUri) {
+            $routedUri = $routedUri->toString();
+        }
+
+        if (0 === strpos($routedUri, "/administrator")) {
+            $routedUri = str_replace("/administrator", "", $routedUri);
+        }
+
+        return $website.$routedUri;
+    }
 }

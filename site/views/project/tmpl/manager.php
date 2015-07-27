@@ -77,8 +77,10 @@ echo $layout->render($this->layoutData);
     </div>
 </div>
 
+<?php if (CrowdfundingHelper::isRewardsEnabled($this->item->id)) {?>
 <div class="row">
     <div class="col-md-12">
         <?php echo $this->loadTemplate("rewards"); ?>
     </div>
 </div>
+<?php } ?>

@@ -16,7 +16,6 @@ if (strcmp("five_steps", $this->wizardType) == 0) {
     $layout      = new JLayoutFile('project_wizard_six_steps');
 }
 echo $layout->render($this->layoutData);
-
 ?>
 <div class="row">
     <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding'); ?>" method="post" name="projectForm" id="crowdf-story-form" class="form-validate" enctype="multipart/form-data">

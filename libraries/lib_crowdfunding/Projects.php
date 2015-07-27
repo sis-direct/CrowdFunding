@@ -23,20 +23,6 @@ defined('JPATH_PLATFORM') or die;
 class Projects extends Prism\Database\ArrayObject
 {
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $projects    = new Crowdfunding\Projects(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db Database object.
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load projects from database by IDs.
      *
      * <code>
@@ -64,8 +50,6 @@ class Projects extends Prism\Database\ArrayObject
         $ids = (!isset($options["ids"])) ? array() : $options["ids"];
 
         ArrayHelper::toInteger($ids);
-        $results = array();
-
         if (!empty($ids)) {
 
             // Prepare and return main query.
@@ -78,15 +62,9 @@ class Projects extends Prism\Database\ArrayObject
             $this->prepareQueryStates($query, $options);
 
             $this->db->setQuery($query);
-            $index = ArrayHelper::getValue($options, "index", null, "string");
-            if (!$index) {
-                $results = (array)$this->db->loadAssocList();
-            } else {
-                $results = (array)$this->db->loadAssocList($index);
-            }
-        }
 
-        $this->items = $results;
+            $this->items = (array)$this->db->loadAssocList();
+        }
     }
 
     /**
@@ -351,9 +329,12 @@ class Projects extends Prism\Database\ArrayObject
     {
         $item = null;
 
-        if (isset($this->items[$projectId])) {
-            $item = new Project(\JFactory::getDbo());
-            $item->bind($this->items[$projectId]);
+        foreach ($this->items as $project) {
+            if ($projectId == $project["id"]) {
+                $item = new Project(\JFactory::getDbo());
+                $item->bind($project);
+                break;
+            }
         }
 
         return $item;

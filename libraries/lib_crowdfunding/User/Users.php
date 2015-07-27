@@ -23,20 +23,6 @@ defined('JPATH_PLATFORM') or die;
 class Users extends Prism\Database\ArrayObject
 {
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $users   = new Crowdfunding\Users(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load users data from database.
      *
      * <code>
@@ -57,27 +43,22 @@ class Users extends Prism\Database\ArrayObject
      */
     public function load($options = array())
     {
-        $query = $this->db->getQuery(true);
-
-        $query
-            ->select("a.id, a.name, a.email")
-            ->from($this->db->quoteName("#__users", "a"));
-
         // Filter by users IDs.
         $ids = ArrayHelper::getValue($options, "ids", array(), "array");
         ArrayHelper::toInteger($ids);
+
         if (!empty($ids)) {
+            $query = $this->db->getQuery(true);
+
+            $query
+                ->select("a.id, a.name, a.email")
+                ->from($this->db->quoteName("#__users", "a"));
+
             $query->where("a.id IN (" . implode(",", $ids) . ")");
-        }
 
-        $this->db->setQuery($query);
+            $this->db->setQuery($query);
 
-        // Use index.
-        $index = ArrayHelper::getValue($options, "index", null, "string");
-        if (!$index) {
             $this->items = (array)$this->db->loadAssocList();
-        } else {
-            $this->items = (array)$this->db->loadAssocList($index);
         }
     }
 
@@ -104,9 +85,12 @@ class Users extends Prism\Database\ArrayObject
     {
         $item = null;
 
-        if (isset($this->items[$userId])) {
-            $item = new User(\JFactory::getDbo());
-            $item->bind($this->items[$userId]);
+        foreach ($this->items as $user) {
+            if ($userId == $user["id"]) {
+                $item = new User(\JFactory::getDbo());
+                $item->bind($user);
+                break;
+            }
         }
 
         return $item;

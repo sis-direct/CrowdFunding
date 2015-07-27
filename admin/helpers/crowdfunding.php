@@ -175,74 +175,6 @@ abstract class CrowdfundingHelper
     }
 
     /**
-     * Calculate percentage.
-     *
-     * @param $funded
-     * @param $goal
-     *
-     * @return float|int
-     * @deprecated since v1.8
-     */
-    public static function calculatePercent($funded, $goal)
-    {
-        if (($funded == 0) or ($goal == 0)) {
-            return 0;
-        }
-
-        $value = ($funded / $goal) * 100;
-
-        return round($value, 2);
-    }
-
-    /**
-     * Calculate end date
-     *
-     * @param string $fundingStart This is starting date
-     * @param int    $fundingDays  This is period in days.
-     *
-     * @return string
-     * @deprecated since v1.8. Use Crowdfunding\Date->calculateEndDate();
-     */
-    public static function calcualteEndDate($fundingStart, $fundingDays)
-    {
-        // Calculate days left
-        $endingDate = new DateTime($fundingStart);
-        $endingDate->modify("+" . (int)$fundingDays . " days");
-
-        return $endingDate->format("Y-m-d");
-    }
-
-    /**
-     * Validate a date
-     *
-     * @param string $string
-     *
-     * @return boolean
-     * @deprecated deprecated since version 1.8
-     */
-    public static function isValidDate($string)
-    {
-        $string = Joomla\String\String::trim($string);
-
-        try {
-            $date = new DateTime($string);
-        } catch (Exception $e) {
-            return false;
-        }
-
-        $month = $date->format('m');
-        $day   = $date->format('d');
-        $year  = $date->format('Y');
-
-        if (checkdate($month, $day, $year)) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-    /**
      * This module collects statistical data about project - number of updates, comments, funders,...
      *
      * @param integer $projectId
@@ -573,5 +505,24 @@ abstract class CrowdfundingHelper
         $socialProfilesBuilder->build();
 
         return $socialProfilesBuilder->getProfiles();
+    }
+
+    public static function isRewardsEnabled($projectId)
+    {
+        // Check for enabled rewards by component options.
+        $componentParams = JComponentHelper::getParams('com_crowdfunding');
+        if (!$componentParams->get("rewards_enabled", 1)) {
+            return false;
+        }
+
+        // Check for enabled rewards by project type.
+        $project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
+        $type    = $project->getType();
+
+        if (!is_null($type) and !$type->isRewardsEnabled()) {
+            return false;
+        }
+
+        return true;
     }
 }

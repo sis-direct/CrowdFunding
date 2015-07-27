@@ -1,6 +1,12 @@
 Crowdfunding Release Notes
 ==========================
 
+###v2.1
+* Added option to disable rewards.
+* Added server for upgrading the crowdfunding platform via Joomla! updater.
+* Added {REWARD_TITLE} and {DELIVERY_DATE} placeholders to the payment plugins.
+* Fixed some issues.
+
 ###v2.0
 * Improved Crowdfunding library.
 * Improved code quality.

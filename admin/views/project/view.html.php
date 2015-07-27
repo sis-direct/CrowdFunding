@@ -158,8 +158,8 @@ class CrowdfundingViewProject extends JViewLegacy
         JHtml::_('formbehavior.chosen', 'select');
 
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('prism.ui.bootstrapFileUploadStyle');
-        JHtml::_('prism.ui.bootstrapTypeahead2');
+        JHtml::_('prism.ui.bootstrap2FileInput');
+        JHtml::_('prism.ui.bootstrap2Typeahead');
 
         JHtml::_("prism.ui.joomlaHelper");
 

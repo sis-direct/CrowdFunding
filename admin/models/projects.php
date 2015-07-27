@@ -126,7 +126,9 @@ class CrowdfundingModelProjects extends JModelList
                 'a.featured, a.published, a.approved, ' .
                 'b.title AS category, ' .
                 'c.title AS type, ' .
-                'd.name AS username'
+                'd.name AS username,' .
+                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
+                $query->concatenate(array("b.id", "b.alias"), ":") . ' AS catslug'
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', 'a'));

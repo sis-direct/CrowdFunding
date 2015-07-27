@@ -13,8 +13,8 @@ defined('_JEXEC') or die;
 /**
  * Crowdfunding story controller
  *
- * @package     ITPrism Components
- * @subpackage  Crowdfunding
+ * @package     Crowdfunding
+ * @subpackage  Components
  */
 class CrowdfundingControllerStory extends Prism\Controller\Form\Frontend
 {
@@ -153,7 +153,7 @@ class CrowdfundingControllerStory extends Prism\Controller\Form\Frontend
         // Redirect to next page
         $redirectOptions = array(
             "view"   => "project",
-            "layout" => "rewards",
+            "layout" => $this->getNextLayout($params),
             "id"     => $itemId
         );
 
@@ -203,5 +203,38 @@ class CrowdfundingControllerStory extends Prism\Controller\Form\Frontend
 
         $redirectOptions["id"] = $itemId;
         $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
+    }
+
+    /**
+     * Prepare next layout.
+     *
+     * @param Joomla\Registry\Registry $params
+     *
+     * @return string
+     */
+    protected function getNextLayout($params)
+    {
+        // If it is five steps wizard type, redirect to manager.
+        // If it is six steps wizard type, redirect to extras.
+        switch($params->get("project_wizard_type", "five_steps")) {
+
+            case "six_steps":
+                if (!$params->get("rewards_enabled", 1)) {
+                    $layout = "extras";
+                } else {
+                    $layout = "rewards";
+                }
+                break;
+
+            default:
+                if (!$params->get("rewards_enabled", 1)) {
+                    $layout = "manager";
+                } else {
+                    $layout = "rewards";
+                }
+                break;
+        }
+
+        return $layout;
     }
 }

@@ -43,7 +43,7 @@ class CrowdfundingModelRewards extends JModelLegacy
 
         // Get the pk of the record from the request.
         $value = $app->input->getInt("id");
-        $this->setState($this->getName() . '.id', $value);
+        $this->setState($this->getName() . '.project_id', $value);
 
         // Load the parameters.
         $value = $app->getParams($this->option);
