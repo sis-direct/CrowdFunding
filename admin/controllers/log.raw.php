@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -64,8 +64,8 @@ class CrowdfundingControllerLog extends JControllerLegacy
 
             if (!$model->deleteFile($fileSource)) {
                 $response
-                    ->setTitle(JText::_('COM_Crowdfunding_FAIL'))
-                    ->setText(JText::_('COM_Crowdfunding_ERROR_LOG_FILE_CANNOT_BE_REMOVED'))
+                    ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
+                    ->setText(JText::_('COM_CROWDFUNDING_ERROR_LOG_FILE_CANNOT_BE_REMOVED'))
                     ->failure();
 
                 echo $response;
@@ -75,8 +75,8 @@ class CrowdfundingControllerLog extends JControllerLegacy
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             $response
-                ->setTitle(JText::_('COM_Crowdfunding_FAIL'))
-                ->setText(JText::_('COM_Crowdfunding_ERROR_SYSTEM'))
+                ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
+                ->setText(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'))
                 ->failure();
 
             echo $response;
@@ -84,8 +84,8 @@ class CrowdfundingControllerLog extends JControllerLegacy
         }
 
         $response
-            ->setTitle(JText::_('COM_Crowdfunding_SUCCESS'))
-            ->setText(JText::_('COM_Crowdfunding_LOG_FILE_REMOVED'))
+            ->setTitle(JText::_('COM_CROWDFUNDING_SUCCESS'))
+            ->setText(JText::_('COM_CROWDFUNDING_LOG_FILE_REMOVED'))
             ->success();
 
         echo $response;
@@ -134,7 +134,7 @@ class CrowdfundingControllerLog extends JControllerLegacy
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         echo file_get_contents($fileSource);

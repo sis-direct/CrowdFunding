@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 ?>
 <div class="panel panel-brown">
     <div class="panel-heading">
-        <h4><span class="glyphicon glyphicon-gift"></span> <?php echo JText::_("COM_CROWDFUNDING_REWARDS"); ?></h4>
+        <h4><span class="fa fa-gift"></span> <?php echo JText::_("COM_CROWDFUNDING_REWARDS"); ?></h4>
     </div>
     <table class="table">
         <thead>

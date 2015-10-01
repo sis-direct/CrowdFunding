@@ -4,14 +4,13 @@
  * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Payment;
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
-use Joomla\String\String;
 use Prism;
 use Crowdfunding;
 use EmailTemplates;
@@ -188,7 +187,7 @@ class Plugin extends \JPlugin
         }
 
         // Verify the service provider.
-        $paymentService = str_replace(" ", "", String::strtolower(String::trim($item->service_provider)));
+        $paymentService = str_replace(" ", "", \JString::strtolower(\JString::trim($item->service_provider)));
         if (strcmp($this->paymentService, $paymentService) != 0) {
             return;
         }
@@ -581,7 +580,7 @@ class Plugin extends \JPlugin
 
     protected function getCallbackUrl($htmlEncoded = false)
     {
-        $page = String::trim($this->params->get('callback_url'));
+        $page = \JString::trim($this->params->get('callback_url'));
 
         $uri    = \JUri::getInstance();
         $domain = $uri->toString(array("host"));
@@ -601,7 +600,7 @@ class Plugin extends \JPlugin
 
     protected function getReturnUrl($slug, $catslug)
     {
-        $page = String::trim($this->params->get('return_url'));
+        $page = \JString::trim($this->params->get('return_url'));
         if (!$page) {
             $uri  = \JUri::getInstance();
             $page = $uri->toString(array("scheme", "host")) . \JRoute::_(\CrowdfundingHelperRoute::getBackingRoute($slug, $catslug, "share"), false);
@@ -612,7 +611,7 @@ class Plugin extends \JPlugin
 
     protected function getCancelUrl($slug, $catslug)
     {
-        $page = String::trim($this->params->get('cancel_url'));
+        $page = \JString::trim($this->params->get('cancel_url'));
         if (!$page) {
             $uri  = \JUri::getInstance();
             $page = $uri->toString(array("scheme", "host")) . \JRoute::_(\CrowdfundingHelperRoute::getBackingRoute($slug, $catslug, "default"), false);
@@ -661,10 +660,10 @@ class Plugin extends \JPlugin
      */
     protected function isValidPaymentGateway($gateway)
     {
-        $value1 = String::strtolower($this->paymentService);
-        $value2 = String::strtolower($gateway);
+        $value1 = \JString::strtolower($this->paymentService);
+        $value2 = \JString::strtolower($gateway);
 
-        if (String::strcmp($value1, $value2) != 0) {
+        if (\JString::strcmp($value1, $value2) != 0) {
             return false;
         }
 

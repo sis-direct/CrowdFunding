@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -43,7 +43,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -58,7 +58,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
         }
 
@@ -76,10 +76,10 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_CURRENCIES_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_CURRENCIES_IMPORTED'), $redirectOptions);
 
     }
 
@@ -102,7 +102,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -117,7 +117,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
         }
 
@@ -136,10 +136,10 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_LOCATIONS_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_LOCATIONS_IMPORTED'), $redirectOptions);
 
     }
 
@@ -162,7 +162,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
         /** @var $form JForm * */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -177,7 +177,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
             return;
         }
 
@@ -194,10 +194,10 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_COUNTRIES_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_COUNTRIES_IMPORTED'), $redirectOptions);
 
     }
 
@@ -220,7 +220,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
         /** @var $form JForm * */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -235,7 +235,7 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         $fileData = Joomla\Utilities\ArrayHelper::getValue($data, "data");
         if (empty($fileData) or empty($fileData["name"])) {
-            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_FILE_CANT_BE_UPLOADED'), $redirectOptions);
 
             return;
         }
@@ -248,10 +248,10 @@ class CrowdfundingControllerImport extends Prism\Controller\Form\Backend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_STATES_IMPORTED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_STATES_IMPORTED'), $redirectOptions);
 
     }
 

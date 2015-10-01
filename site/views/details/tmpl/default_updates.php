@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -31,11 +31,11 @@ defined('_JEXEC') or die;
 
     <div class="clearfix"></div>
     <button type="submit" class="btn btn-primary">
-        <span class="glyphicon glyphicon-floppy-saved"></span>
+        <span class="fa fa-floppy-o"></span>
         <?php echo JText::_("JSAVE")?>
     </button>
     <button type="submit" class="btn btn-default" id="js-cfupdates-btn-reset">
-        <span class="glyphicon glyphicon-refresh"></span>
+        <span class="fa fa-refresh"></span>
         <?php echo JText::_("COM_CROWDFUNDING_RESET")?>
     </button>
 </form>
@@ -63,11 +63,11 @@ defined('_JEXEC') or die;
                 	<?php if($this->userId == $item->user_id ) {?>
                 	<div class="pull-right">
                 		<a href="javascript: void(0);" class="btn btn-mini btn-default js-cfupdates-btn-edit" data-id="<?php echo $item->id;?>">
-                            <span class="glyphicon glyphicon-edit"></span>
+                            <span class="fa fa-pencil-square-o"></span>
                             <?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
                         </a>
                 		<a href="javascript: void(0);" class="btn btn-mini btn-danger js-cfupdates-btn-remove" data-id="<?php echo $item->id;?>">
-                            <span class="glyphicon glyphicon-trash"></span>
+                            <span class="fa fa-trash"></span>
                             <?php echo JText::_("COM_CROWDFUNDING_DELETE");?>
                         </a>
                 	</div>

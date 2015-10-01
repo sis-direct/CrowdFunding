@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -72,7 +72,7 @@ class CrowdfundingModelImport extends JModelForm
 
             $currentFileName = JFile::stripExt($fileinfo->getFilename());
             if (!$fileinfo->isDot() and strcmp($fileName, $currentFileName) == 0) {
-                $filePath = $destFolder . DIRECTORY_SEPARATOR . JFile::makeSafe($fileinfo->getFilename());
+                $filePath = JPath::clean($destFolder . DIRECTORY_SEPARATOR . JFile::makeSafe($fileinfo->getFilename()));
                 break;
             }
 
@@ -92,7 +92,7 @@ class CrowdfundingModelImport extends JModelForm
         $uploadedName = JArrayHelper::getValue($fileData, 'name');
         $errorCode    = JArrayHelper::getValue($fileData, 'error');
 
-        $destination = JPath::clean($app->get("tmp_path")) . DIRECTORY_SEPARATOR . JFile::makeSafe($uploadedName);
+        $destination = JPath::clean($app->get("tmp_path") . DIRECTORY_SEPARATOR . JFile::makeSafe($uploadedName));
 
         $file = new Prism\File\File();
 
@@ -130,7 +130,7 @@ class CrowdfundingModelImport extends JModelForm
         $fileName = basename($destination);
 
         // Extract file if it is archive
-        $ext = Joomla\String\String::strtolower(JFile::getExt($fileName));
+        $ext = JString::strtolower(JFile::getExt($fileName));
         if (strcmp($ext, "zip") == 0) {
 
             $destFolder = JPath::clean($app->get("tmp_path")) . "/". $type;
@@ -189,15 +189,15 @@ class CrowdfundingModelImport extends JModelForm
         // Generate data for importing.
         foreach ($content as $item) {
 
-            $title = Joomla\String\String::trim($item->title);
-            $code  = Joomla\String\String::trim($item->code);
+            $title = JString::trim($item->title);
+            $code  = JString::trim($item->code);
             if (!$title or !$code) {
                 continue;
             }
 
             $id = (!$resetId) ? (int)$item->id : "null";
 
-            $items[] = $id . "," . $db->quote($title) . "," . $db->quote($code) . "," . $db->quote(Joomla\String\String::trim($item->symbol)) . "," . (int)$item->position;
+            $items[] = $id . "," . $db->quote($title) . "," . $db->quote($code) . "," . $db->quote(JString::trim($item->symbol)) . "," . (int)$item->position;
         }
 
         unset($content);
@@ -226,7 +226,7 @@ class CrowdfundingModelImport extends JModelForm
 
         foreach ($content as $item) {
 
-            $code = Joomla\String\String::trim($item->code);
+            $code = JString::trim($item->code);
 
             $keys = array("code" => $code);
 
@@ -234,14 +234,14 @@ class CrowdfundingModelImport extends JModelForm
             $table->load($keys);
 
             if (!$table->get("id")) {
-                $table->set("title", Joomla\String\String::trim($item->title));
+                $table->set("title", JString::trim($item->title));
                 $table->set("code", $code);
                 $table->set("position", 0);
             }
 
             // Update the symbol if missing.
             if (!$table->get("symbol") and !empty($item->symbol)) {
-                $table->set("symbol", Joomla\String\String::trim($item->symbol));
+                $table->set("symbol", JString::trim($item->symbol));
             }
 
             $table->store();
@@ -260,7 +260,7 @@ class CrowdfundingModelImport extends JModelForm
      */
     public function importLocations($file, $resetId = false, $minPopulation = 0)
     {
-        $ext = Joomla\String\String::strtolower(JFile::getExt($file));
+        $ext = JString::strtolower(JFile::getExt($file));
 
         switch ($ext) {
             case "xml":
@@ -289,10 +289,10 @@ class CrowdfundingModelImport extends JModelForm
                 $item = mb_split("\t", $geodata);
 
                 // Check for missing ascii characters name
-                $name = Joomla\String\String::trim($item[2]);
+                $name = JString::trim($item[2]);
                 if (!$name) {
                     // If missing ascii characters name, use utf-8 characters name
-                    $name = Joomla\String\String::trim($item[1]);
+                    $name = JString::trim($item[1]);
                 }
 
                 // If missing name, skip the record
@@ -304,11 +304,11 @@ class CrowdfundingModelImport extends JModelForm
                     continue;
                 }
 
-                $id = (!$resetId) ? Joomla\String\String::trim($item[0]) : "null";
+                $id = (!$resetId) ? JString::trim($item[0]) : "null";
 
                 $items[$x][] =
-                    $id . "," . $db->quote($name) . "," . $db->quote(Joomla\String\String::trim($item[4])) . "," .
-                    $db->quote(Joomla\String\String::trim($item[5])) . "," . $db->quote(Joomla\String\String::trim($item[8])) . "," . $db->quote(Joomla\String\String::trim($item[17]));
+                    $id . "," . $db->quote($name) . "," . $db->quote(JString::trim($item[4])) . "," .
+                    $db->quote(JString::trim($item[5])) . "," . $db->quote(JString::trim($item[8])) . "," . $db->quote(JString::trim($item[17]));
 
                 $i++;
                 if ($i == 500) {
@@ -347,7 +347,7 @@ class CrowdfundingModelImport extends JModelForm
             foreach ($content->location as $item) {
 
                 // Check for missing ascii characters name
-                $name = Joomla\String\String::trim($item->name);
+                $name = JString::trim($item->name);
 
                 // If missing name, skip the record
                 if (!$name) {
@@ -355,11 +355,11 @@ class CrowdfundingModelImport extends JModelForm
                 }
 
                 // Reset ID
-                $id = (!empty($item->id) and !$resetId) ? Joomla\String\String::trim($item->id) : "null";
+                $id = (!empty($item->id) and !$resetId) ? JString::trim($item->id) : "null";
 
                 $items[$x][] =
-                    $id . "," . $db->quote($name) . "," . $db->quote(Joomla\String\String::trim($item->latitude)) . "," . $db->quote(Joomla\String\String::trim($item->longitude)) . "," .
-                    $db->quote(Joomla\String\String::trim($item->country_code)) . "," . $db->quote(Joomla\String\String::trim($item->timezone));
+                    $id . "," . $db->quote($name) . "," . $db->quote(JString::trim($item->latitude)) . "," . $db->quote(JString::trim($item->longitude)) . "," .
+                    $db->quote(JString::trim($item->country_code)) . "," . $db->quote(JString::trim($item->timezone));
                 $i++;
                 if ($i == 500) {
                     $x++;
@@ -425,8 +425,8 @@ class CrowdfundingModelImport extends JModelForm
 
         foreach ($content->country as $item) {
 
-            $name = Joomla\String\String::trim($item->name);
-            $code = Joomla\String\String::trim($item->code);
+            $name = JString::trim($item->name);
+            $code = JString::trim($item->code);
             if (!$name or !$code) {
                 continue;
             }
@@ -463,7 +463,7 @@ class CrowdfundingModelImport extends JModelForm
 
         foreach ($content->country as $item) {
 
-            $code = Joomla\String\String::trim($item->code);
+            $code = JString::trim($item->code);
 
             $keys = array("code" => $code);
 
@@ -471,15 +471,15 @@ class CrowdfundingModelImport extends JModelForm
             $table->load($keys);
 
             if (!$table->id) {
-                $table->name = Joomla\String\String::trim($item->name);
+                $table->name = JString::trim($item->name);
                 $table->code = $code;
             }
 
-            $table->code4     = Joomla\String\String::trim($item->code4);
-            $table->latitude  = Joomla\String\String::trim($item->latitude);
-            $table->longitude = Joomla\String\String::trim($item->longitude);
-            $table->currency  = Joomla\String\String::trim($item->currency);
-            $table->timezone  = Joomla\String\String::trim($item->timezone);
+            $table->code4     = JString::trim($item->code4);
+            $table->latitude  = JString::trim($item->latitude);
+            $table->longitude = JString::trim($item->longitude);
+            $table->currency  = JString::trim($item->currency);
+            $table->timezone  = JString::trim($item->timezone);
 
             $table->store();
         }
@@ -525,7 +525,7 @@ class CrowdfundingModelImport extends JModelForm
             foreach ($content->state as $item) {
 
                 // Check for missing state
-                $stateCode = Joomla\String\String::trim($item->state_code);
+                $stateCode = JString::trim($item->state_code);
                 if (!$stateCode) {
                     continue;
                 }
@@ -575,12 +575,12 @@ class CrowdfundingModelImport extends JModelForm
             foreach ($content->city as $item) {
 
                 // Check for missing ascii characters title
-                $name = Joomla\String\String::trim($item->name);
+                $name = JString::trim($item->name);
                 if (!$name) {
                     continue;
                 }
 
-                $code = Joomla\String\String::trim($item->state_code);
+                $code = JString::trim($item->state_code);
 
                 $states[$code][] = "(" . $db->quoteName("name") . "=" . $db->quote($name) . " AND " . $db->quoteName("country_code") . "=" . $db->quote("US") . ")";
             }

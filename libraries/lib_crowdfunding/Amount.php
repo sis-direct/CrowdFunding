@@ -4,7 +4,7 @@
  * @subpackage   Amounts
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -147,19 +147,16 @@ class Amount
             if (!$this->currency->getSymbol()) { // Symbol
                 $amount = $value . $this->currency->getCode();
             } else { // Code
-
                 if (0 == $this->currency->getPosition()) { // Symbol at beginning.
                     $amount = $this->currency->getSymbol() . $value;
                 } else { // Symbol at end.
                     $amount = $value . $this->currency->getSymbol();
                 }
-
             }
         }
 
         // Use PHP Intl library.
         if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-
             $locale = $this->options->get("locale");
 
             // Get current locale code.
@@ -210,7 +207,6 @@ class Amount
 
         // Use PHP Intl library to format the amount.
         if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-
             $locale = $this->options->get("locale");
 
             // Get current locale code.
@@ -221,8 +217,8 @@ class Amount
 
             $numberFormat = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
             $numberFormat->setAttribute(\NumberFormatter::FRACTION_DIGITS, $fractionDigits);
-            return $numberFormat->format($this->value, \NumberFormatter::TYPE_DOUBLE);
 
+            return $numberFormat->format($this->value, \NumberFormatter::TYPE_DOUBLE);
         }
 
         return $this->value;
@@ -248,7 +244,6 @@ class Amount
 
         // Use PHP Intl library to format the amount.
         if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-
             $locale = $this->getOption("locale");
 
             // Get current locale code.
@@ -338,12 +333,12 @@ class Amount
         $format = explode("/", $format);
 
         if (!empty($format)) {
+
             $value = (false !== strpos($value, ",")) ? $this->parse() : $value;
 
             $count = count($format);
 
             switch ($count) {
-
                 case 1:
                     $value = number_format($value, $format[0]);
                     break;

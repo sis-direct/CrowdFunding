@@ -4,7 +4,7 @@
  * @subpackage   Transactions
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -53,7 +53,7 @@ class Transactions extends Prism\Database\ArrayObject
             return;
         }
 
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
         // Load project data
         $query = $this->db->getQuery(true);

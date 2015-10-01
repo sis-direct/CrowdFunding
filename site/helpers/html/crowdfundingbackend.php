@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -282,23 +282,28 @@ abstract class JHtmlCrowdfundingBackend
      */
     public static function transactionAmount($item, $amount, $currencies)
     {
-        $currency = $currencies->getCurrencyByCode($item->txn_currency);
-        $amount->setCurrency($currency);
-
         $item->txn_amount = floatval($item->txn_amount);
         $item->fee = floatval($item->fee);
 
-        $output = (!empty($currency)) ? $amount->setValue($item->txn_amount)->formatCurrency() : $item->txn_amount;
+        $currency = null;
+        if ($currencies instanceof Crowdfunding\Currencies) {
+            $currency = $currencies->getCurrencyByCode($item->txn_currency);
+        }
+
+        if ($currency instanceof Crowdfunding\Currency) {
+            $amount->setCurrency($currency);
+            $output = $amount->setValue($item->txn_amount)->formatCurrency();
+        } else {
+            $output = $item->txn_amount;
+        }
 
         if (!empty($item->fee)) {
 
-            $fee = (!empty($currency)) ? $amount->setValue($item->fee)->formatCurrency() : $item->fee;
+            $fee = ($currency instanceof Crowdfunding\Currency) ? $amount->setValue($item->fee)->formatCurrency() : $item->fee;
 
             // Prepare project owner amount.
             $projectOwnerAmount = round($item->txn_amount - $item->fee, 2);
             $projectOwnerAmount = (!empty($currency)) ? $amount->setValue($projectOwnerAmount)->formatCurrency() : $projectOwnerAmount;
-
-            JHtml::_('bootstrap.tooltip');
 
             $title = JText::sprintf("COM_CROWDFUNDING_TRANSACTION_AMOUNT_FEE", $projectOwnerAmount, $fee);
 
@@ -345,7 +350,7 @@ abstract class JHtmlCrowdfundingBackend
             $routedUri = $routedUri->toString();
         }
 
-        if (0 === strpos($routedUri, "/administrator")) {
+        if (false !== strpos($routedUri, "/administrator")) {
             $routedUri = str_replace("/administrator", "", $routedUri);
         }
 

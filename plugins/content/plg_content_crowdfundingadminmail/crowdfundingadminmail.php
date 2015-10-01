@@ -4,7 +4,7 @@
  * @subpackage      Plugins
  * @author          Todor Iliev
  * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license         http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license         http://www.gnu.org/licenses/gpl-3.0.en.html GNU/GPL
  */
 
 // no direct access
@@ -100,7 +100,7 @@ class plgContentCrowdfundingAdminMail extends JPlugin
             return null;
         }
 
-        Joomla\Utilities\ArrayHelper::toInteger($ids);
+        $ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
 
         if (!empty($ids) and $state == Prism\Constants::PUBLISHED) {
 

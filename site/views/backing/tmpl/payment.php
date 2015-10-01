@@ -4,11 +4,13 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
+
+$this->document->addScript("templates/your_template/js/payment.js");
 ?>
 <div class="cfbacking<?php echo $this->params->get("pageclass_sfx"); ?>">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -39,10 +41,10 @@ defined('_JEXEC') or die;
                         $amount = $this->amount->setValue($this->paymentAmount)->formatCurrency();
                         echo JText::sprintf("COM_CROWDFUNDING_INVESTMENT_AMOUNT", $amount); ?></p>
 
-                    <p><?php echo JText::_("COM_CROWDFUNDING_FUNDING_TYPE_" . Joomla\String\String::strtoupper($this->item->funding_type)); ?></p>
+                    <p><?php echo JText::_("COM_CROWDFUNDING_FUNDING_TYPE_" . JString::strtoupper($this->item->funding_type)); ?></p>
 
                     <p class="bg-info p-5">
-                        <span class="glyphicon glyphicon-info-sign"></span>
+                        <span class="fa fa-info-circle"></span>
                         <?php
                         $endDate = JHtml::_('date', $this->item->funding_end, JText::_('DATE_FORMAT_LC3'));
                         if ($this->item->funding_type == "FIXED") {

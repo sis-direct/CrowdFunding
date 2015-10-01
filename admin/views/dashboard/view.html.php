@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -53,7 +53,7 @@ class CrowdfundingViewDashboard extends JViewLegacy
 
         $this->version = new Crowdfunding\Version();
 
-        // Load ITPrism library version
+        // Load Prism library version
         if (!class_exists("Prism\\Version")) {
             $this->prismVersion = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD");
         } else {

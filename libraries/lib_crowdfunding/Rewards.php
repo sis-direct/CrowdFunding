@@ -4,7 +4,7 @@
  * @subpackage   Rewards
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -102,33 +102,6 @@ class Rewards extends Prism\Database\ArrayObject
     }
 
     /**
-     * Return an array that contains rewards IDs.
-     *
-     * <code>
-     * $options = array(
-     *     "project_id" => 1
-     * );
-     *
-     * $rewards   = new Crowdfunding\Rewards(\JFactory::getDbo());
-     * $rewards->load($options);
-     *
-     * $rewardsKeys = $rewards->getKeys();
-     * </code>
-     *
-     * @return array
-     */
-    public function getKeys()
-    {
-        $keys = array();
-
-        foreach ($this->items as $item) {
-            $keys[] = $item["id"];
-        }
-
-        return $keys;
-    }
-
-    /**
      * Get number of people who have to receive rewards current rewards.
      *
      * <code>
@@ -147,7 +120,7 @@ class Rewards extends Prism\Database\ArrayObject
     public function countReceivers()
     {
         $keys = $this->getKeys();
-        ArrayHelper::toInteger($keys);
+        $keys = ArrayHelper::toInteger($keys);
 
         if (!$keys) {
             return array();

@@ -4,13 +4,12 @@
  * @subpackage   Categories
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
 use Joomla\Utilities\ArrayHelper;
-use Joomla\String\String;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -80,7 +79,7 @@ class Categories extends \JCategories
      */
     public function getChildNumber($ids, $options = array())
     {
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
         if (!$ids) {
             return array();
@@ -132,7 +131,7 @@ class Categories extends \JCategories
      */
     public function getProjectsNumber($ids = array(), $options = array())
     {
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
         // Get the ids from the current items.
         if (!$ids and !empty($this->data)) {
@@ -205,7 +204,7 @@ class Categories extends \JCategories
         $orderBy   = (isset($options["order_by"])) ? $options["order_by"] : "a.title";
         $orderDir  = (isset($options["order_dir"])) ? $options["order_dir"] : "ASC";
 
-        $orderDir = String::strtoupper($orderDir);
+        $orderDir = \JString::strtoupper($orderDir);
 
         if (!in_array($orderDir, array("ASC", "DESC"))) {
             $orderDir = "ASC";

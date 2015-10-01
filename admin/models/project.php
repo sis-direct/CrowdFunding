@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -698,10 +698,9 @@ class CrowdfundingModelProject extends JModelAdmin
         // Generate temporary file name
         $ext = JFile::makeSafe(JFile::getExt($image['name']));
 
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(32);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(32);
 
-        $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
+        $tmpDestFile   = JPath::clean($tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
         // Prepare uploader object.
         $uploader = new Prism\File\Uploader\Local($uploadedFile);
@@ -830,12 +829,11 @@ class CrowdfundingModelProject extends JModelAdmin
         }
 
         // Generate temporary file name
-        $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+        $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(32);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(32);
 
-        $tmpDestFile = $tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
+        $tmpDestFile = JPath::clean($tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
         // Prepare uploader object.
         $uploader = new Prism\File\Uploader\Local($uploadedFile);

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -370,8 +370,7 @@ class CrowdfundingModelProject extends JModelForm
         // Generate temporary file name
         $ext = JFile::makeSafe(JFile::getExt($image['name']));
 
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(16);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(16);
 
         $temporaryFile = $destination . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
 
@@ -416,8 +415,7 @@ class CrowdfundingModelProject extends JModelForm
         $destinationFolder  = Joomla\Utilities\ArrayHelper::getValue($options, "destination");
 
         // Generate temporary file name
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(32);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(32);
 
         $imageName  = $generatedName . "_image.png";
         $smallName  = $generatedName . "_small.png";

@@ -4,7 +4,7 @@
  * @subpackage   Updates
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -72,32 +72,6 @@ class Updates extends Prism\Database\ArrayObject
         }
 
         $this->items = (array)$this->db->loadAssocList();
-    }
-
-    /**
-     * Return an array that contains updates IDs.
-     *
-     * <code>
-     * $options = array(
-     *     "project_id" => 1
-     * );
-     *
-     * $updates   = new Crowdfunding\Updates(\JFactory::getDbo());
-     * $updates->load($options);
-     *
-     * $keys = $updates->getKeys();
-     * </code>
-     *
-     * @return array
-     */
-    public function getKeys()
-    {
-        $keys = array();
-        foreach ($this->items as $item) {
-            $keys[] = (int)$item["id"];
-        }
-
-        return $keys;
     }
 
     /**

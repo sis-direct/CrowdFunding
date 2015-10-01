@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -38,7 +38,7 @@ class CrowdfundingControllerEmail extends Prism\Controller\Form\Backend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form data
@@ -59,9 +59,9 @@ class CrowdfundingControllerEmail extends Prism\Controller\Form\Backend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_EMAIL_SAVED_SUCCESSFULLY'), $responseOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_EMAIL_SAVED_SUCCESSFULLY'), $responseOptions);
     }
 }

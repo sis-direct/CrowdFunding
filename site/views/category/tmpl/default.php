@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -14,6 +14,10 @@ defined('_JEXEC') or die;
     <?php if ($this->params->get('show_page_heading', 1)) { ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
+
+    <?php if ($this->params->get("display_description", 0)) {
+        echo $this->item->description;
+    } ?>
 
     <?php if (empty($this->items)) { ?>
         <p class="alert alert-warning"><?php echo JText::_("COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY"); ?></p>

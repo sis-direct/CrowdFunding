@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -142,7 +142,7 @@ class CrowdfundingModelReward extends JModelAdmin
         $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
 
         $uploadedFile = JArrayHelper::getValue($image, 'tmp_name');
-        $uploadedName = Joomla\String\String::trim(JArrayHelper::getValue($image, 'name'));
+        $uploadedName = JString::trim(JArrayHelper::getValue($image, 'name'));
         $errorCode    = JArrayHelper::getValue($image, 'error');
 
         $file = new Prism\File\Image();
@@ -177,10 +177,9 @@ class CrowdfundingModelReward extends JModelAdmin
             }
 
             // Generate temporary file name
-            $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+            $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-            $generatedName = new Prism\String();
-            $generatedName->generateRandomString(12, "reward_");
+            $generatedName = Prism\Utilities\StringHelper::generateRandomString(12, "reward_");
 
             $destFile = JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
@@ -202,7 +201,7 @@ class CrowdfundingModelReward extends JModelAdmin
             // Generate thumbnails.
 
             // Create thumbnail.
-            $generatedName->generateRandomString(12, "reward_thumb_");
+            $generatedName= Prism\Utilities\StringHelper::generateRandomString(12, "reward_thumb_");
             $options     = array(
                 "width"       => $params->get("rewards_image_thumb_width", 200),
                 "height"      => $params->get("rewards_image_thumb_height", 200),
@@ -211,7 +210,7 @@ class CrowdfundingModelReward extends JModelAdmin
             $thumbSource = $file->createThumbnail($options);
 
             // Create square image.
-            $generatedName->generateRandomString(12, "reward_square_");
+            $generatedName = Prism\Utilities\StringHelper::generateRandomString(12, "reward_square_");
             $options      = array(
                 "width"       => $params->get("rewards_image_square_width", 50),
                 "height"      => $params->get("rewards_image_square_height", 50),

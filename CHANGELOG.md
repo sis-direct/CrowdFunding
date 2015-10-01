@@ -1,5 +1,15 @@
-Crowdfunding Release Notes
+Crowdfunding Platform Release Notes
 ==========================
+
+###v2.2
+* Added information about the license.
+* Replaced where it was used Joomla\String\String with JString.
+* Fixed bug with improper use of Joomla\Utilities\ArrayHelper::toInteger.
+* Fixed the button "clear" on back-end views.
+* Fixed the view that display a widget from embed code.
+* Fixed a bug with routing subcategories.
+* Added option, for managing pagination, to the views that display list of results.
+* Added option to display category description on the view "Category".
 
 ###v2.1
 * Added option to disable rewards.

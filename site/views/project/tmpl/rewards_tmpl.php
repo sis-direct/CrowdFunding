@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -36,7 +36,7 @@ defined('_JEXEC') or die;
         </div>
 
         <div class="form-group">
-        <label for="reward_number_d" id="reward_number_title_d"><?php echo JText::_("COM_CROWDFUNDING_AVAIABLE");?></label>
+        <label for="reward_number_d" id="reward_number_title_d"><?php echo JText::_("COM_CROWDFUNDING_AVAILABLE");?></label>
         <input name="rewards[][number]" id="reward_number_d" type="text" value="" />
         </div>
 
@@ -53,7 +53,7 @@ defined('_JEXEC') or die;
             <div class="col-md-12 text-right">
                 <?php if(!$this->debugMode) {?>
                     <a href="#" class="btn btn-danger js-btn-remove-reward mt-10" title="<?php echo JText::_("COM_CROWDFUNDING_REMOVE_REWARD")?>" id="reward_remove_d" data-reward-id="0" data-index-id="0" >
-                        <span class="glyphicon glyphicon-remove"></span>
+                        <span class="fa fa-times"></span>
                     </a>
                 <?php }?>
             </div>

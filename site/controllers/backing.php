@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -179,7 +179,7 @@ class CrowdfundingControllerBacking extends JControllerLegacy
 
         // Check for maintenance (debug) state.
         if ($params->get("debug_payment_disabled", 0)) {
-            $msg = Joomla\String\String::trim($params->get("debug_disabled_functionality_msg"));
+            $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
             if (!$msg) {
                 $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
             }
@@ -224,17 +224,14 @@ class CrowdfundingControllerBacking extends JControllerLegacy
 
         // Generate hash user ID used for anonymous payment.
         if (!$userId) {
-
             $aUserId = $app->getUserState("auser_id");
             if (!$aUserId) {
                 // Generate a hash ID for anonymous user.
-                $anonymousUserId = new Prism\String();
-                $anonymousUserId->generateRandomString(32);
+                $anonymousUserId = Prism\Utilities\StringHelper::generateRandomString(32);
 
                 $aUserId = (string)$anonymousUserId;
                 $app->setUserState("auser_id", $aUserId);
             }
-
         }
 
         $date   = new JDate();
@@ -242,7 +239,6 @@ class CrowdfundingControllerBacking extends JControllerLegacy
         // Create an intention record.
         $intentionId = 0;
         if (!empty($userId)) {
-
             $intentionKeys = array(
                 "user_id"    => $userId,
                 "project_id" => $item->id

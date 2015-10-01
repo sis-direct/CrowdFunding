@@ -125,10 +125,12 @@ jQuery(document).ready(function() {
         jQuery(".js-reward-image").fileinput({
             browseLabel: Joomla.JText._('COM_CROWDFUNDING_PICK_IMAGE'),
             browseClass: "btn btn-success",
+            browseIcon: '<span class="fa fa-picture-o"></span> ',
             showUpload: false,
             showPreview: false,
             removeLabel: "",
-            removeClass: "btn btn-danger"
+            removeClass: "btn btn-danger",
+            removeIcon: '<span class="fa fa-trash"></span> ',
         });
     }
 

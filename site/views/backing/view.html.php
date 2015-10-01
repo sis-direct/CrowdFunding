@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -184,14 +184,13 @@ class CrowdfundingViewBacking extends JViewLegacy
         $result                 = (string)array_pop($results);
 
         $this->event            = new stdClass();
-        $this->event->onDisplay = Joomla\String\String::trim($result);
+        $this->event->onDisplay = JString::trim($result);
     }
 
     protected function prepareRewards(&$paymentSession)
     {
         // Create payment session ID.
-        $sessionId = new Prism\String();
-        $sessionId->generateRandomString(32);
+        $sessionId = Prism\Utilities\StringHelper::generateRandomString(32);
 
         $paymentSession->session_id = (string)$sessionId;
 
@@ -364,7 +363,7 @@ class CrowdfundingViewBacking extends JViewLegacy
         // Check for maintenance (debug) state.
         $params = $this->state->get("params");
         if ($params->get("debug_payment_disabled", 0)) {
-            $msg = Joomla\String\String::trim($params->get("debug_disabled_functionality_msg"));
+            $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
             if (!$msg) {
                 $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
             }
@@ -400,11 +399,11 @@ class CrowdfundingViewBacking extends JViewLegacy
         }
 
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
 
         if ($this->params->get('robots')) {
-            $this->document->setMetadata('robots', $this->params->get('robots'));
+            $this->document->setMetaData('robots', $this->params->get('robots'));
         }
 
         // Breadcrumb

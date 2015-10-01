@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -69,7 +69,7 @@ echo $layout->render($this->layoutData);
             <?php echo JHtml::_('form.token'); ?>
             
             <button type="submit" class="btn btn-primary mtb-15-0" <?php echo $this->disabledButton;?>>
-            	<span class="glyphicon glyphicon-ok"></span>
+            	<span class="fa fa-check"></span>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </form>
@@ -79,14 +79,14 @@ echo $layout->render($this->layoutData);
         <?php if(!$this->debugMode) {?>
         <div class="mb-15">
             <span class="btn btn-default fileinput-button">
-                <span class="glyphicon glyphicon-upload"></span>
+                <span class="fa fa-upload"></span>
                 <span><?php echo JText::_("COM_CROWDFUNDING_UPLOAD_IMAGE");?></span>
                 <!-- The file input field used as target for the file upload widget -->
                 <input id="js-thumb-fileupload" type="file" name="project_image" data-url="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.uploadImage&format=raw");?>" />
             </span>
 
             <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" id="js-btn-remove-image" class="btn btn-danger" style="display: <?php echo $this->displayRemoveButton; ?>">
-                <span class="glyphicon glyphicon-trash"></span>
+                <span class="fa fa-trash"></span>
                 <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
             </a>
 
@@ -94,12 +94,12 @@ echo $layout->render($this->layoutData);
 
             <div id="js-image-tools" class="mt-10" style="display: none;">
                 <a href="javascript: void(0);" class="btn btn-primary" id="js-crop-btn">
-                    <span class="glyphicon glyphicon-ok-sign"></span>
+                    <span class="fa fa-check-circle"></span>
                     <?php echo JText::_("COM_CROWDFUNDING_CROP_IMAGE");?>
                 </a>
 
                 <a href="javascript: void(0);" class="btn btn-default" id="js-crop-btn-cancel">
-                    <span class="glyphicon glyphicon-ban-circle"></span>
+                    <span class="fa fa-ban"></span>
                     <?php echo JText::_("COM_CROWDFUNDING_CANCEL");?>
                 </a>
             </div>

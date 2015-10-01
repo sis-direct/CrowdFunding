@@ -36,6 +36,7 @@
 
         <field name="type_id" type="cftypes" class="cf-advanced-select"
                label="COM_CROWDFUNDING_FIELD_PROJECT_TYPE"
+               required="true"
                />
 
         <field name="id" type="hidden" filter="int"/>

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -38,8 +38,8 @@ echo $layout->render($this->layoutData);
             <img src="<?php echo $this->imageFolder."/".$this->pitchImage;?>" class="img-thumbnail" />
             <br /><br />
                 <?php if(!$this->debugMode) {?>
-                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-sm btn-danger" role="button">
-                   <span class="glyphicon glyphicon-trash"></span>
+                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-danger" role="button">
+                   <span class="fa fa-trash"></span>
                    <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
                 </a>
                 <?php }?>
@@ -55,7 +55,7 @@ echo $layout->render($this->layoutData);
             <?php echo JHtml::_('form.token'); ?>
 
             <button type="submit" class="btn btn-primary mtb-15-0" <?php echo $this->disabledButton;?>>
-                <span class="glyphicon glyphicon-ok"></span>
+                <span class="fa fa-check"></span>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </div>

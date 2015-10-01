@@ -194,6 +194,7 @@
             <option value="easysocial">COM_CROWDFUNDING_EASYSOCIAL</option>
             <option value="kunena">COM_CROWDFUNDING_KUNENA</option>
             <option value="easyprofile">COM_CROWDFUNDING_EASYPROFILE</option>
+            <option value="communitybuilder">COM_CROWDFUNDING_COMMUNITY_BUILDER</option>
         </field>
         <field name="integration_avatars_size" type="list" default="small" label="COM_CROWDFUNDING_AVATARS_SIZE" description="COM_CROWDFUNDING_AVATARS_SIZE_DESC" >
             <option value="icon">COM_CROWDFUNDING_ICON</option>
@@ -279,7 +280,7 @@
         <field name="fraction_digits" type="text" default="2" label="COM_CROWDFUNDING_INTL_FRACTION_DIGITS" description="COM_CROWDFUNDING_INTL_FRACTION_DIGITS_DESC" />
         <field name="amount_format" type="text" default="2/,/." label="COM_CROWDFUNDING_AMOUNT_FORMAT"
                description="COM_CROWDFUNDING_AMOUNT_FORMAT_DESC"/>
-        <field name="project_date_format" type="text" default="%Y-%m-%d" label="COM_CROWDFUNDING_DATE_FORMAT"
+        <field name="project_date_format" type="text" default="Y-m-d" label="COM_CROWDFUNDING_DATE_FORMAT"
                description="COM_CROWDFUNDING_DATE_FORMAT_DESC"/>
         <field name="enable_chosen" type="radio" default="1" label="COM_CROWDFUNDING_ENABLE_CHOSEN"
                description="COM_CROWDFUNDING_ENABLE_CHOSEN_DESC" class="btn-group">

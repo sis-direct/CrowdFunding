@@ -4,7 +4,7 @@
  * @subpackage   Users
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\User;
@@ -45,7 +45,7 @@ class Users extends Prism\Database\ArrayObject
     {
         // Filter by users IDs.
         $ids = ArrayHelper::getValue($options, "ids", array(), "array");
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
         if (!empty($ids)) {
             $query = $this->db->getQuery(true);

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -31,7 +31,7 @@ switch($displayData["layout"]) {
         break;
 }
 ?>
-<div class="navbar navbar-default" role="navigation">
+<div class="navbar navbar-default cf-project-navigation" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project".$id);?>">

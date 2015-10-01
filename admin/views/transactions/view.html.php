@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -70,8 +70,8 @@ class CrowdfundingViewTransactions extends JViewLegacy
         foreach ($this->items as $item) {
             $currencies[] = $item->txn_currency;
         }
-        $currencies   = array_unique($currencies);
-
+        $currencies   = array_filter(array_unique($currencies));
+        
         if (!empty($currencies)) {
             $options = new Joomla\Registry\Registry;
             $options->set("locale_intl", $this->params->get("locale_intl"));

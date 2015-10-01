@@ -4,7 +4,7 @@
  * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -206,11 +206,11 @@ class plgContentCrowdfundingSocialShare extends JPlugin
         }
         if ($params->get("display_embed_button", 1)) {
             $link = JRoute::_(CrowdfundingHelperRoute::getEmbedRoute($item->slug, $item->catslug), false);
-            $html .= '<a href="' . $link . '" class="btn btn-default" role="button"><span class="glyphicon glyphicon-th-large"></span> ' . JText::_("PLG_CONTENT_CROWDFUNDINGSOCIALSHARE_EMBED") . '</a>';
+            $html .= '<a href="' . $link . '" class="btn btn-default" role="button"><span class="fa fa-th-large"></span> ' . JText::_("PLG_CONTENT_CROWDFUNDINGSOCIALSHARE_EMBED") . '</a>';
         }
         if ($params->get("display_embed_email", 1)) {
             $link = JRoute::_(CrowdfundingHelperRoute::getEmbedRoute($item->slug, $item->catslug, "email"), false);
-            $html .= '<a class="btn btn-default" href="' . $link . '" role="button"><span class="glyphicon glyphicon-envelope"></span> ' . JText::_("PLG_CONTENT_CROWDFUNDINGSOCIALSHARE_EMAIL") . '</a>';
+            $html .= '<a class="btn btn-default" href="' . $link . '" role="button"><span class="fa fa-envelope"></span> ' . JText::_("PLG_CONTENT_CROWDFUNDINGSOCIALSHARE_EMAIL") . '</a>';
         }
         if ($params->get("display_follow", 0)) {
 
@@ -243,7 +243,7 @@ class plgContentCrowdfundingSocialShare extends JPlugin
             }
 
             $html .= '<a href="javascript: void(0);" class="btn '.$class.'" id="js-plgsocialshare-btn-follow" role="button" data-uid="'.(int)$userId.'" data-state="'.(int)$state.'" data-pid="'.$projectId.'">
-            <span class="glyphicon glyphicon-heart"></span>
+            <span class="fa fa-heart"></span>
             <span id="js-plgsocialshare-btn-text">' . $text . '</span></a>';
         }
         $html .= '</div>';
@@ -450,7 +450,7 @@ class plgContentCrowdfundingSocialShare extends JPlugin
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/' . $this->fbLocale . '/sdk.js#xfbml=1&version=v2.3' . $appId . '";
+  js.src = "//connect.facebook.net/' . $this->fbLocale . '/sdk.js#xfbml=1&version=v2.4' . $appId . '";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, \'script\', \'facebook-jssdk\'));</script>';
 

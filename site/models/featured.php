@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -145,7 +145,7 @@ class CrowdfundingModelFeatured extends JModelList
         if (!in_array($orderDirn, $allowedDirns)) {
             $orderDirn = "ASC";
         } else {
-            $orderDirn = Joomla\String\String::strtoupper($orderDirn);
+            $orderDirn = JString::strtoupper($orderDirn);
         }
 
         switch ($order) {

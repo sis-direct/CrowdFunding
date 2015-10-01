@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -27,7 +27,7 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
     protected $projectId;
 
-    protected $text_prefix = "COM_Crowdfunding";
+    protected $text_prefix = "COM_CROWDFUNDING";
 
     public function __construct($config = array())
     {
@@ -110,7 +110,7 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
                 foreach ($items as $item) {
 
-                    $context = $this->option . '.payments.capture.' . Joomla\String\String::strtolower(str_replace(" ", "", $item->service_provider));
+                    $context = $this->option . '.payments.capture.' . JString::strtolower(str_replace(" ", "", $item->service_provider));
 
                     // Trigger onContentPreparePayment event.
                     $results = $dispatcher->trigger("onPaymentsCapture", array($context, &$item, &$params));
@@ -194,7 +194,7 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
                 foreach ($items as $item) {
 
-                    $context = $this->option . '.payments.void.' . Joomla\String\String::strtolower(str_replace(" ", "", $item->service_provider));
+                    $context = $this->option . '.payments.void.' . JString::strtolower(str_replace(" ", "", $item->service_provider));
 
                     // Trigger onContentPreparePayment event.
                     $results = $dispatcher->trigger("onPaymentsVoid", array($context, &$item, &$params));

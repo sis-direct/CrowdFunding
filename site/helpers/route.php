@@ -4,13 +4,14 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-jimport("Crowdfunding.init");
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 /**
  * Component Route Helper that help to find a menu item.
@@ -55,13 +56,13 @@ abstract class CrowdfundingHelperRoute
             'details' => array((int)$id),
         );
 
-        $catid = intval($catid);
+        $catid = (int)$catid;
 
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=details&id=' . $id;
         if ($catid > 1) {
 
-            $options = array("published" => 2);
+            $options = array('published' => 2);
 
             $categories = Crowdfunding\Categories::getInstance('crowdfunding', $options);
             $category   = $categories->get($catid);
@@ -75,7 +76,7 @@ abstract class CrowdfundingHelperRoute
         }
 
         // Set a screen page
-        if (!empty($screen)) {
+        if (null !== $screen) {
             $link .= '&screen=' . $screen;
         }
 
@@ -172,7 +173,7 @@ abstract class CrowdfundingHelperRoute
         $link = 'index.php?option=com_crowdfunding&view=report';
 
         if ($id) {
-            $link .= "&id=".(int)$id;
+            $link .= '&id='.(int)$id;
         }
 
         // Looking for menu item (Itemid)
@@ -193,7 +194,7 @@ abstract class CrowdfundingHelperRoute
      *
      * @return string
      */
-    public static function getBackingRoute($id, $catid, $layout = "default", $rewardId = null)
+    public static function getBackingRoute($id, $catid, $layout = null, $rewardId = null)
     {
         /**
          *
@@ -224,11 +225,11 @@ abstract class CrowdfundingHelperRoute
             }
         }
 
-        if (!is_null($layout)) {
+        if (null !== $layout) {
             $link .= '&layout=' . $layout;
         }
 
-        if (!is_null($rewardId) and $rewardId > 0) {
+        if ((null !== $rewardId) and $rewardId > 0) {
             $link .= '&rid=' . (int)$rewardId;
         }
 
@@ -281,8 +282,8 @@ abstract class CrowdfundingHelperRoute
             }
         }
 
-        if (!empty($layout)) {
-            $link .= "&layout=" . $layout;
+        if (null !== $layout) {
+            $link .= '&layout=' . $layout;
         }
 
         // Looking for menu item (Itemid)
@@ -301,7 +302,7 @@ abstract class CrowdfundingHelperRoute
      *
      * @return string
      */
-    public static function getFormRoute($id, $layout = "default")
+    public static function getFormRoute($id, $layout = null)
     {
         $needles = array(
             'project' => array(0)
@@ -310,8 +311,8 @@ abstract class CrowdfundingHelperRoute
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=project&id=' . $id;
 
-        if (strcmp($layout, "default") != 0) {
-            $link .= "&layout=" . $layout;
+        if (null !== $layout) {
+            $link .= '&layout=' . $layout;
         }
 
         // Looking for menu item (Itemid)
@@ -331,7 +332,7 @@ abstract class CrowdfundingHelperRoute
      *
      * @return string
      */
-    public static function getDiscoverRoute($params = array())
+    public static function getDiscoverRoute(array $params = array())
     {
         $needles = array(
             'discover' => array(0)
@@ -340,7 +341,7 @@ abstract class CrowdfundingHelperRoute
         //Create the link
         $link = 'index.php?option=com_crowdfunding&view=discover';
 
-        if (!empty($params)) {
+        if (count($params) > 0) {
             $link .= CrowdfundingHelper::generateUrlParams($params);
         }
 
@@ -372,7 +373,7 @@ abstract class CrowdfundingHelperRoute
         }
 
         if ($id < 1 or !($category instanceof JCategoryNode)) {
-            $link = "";
+            $link = '';
         } else {
 
             //Create the link
@@ -416,14 +417,14 @@ abstract class CrowdfundingHelperRoute
 
             if ($items) {
                 foreach ($items as $item) {
-                    if (isset($item->query) && isset($item->query['view'])) {
+                    if (isset($item->query) and !empty($item->query['view'])) {
                         $view = $item->query['view'];
 
                         if (!isset(self::$lookup[$view])) {
                             self::$lookup[$view] = array();
                         }
 
-                        if (isset($item->query['id'])) {
+                        if (!empty($item->query['id'])) {
                             self::$lookup[$view][$item->query['id']] = $item->id;
                         } else { // If it is a root element that have no a request parameter ID ( categories, authors ), we set 0 for an key
                             self::$lookup[$view][0] = $item->id;
@@ -458,7 +459,6 @@ abstract class CrowdfundingHelperRoute
     }
 
     /**
-     *
      * Prepare categories path to the segments.
      * We use this method in the router "CrowdfundingParseRoute".
      *
@@ -471,10 +471,9 @@ abstract class CrowdfundingHelperRoute
      */
     public static function prepareCategoriesSegments($categoryId, $segments, $menuItem, $menuItemGiven)
     {
-        if ($menuItemGiven and isset($menuItem->query['id'])) {
-            $menuCategoryId = $menuItem->query['id'];
-        } else {
-            $menuCategoryId = 0;
+        $menuCategoryId = 0;
+        if ($menuItemGiven and (isset($menuItem->query) and !empty($menuItem->query['id']))) {
+            $menuCategoryId = (int)$menuItem->query['id'];
         }
 
         $categories = Crowdfunding\Categories::getInstance('Crowdfunding');
@@ -494,15 +493,11 @@ abstract class CrowdfundingHelperRoute
         foreach ($path as $id) {
 
             // Is an ID match with an ID in a menu item?
-            if ((int)$id == (int)$menuCategoryId) {
+            if ($menuCategoryId === (int)$id) {
                 break;
             }
 
-            // Add the item to the array with category aliases.
-            /*list($tmp, $id) = explode(':', $id, 2);
-            $array[] = $id;*/
-
-            $array[] = str_replace(":", "-", $id);
+            $array[] = str_replace(':', '-', $id);
         }
 
         $array = array_reverse($array);
@@ -539,9 +534,9 @@ abstract class CrowdfundingHelperRoute
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.id, a.alias, a.catid," . $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug")
-            ->from($query->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id = " . (int)$id);
+            ->select('a.id, a.alias, a.catid,' . $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug')
+            ->from($query->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = ' . (int)$id);
 
         $db->setQuery($query);
         $result = $db->loadAssoc();
@@ -565,7 +560,7 @@ abstract class CrowdfundingHelperRoute
      */
     public static function getProjectAlias($id)
     {
-        $result = "";
+        $result = '';
         $id     = (int)$id;
 
         // Check for valid ID.
@@ -582,19 +577,58 @@ abstract class CrowdfundingHelperRoute
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.alias")
-            ->from($query->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id = " . (int)$id);
+            ->select('a.alias')
+            ->from($query->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = ' . (int)$id);
 
         $db->setQuery($query, 0, 1);
         $result = $db->loadResult();
 
         if (!$result) {
-            $result = "";
+            $result = '';
         }
 
         self::$projectsAliases[$id] = $result;
 
         return self::$projectsAliases[$id];
+    }
+
+    /**
+     * Check if the alias of a category or a project.
+     *
+     * @param $segments
+     *
+     * @return array
+     */
+    public static function prepareCategoryOrDetails($segments)
+    {
+        $vars = array();
+        $lastSegment = end($segments);
+
+        // Remove last segment, if it is "index.php".
+        if (strcmp('index.php', $lastSegment) === 0) {
+            array_pop($segments);
+            $lastSegment = end($segments);
+        }
+
+        list($id, $alias) = explode(':', $lastSegment, 2);
+        $alias = str_replace(':', '-', $alias);
+
+        // first we check if it is a category
+        $category = JCategories::getInstance('Crowdfunding')->get($id);
+
+        if ($category and (strcmp($category->alias, $alias) === 0)) {
+            $vars['view'] = 'category';
+            $vars['id']   = $id;
+        } else {
+            $project = self::getProject($id);
+            if ((0 !== count($project)) and ($project['alias'] === $alias)) {
+                $vars['view']  = 'details';
+                $vars['catid'] = (int)$project['catid'];
+                $vars['id']    = (int)$id;
+            }
+        }
+
+        return $vars;
     }
 }

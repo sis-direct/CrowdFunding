@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -56,7 +56,7 @@ if (!empty($deliveryDate)) {
         </div>
 
         <div class="form-group">
-        <label class="hasTooltip" data-placement="left" for="reward_number_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_AVAIABLE_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_AVAIABLE"); ?></label>
+        <label class="hasTooltip" data-placement="left" for="reward_number_<?php echo $this->formIndex;?>" title="<?php echo JText::_("COM_CROWDFUNDING_REWARDS_AVAIABLE_DESC");?>"><?php echo JText::_("COM_CROWDFUNDING_AVAILABLE"); ?></label>
         <input name="rewards[<?php echo $this->formIndex;?>][number]" id="reward_number_<?php echo $this->formIndex;?>" type="text" value="<?php echo $availability; ?>" />
         </div>
 
@@ -75,7 +75,7 @@ if (!empty($deliveryDate)) {
             <div class="col-md-12 text-right">
                 <?php if(!$this->debugMode) {?>
                     <a href="javascript: void(0);" class="btn btn-danger js-btn-remove-reward mt-10" title="<?php echo JText::_("COM_CROWDFUNDING_REMOVE_REWARD")?>" data-reward-id="<?php echo Joomla\Utilities\ArrayHelper::getValue($this->formItem,  "id")?>" data-index-id="<?php echo $this->formIndex;?>" >
-                        <span class="glyphicon glyphicon-remove"></span>
+                        <span class="fa fa-times"></span>
                     </a>
                 <?php }?>
             </div>

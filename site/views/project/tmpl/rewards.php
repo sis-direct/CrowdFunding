@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -50,13 +50,13 @@ echo $layout->render($this->layoutData);
             $nextLayout = (strcmp($this->params->get("project_wizard_type", "five_steps"), "five_steps") == 0) ? "manager" : "extras";
             ?>
             <p class="alert alert-info mt-10">
-                <span class="glyphicon glyphicon-info"></span>
+                <span class="fa fa-info"></span>
                 <?php echo JText::_("COM_CROWDFUNDING_NOTE_REWARDS_CREATING_NOT_ALLOWED");?>
             </p>
 
             <div class="cf-rewards-submit-btn">
                 <a class="btn btn-primary" href="<?php echo JRoute::_(CrowdfundingHelperRoute::getFormRoute($this->item->id, $nextLayout)); ?>">
-                    <span class="glyphicon glyphicon-ok"></span>
+                    <span class="fa fa-check"></span>
                     <?php echo JText::_("COM_CROWDFUNDING_CONTINUE");?>
                 </a>
             </div>
@@ -65,12 +65,12 @@ echo $layout->render($this->layoutData);
         
             <div class="cf-rewards-submit-btn">
                 <button class="btn btn-primary" <?php echo $this->disabledButton;?> name="btn_submit" value="save" type="submit">
-                    <span class="glyphicon glyphicon-ok"></span>
+                    <span class="fa fa-check"></span>
                     <?php echo JText::_("COM_CROWDFUNDING_SAVE_REWARDS");?>
                 </button>
 
                 <button class="btn btn-default" <?php echo $this->disabledButton;?> name="btn_submit" value="save_continue" type="submit">
-                    <span class="glyphicon glyphicon-ok"></span>
+                    <span class="fa fa-check"></span>
                     <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE");?>
                 </button>
             </div>

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -32,7 +32,7 @@ defined('_JEXEC') or die;
         <?php if (!$this->debugMode) {?>
         <input type="file" class="js-reward-image" name="images[<?php echo (int)$this->formItem["id"]?>]" value="" />
         <a href="javascript: void(0);" class="btn btn-danger js-btn-remove-reward-image mt-10" <?php echo $displayRemoveButton; ?> data-reward-id="<?php echo $rewardId;?>">
-            <span class="glyphicon glyphicon-trash"></span>
+            <span class="fa fa-trash"></span>
             <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE")?>
         </a>
         <?php } ?>

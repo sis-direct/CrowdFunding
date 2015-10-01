@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -74,9 +74,6 @@ class CrowdfundingViewProjects extends JViewLegacy
         $projects = new Crowdfunding\Projects(JFactory::getDbo());
         $this->rewards = $projects->getRewardsNumber($projectsIds);
 
-        // Add submenu
-        CrowdfundingHelper::addSubmenu($this->getName());
-
         // Prepare sorting data
         $this->prepareSorting();
 
@@ -126,6 +123,8 @@ class CrowdfundingViewProjects extends JViewLegacy
      */
     protected function addSidebar()
     {
+        CrowdfundingHelper::addSubmenu($this->getName());
+
         JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
 
         // Prepare options

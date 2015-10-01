@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -77,9 +77,6 @@ class pkg_crowdfundingInstallerScript
         // Register Component helpers
         JLoader::register("CrowdfundingInstallHelper", COM_CROWDFUNDING_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "install.php");
 
-        jimport('joomla.filesystem.path');
-        jimport('joomla.filesystem.folder');
-        jimport('joomla.filesystem.file');
         jimport('Prism.init');
         jimport('Crowdfunding.init');
 
@@ -274,9 +271,9 @@ class pkg_crowdfundingInstallerScript
         } else {
 
             if (class_exists("Crowdfunding\\Version")) {
-                $prismVersion        = new Prism\Version();
-                $crowdfundingVersion = new Crowdfunding\Version();
-                if (version_compare($prismVersion->getShortVersion(), $crowdfundingVersion->requiredPrismVersion)) {
+                $prismVersion     = new Prism\Version();
+                $componentVersion = new Crowdfunding\Version();
+                if (version_compare($prismVersion->getShortVersion(), $componentVersion->requiredPrismVersion, "<")) {
                     echo JText::_("COM_CROWDFUNDING_MESSAGE_INSTALL_PRISM_LIBRARY");
                 }
             }

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -19,7 +19,6 @@ defined('_JEXEC') or die;
     	    <h2><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND"); ?></h2>
             <p><?php echo JText::_("COM_CROWDFUNDING_SEND_TO_FRIEND_HELP"); ?></p>
             <form method="post" action="<?php echo JRoute::_("index.php?option=com_crowdfunding");?>" class="bs-docs-example mt-0" id="form-send-to-friend" autocomplete="off">
-
                 <div class="form-group">
                     <?php echo $this->form->getLabel('subject'); ?>
                     <?php echo $this->form->getInput('subject'); ?>
@@ -50,11 +49,7 @@ defined('_JEXEC') or die;
 
                 <input type="hidden" name="task" value="friendmail.send" />
                 <button type="submit" class="btn btn-primary"><?php echo JText::_("COM_CROWDFUNDING_SEND");?></button>
-            		
             </form>
-        	
     	</div>
-    	
 	</div>
-	
 </div>

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -113,7 +113,7 @@ class CrowdfundingControllerPayments extends JControllerLegacy
             $model   = $this->getModel();
             $item    = $model->prepareItem($this->projectId, $params, $this->paymentProcess);
 
-            $context = 'com_crowdfunding.payments.checkout.' . Joomla\String\String::strtolower($paymentService);
+            $context = 'com_crowdfunding.payments.checkout.' . JString::strtolower($paymentService);
 
             // Import Crowdfunding Payment Plugins
             $dispatcher = JEventDispatcher::getInstance();
@@ -192,7 +192,7 @@ class CrowdfundingControllerPayments extends JControllerLegacy
             $model   = $this->getModel();
             $item    = $model->prepareItem($this->projectId, $params, $this->paymentProcess);
 
-            $context = 'com_crowdfunding.payments.docheckout.' . Joomla\String\String::strtolower($paymentService);
+            $context = 'com_crowdfunding.payments.docheckout.' . JString::strtolower($paymentService);
 
             // Import Crowdfunding Payment Plugins
             $dispatcher = JEventDispatcher::getInstance();
@@ -271,7 +271,7 @@ class CrowdfundingControllerPayments extends JControllerLegacy
         // Trigger the event
         try {
 
-            $context = 'com_crowdfunding.payments.completeCheckout.' . Joomla\String\String::strtolower($paymentService);
+            $context = 'com_crowdfunding.payments.completeCheckout.' . JString::strtolower($paymentService);
 
             // Import Crowdfunding Payment Plugins
             $dispatcher = JEventDispatcher::getInstance();

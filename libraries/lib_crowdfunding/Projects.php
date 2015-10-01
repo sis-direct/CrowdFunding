@@ -4,13 +4,14 @@
  * @subpackage   Projects
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
 use Prism;
 use Joomla\Utilities\ArrayHelper;
+use Psr\Log\InvalidArgumentException;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -29,7 +30,8 @@ class Projects extends Prism\Database\ArrayObject
      * $options = array(
      *    "ids"       => array(1,2,3),
      *    "published" => Prism\Constants::PUBLISHED,
-     *    "approved" => Prism\Constants::APPROVED
+     *    "approved"  => Prism\Constants::APPROVED,
+     *    "users_ids" => array(10, 11, 12)
      * );
      *
      * $projects    = new Crowdfunding\Projects(\JFactory::getDbo());
@@ -44,27 +46,39 @@ class Projects extends Prism\Database\ArrayObject
      * @param array $options
      *
      * @return array
+     * @throws \InvalidArgumentException
      */
     public function load($options = array())
     {
-        $ids = (!isset($options["ids"])) ? array() : $options["ids"];
+        $ids = (!empty($options['ids'])) ? $options['ids'] : array();
+        $ids = ArrayHelper::toInteger($ids);
 
-        ArrayHelper::toInteger($ids);
-        if (!empty($ids)) {
-
-            // Prepare and return main query.
-            $query = $this->getQuery();
-
-            // Prepare the query to load project by IDs.
-            $query->where("a.id IN ( " . implode(",", $ids) . " )");
-
-            // Prepare project states in the query.
-            $this->prepareQueryStates($query, $options);
-
-            $this->db->setQuery($query);
-
-            $this->items = (array)$this->db->loadAssocList();
+        $usersIds = (!empty($options['users_ids'])) ? $options['users_ids'] : array();
+        $usersIds = ArrayHelper::toInteger($usersIds);
+        
+        if (!$ids and !$usersIds) {
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_PARAMETERS_IDS_USER_IDS'));
         }
+        
+        // Prepare and return main query.
+        $query = $this->getQuery();
+
+        // Prepare the query to load project by IDs.
+        if (count($ids) > 0) {
+            $query->where('a.id IN ( ' . implode(',', $ids) . ' )');
+        }
+
+        // Prepare the query to load project by users IDs.
+        if (count($usersIds) > 0) {
+            $query->where('a.user_id IN ( ' . implode(',', $usersIds) . ' )');
+        }
+
+        // Prepare project states in the query.
+        $this->prepareQueryStates($query, $options);
+
+        $this->db->setQuery($query);
+
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**
@@ -74,8 +88,8 @@ class Projects extends Prism\Database\ArrayObject
      * $phrase  = "Gamification";
      *
      * $options = array(
-     *  "published" => Prism\Constants::PUBLISHED,
-     *  "approved" => Prism\Constants::APPROVED
+     *     "published" => Prism\Constants::PUBLISHED,
+     *     "approved" => Prism\Constants::APPROVED
      * );
      *
      * $projects    = new Crowdfunding\Projects(\JFactory::getDbo());
@@ -92,28 +106,27 @@ class Projects extends Prism\Database\ArrayObject
      *
      * @return array
      */
-    public function loadByString($phrase, $options = array())
+    public function loadByString($phrase, array $options = array())
     {
         $results = array();
 
-        if (!empty($phrase)) {
+        if (\JString::strlen($phrase) > 0) {
 
             // Prepare and return main query.
             $query = $this->getQuery();
 
             // Prepare LIKE filter.
             $escaped = $this->db->escape($phrase, true);
-            $quoted  = $this->db->quote("%" . $escaped . "%", false);
-            $query->where("a.title LIKE " . $quoted);
+            $quoted  = $this->db->quote('%' . $escaped . '%', false);
+            $query->where('a.title LIKE ' . $quoted);
 
             // Prepare project states in the query.
             $this->prepareQueryStates($query, $options);
 
-            $query->order("a.title ASC");
+            $query->order('a.title ASC');
 
             $this->db->setQuery($query);
             $results = (array)$this->db->loadAssocList();
-
         }
 
         $this->items = $results;
@@ -131,12 +144,12 @@ class Projects extends Prism\Database\ArrayObject
 
         $query
             ->select(
-                "a.id, a.title, a.alias, " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
-                $query->concatenate(array("b.id", "b.alias"), ":") . ' AS catslug'
+                'a.id, a.title, a.alias, a.image, a.image_small, a.image_square, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->innerJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id");
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->innerJoin($this->db->quoteName('#__categories', 'b') . ' ON a.catid = b.id');
 
         return $query;
     }
@@ -147,18 +160,18 @@ class Projects extends Prism\Database\ArrayObject
      * @param \JDatabaseQuery $query
      * @param array $options
      */
-    protected function prepareQueryStates(&$query, $options = array())
+    protected function prepareQueryStates(&$query, array $options = array())
     {
         // Filter by state published.
-        $published = ArrayHelper::getValue($options, "published", 0, "int");
-        if (!empty($published)) {
-            $query->where("a.published = " . (int)$published);
+        $value = ArrayHelper::getValue($options, 'published');
+        if ((null !== $value) and is_numeric($value)) {
+            $query->where('a.published = ' . (int)$value);
         }
 
         // Filter by state approved.
-        $approved = ArrayHelper::getValue($options, "approved", 0, "int");
-        if (!empty($approved)) {
-            $query->where("a.approved = " . (int)$approved);
+        $value = ArrayHelper::getValue($options, 'approved');
+        if ((null !== $value) and is_numeric($value)) {
+            $query->where('a.approved = ' . (int)$value);
         }
     }
 
@@ -178,30 +191,30 @@ class Projects extends Prism\Database\ArrayObject
      *
      * @return array
      */
-    public function getRewardsNumber($ids = array())
+    public function getRewardsNumber(array $ids = array())
     {
         // If it is missing IDs as parameter, get the IDs of the current items.
-        if (!$ids and !empty($this->items)) {
+        if (!$ids and count($this->items) > 0) {
             $ids = $this->getKeys();
         }
 
         $results = array();
 
         // If there are no IDs, return empty array.
-        if (!empty($ids)) {
+        if (count($ids) > 0) {
 
             // Create a new query object.
             $query = $this->db->getQuery(true);
 
             $query
-                ->select("a.project_id, COUNT(*) as number")
-                ->from($this->db->quoteName("#__crowdf_rewards", "a"))
-                ->where("a.project_id IN (" . implode(",", $ids) . ")")
-                ->group("a.project_id");
+                ->select('a.project_id, COUNT(*) as number')
+                ->from($this->db->quoteName('#__crowdf_rewards', 'a'))
+                ->where('a.project_id IN (' . implode(',', $ids) . ')')
+                ->group('a.project_id');
 
             $this->db->setQuery($query);
 
-            $results = (array)$this->db->loadAssocList("project_id");
+            $results = (array)$this->db->loadAssocList('project_id');
         }
 
         return $results;
@@ -221,91 +234,33 @@ class Projects extends Prism\Database\ArrayObject
      *
      * @return array
      */
-    public function getTransactionsNumber($ids = array())
+    public function getTransactionsNumber(array $ids = array())
     {
         // If it is missing IDs as parameter, get the IDs of the current items.
-        if (!$ids and !empty($this->items)) {
+        if (!$ids and count($this->items) > 0) {
             $ids = $this->getKeys();
         }
 
         $results = array();
 
         // If there are no IDs, return empty array.
-        if (!empty($ids)) {
+        if (count($ids) > 0) {
 
             // Create a new query object.
             $query = $this->db->getQuery(true);
 
             $query
-                ->select("a.project_id, COUNT(*) as number")
-                ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-                ->where("a.project_id IN (" . implode(",", $ids) . ")")
-                ->group("a.project_id");
+                ->select('a.project_id, COUNT(*) as number')
+                ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+                ->where('a.project_id IN (' . implode(',', $ids) . ')')
+                ->group('a.project_id');
 
             $this->db->setQuery($query);
 
-            $results = (array)$this->db->loadAssocList("project_id");
+            $results = (array)$this->db->loadAssocList('project_id');
         }
 
         return $results;
-    }
-
-    /**
-     * Prepare an array that will be used as options in drop down form element.
-     *
-     * <code>
-     * $phrase  = "Gamification";
-     *
-     * $options = array(
-     *    "published" => Prism\Constants::PUBLISHED,
-     *    "approved" => Prism\Constants::APPROVED
-     * );
-     *
-     * $projects    = new Crowdfunding\Projects(\JFactory::getDbo());
-     * $projects->loadByString($phrase, $options);
-     *
-     * $formOptions = $projects->toOptions();
-     * </code>
-     *
-     * @return array
-     */
-    public function toOptions()
-    {
-        $options = array();
-
-        foreach ($this->items as $item) {
-            $options[] = array(
-                "id"   => $item["id"],
-                "name" => $item["title"]
-            );
-        }
-
-        return $options;
-    }
-
-    /**
-     * Return an array that contains IDs of the items.
-     *
-     * <code>
-     * $phrase = "Gamification";
-     *
-     * $projects   = new Crowdfunding\Projects(\JFactory::getDbo());
-     * $projects->loadByString($phrase);
-     *
-     * $keys = $projects->getKeys();
-     * </code>
-     *
-     * @return array
-     */
-    public function getKeys()
-    {
-        $keys = array();
-
-        foreach ($this->items as $item) {
-            $keys[] = $item["id"];
-        }
-
-        return $keys;
     }
 
     /**
@@ -330,7 +285,7 @@ class Projects extends Prism\Database\ArrayObject
         $item = null;
 
         foreach ($this->items as $project) {
-            if ($projectId == $project["id"]) {
+            if ((int)$projectId === (int)$project['id']) {
                 $item = new Project(\JFactory::getDbo());
                 $item->bind($project);
                 break;

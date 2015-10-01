@@ -34,6 +34,7 @@
             <option value="completed">COM_CROWDFUNDING_COMPLETED</option>
             <option value="canceled">COM_CROWDFUNDING_CANCELED</option>
             <option value="refunded">COM_CROWDFUNDING_REFUNDED</option>
+            <option value="failed">COM_CROWDFUNDING_FAILED</option>
         </field>
 
         <field name="txn_id" type="text"

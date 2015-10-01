@@ -4,7 +4,7 @@
  * @subpackage   Locations
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -53,7 +53,7 @@ class Locations extends Prism\Database\ArrayObject
 
         $ids = (!isset($options["ids"])) ? null : (array)$options["ids"];
         if (!empty($ids)) {
-            ArrayHelper::toInteger($ids);
+            $ids = ArrayHelper::toInteger($ids);
             $query->where("a.id IN ( " . implode(",", $ids) . " )");
         }
 

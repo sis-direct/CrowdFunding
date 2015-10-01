@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -66,7 +66,7 @@ class CrowdfundingModelEmbed extends JModelItem
             $query
                 ->select(
                     "a.id, a.title, a.short_desc, a.image,  " .
-                    "a.funded, a.goal, a.user_id, " .
+                    "a.funded, a.goal, a.user_id, a.funding_type, " .
                     "a.funding_start, a.funding_end, a.funding_days,  " .
                     $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
                     "b.name AS user_name, " .

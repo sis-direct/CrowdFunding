@@ -4,7 +4,7 @@
  * @subpackage   Currencies
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -45,18 +45,18 @@ class Currencies extends Prism\Database\ArrayObject
     {
         // Get IDs.
         $ids = (!isset($options["ids"])) ? array() : $options["ids"];
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
         // Get codes.
         $codes = (!isset($options["codes"])) ? array() : $options["codes"];
 
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->select("a.id, a.title, a.code, a.symbol, a.position")
+            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
+
         if (!empty($ids) or !empty($codes)) {
-
-            $query = $this->db->getQuery(true);
-
-            $query
-                ->select("a.id, a.title, a.code, a.symbol, a.position")
-                ->from($this->db->quoteName("#__crowdf_currencies", "a"));
 
             if (!empty($ids)) { // Load by IDs
                 $query->where("a.id IN ( " . implode(",", $ids) . " )");
@@ -68,11 +68,10 @@ class Currencies extends Prism\Database\ArrayObject
 
                 $query->where("a.code IN ( " . implode(",", $codes) . " )");
             }
-
-            $this->db->setQuery($query);
-            $this->items = (array)$this->db->loadAssocList();
-
         }
+
+        $this->db->setQuery($query);
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**

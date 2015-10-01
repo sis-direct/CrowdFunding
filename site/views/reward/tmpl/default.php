@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -118,7 +118,7 @@ defined('_JEXEC') or die;?>
     </div>
 </div>
 <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getFormRoute($this->reward->getProjectId(), "manager")); ?>" class="btn btn-default">
-    <span class="glyphicon glyphicon-menu-left"></span>
+    <span class="fa fa-chevron-left"></span>
     <?php echo JText::_("COM_CROWDFUNDING_BACK_PROJECT_MANAGER"); ?>
 </a>
 <?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>

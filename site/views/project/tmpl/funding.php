@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -73,7 +73,7 @@ echo $layout->render($this->layoutData);
             <?php echo JHtml::_('form.token'); ?>
             
             <button type="submit" class="btn btn-primary mtb-15-0" <?php echo $this->disabledButton;?>>
-                <span class="glyphicon glyphicon-ok"></span>
+                <span class="fa fa-check"></span>
                 <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
             </button>
         </form>

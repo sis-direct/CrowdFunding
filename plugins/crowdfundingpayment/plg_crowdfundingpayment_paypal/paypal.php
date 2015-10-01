@@ -4,7 +4,7 @@
  * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -98,9 +98,9 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
 
         // Start the form.
         if ($this->params->get('paypal_sandbox', 1)) {
-            $html[] = '<form action="' . Joomla\String\String::trim($this->params->get('paypal_sandbox_url')) . '" method="post">';
+            $html[] = '<form action="' . JString::trim($this->params->get('paypal_sandbox_url')) . '" method="post">';
         } else {
-            $html[] = '<form action="' . Joomla\String\String::trim($this->params->get('paypal_url')) . '" method="post">';
+            $html[] = '<form action="' . JString::trim($this->params->get('paypal_url')) . '" method="post">';
         }
 
         $html[] = $paymentReceiverInput;
@@ -137,7 +137,7 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
         $html[] = '<input type="hidden" name="custom" value="' . $custom . '" />';
 
         // Set a link to logo
-        $imageUrl = Joomla\String\String::trim($this->params->get('paypal_image_url'));
+        $imageUrl = JString::trim($this->params->get('paypal_image_url'));
         if ($imageUrl) {
             $html[] = '<input type="hidden" name="image_url" value="' . $imageUrl . '" />';
         }
@@ -155,7 +155,7 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
 
         // Display a sticky note if the extension works in sandbox mode.
         if ($this->params->get('paypal_sandbox', 1)) {
-            $html[] = '<div class="bg-info p-10-5"><span class="glyphicon glyphicon-info-sign"></span> ' . JText::_($this->textPrefix . "_WORKS_SANDBOX") . '</div>';
+            $html[] = '<div class="bg-info p-10-5"><span class="fa fa-info-circle"></span> ' . JText::_($this->textPrefix . "_WORKS_SANDBOX") . '</div>';
         }
 
         $html[] = '</div>';
@@ -225,9 +225,9 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
 
         // Get PayPal URL
         if ($this->params->get('paypal_sandbox', 1)) {
-            $url = Joomla\String\String::trim($this->params->get('paypal_sandbox_url', "https://www.sandbox.paypal.com/cgi-bin/webscr"));
+            $url = JString::trim($this->params->get('paypal_sandbox_url', "https://www.sandbox.paypal.com/cgi-bin/webscr"));
         } else {
-            $url = Joomla\String\String::trim($this->params->get('paypal_url', "https://www.paypal.com/cgi-bin/webscr"));
+            $url = JString::trim($this->params->get('paypal_url', "https://www.paypal.com/cgi-bin/webscr"));
         }
 
         $paypalIpn       = new Prism\Payment\PayPal\Ipn($url, $_POST);
@@ -405,7 +405,7 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
             "txn_id"           => Joomla\Utilities\ArrayHelper::getValue($data, "txn_id", null, "string"),
             "txn_amount"       => Joomla\Utilities\ArrayHelper::getValue($data, "mc_gross", null, "float"),
             "txn_currency"     => Joomla\Utilities\ArrayHelper::getValue($data, "mc_currency", null, "string"),
-            "txn_status"       => Joomla\String\String::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "payment_status", null, "string")),
+            "txn_status"       => JString::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "payment_status", null, "string")),
             "txn_date"         => $date->toSql(),
             "extra_data"       => $this->prepareExtraData($data)
         );
@@ -440,9 +440,9 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
 
         // Check payment receiver.
         $allowedReceivers = array(
-            Joomla\String\String::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "business")),
-            Joomla\String\String::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "receiver_email")),
-            Joomla\String\String::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "receiver_id"))
+            JString::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "business")),
+            JString::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "receiver_email")),
+            JString::strtolower(Joomla\Utilities\ArrayHelper::getValue($data, "receiver_id"))
         );
 
         // Get payment receiver.
@@ -586,11 +586,11 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
     protected function preparePaymentReceiver($paymentReceiverOption, $itemId)
     {
         if ($this->params->get('paypal_sandbox', 1)) {
-            return '<input type="hidden" name="business" value="' . Joomla\String\String::trim($this->params->get('paypal_sandbox_business_name')) . '" />';
+            return '<input type="hidden" name="business" value="' . JString::trim($this->params->get('paypal_sandbox_business_name')) . '" />';
         } else {
 
             if (strcmp("site_owner", $paymentReceiverOption) == 0) { // Site owner
-                return '<input type="hidden" name="business" value="' . Joomla\String\String::trim($this->params->get('paypal_business_name')) . '" />';
+                return '<input type="hidden" name="business" value="' . JString::trim($this->params->get('paypal_business_name')) . '" />';
             } else {
 
                 if (!JComponentHelper::isEnabled("com_crowdfundingfinance")) {
@@ -604,7 +604,7 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
                         return null;
                     }
 
-                    return '<input type="hidden" name="business" value="' . Joomla\String\String::trim($payout->getPaypalEmail()) . '" />';
+                    return '<input type="hidden" name="business" value="' . JString::trim($payout->getPaypalEmail()) . '" />';
 
                 }
 
@@ -625,11 +625,11 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
     protected function getPaymentReceiver($paymentReceiverOption, $itemId)
     {
         if ($this->params->get('paypal_sandbox', 1)) {
-            return Joomla\String\String::strtolower(Joomla\String\String::trim($this->params->get('paypal_sandbox_business_name')));
+            return JString::strtolower(JString::trim($this->params->get('paypal_sandbox_business_name')));
         } else {
 
             if (strcmp("site_owner", $paymentReceiverOption) == 0) { // Site owner
-                return Joomla\String\String::strtolower(Joomla\String\String::trim($this->params->get('paypal_business_name')));
+                return JString::strtolower(JString::trim($this->params->get('paypal_business_name')));
             } else {
 
                 if (!JComponentHelper::isEnabled("com_crowdfundingfinance")) {
@@ -643,7 +643,7 @@ class plgCrowdfundingPaymentPayPal extends Crowdfunding\Payment\Plugin
                         return null;
                     }
 
-                    return Joomla\String\String::strtolower(Joomla\String\String::trim($payout->getPaypalEmail()));
+                    return JString::strtolower(JString::trim($payout->getPaypalEmail()));
                 }
 
             }

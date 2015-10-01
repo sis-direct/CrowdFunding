@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -172,7 +172,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $params          = $this->state->get("params");
         $this->debugMode = $params->get("debug_project_adding_disabled", 0);
         if ($this->debugMode) {
-            $msg = Joomla\String\String::trim($params->get("debug_disabled_functionality_msg"));
+            $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
             if (!$msg) {
                 $msg = JText::_("COM_CROWDFUNDING_DEBUG_MODE_DEFAULT_MSG");
             }
@@ -558,7 +558,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->document->setDescription($this->params->get('menu-meta_description'));
 
         // Meta keywords
-        $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+        $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
 
         // Add current layout into breadcrumbs.
         $pathway = $this->app->getPathway();

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -95,16 +95,16 @@ class CrowdfundingModelRewards extends JModelLegacy
             }
 
             $item["title"] = $filter->clean($item["title"], "string");
-            $item["title"] = Joomla\String\String::trim($item["title"]);
-            $item["title"] = Joomla\String\String::substr($item["title"], 0, 128);
+            $item["title"] = JString::trim($item["title"]);
+            $item["title"] = JString::substr($item["title"], 0, 128);
 
             $item["description"] = $filter->clean($item["description"], "string");
-            $item["description"] = Joomla\String\String::trim($item["description"]);
-            $item["description"] = Joomla\String\String::substr($item["description"], 0, 500);
+            $item["description"] = JString::trim($item["description"]);
+            $item["description"] = JString::substr($item["description"], 0, 500);
 
             $item["number"] = (int)$item["number"];
 
-            $item["delivery"] = Joomla\String\String::trim($item["delivery"]);
+            $item["delivery"] = JString::trim($item["delivery"]);
             $item["delivery"] = $filter->clean($item["delivery"], "string");
 
             if (!empty($item["delivery"])) {
@@ -238,7 +238,7 @@ class CrowdfundingModelRewards extends JModelLegacy
             }
 
             $uploadedFile = Joomla\Utilities\ArrayHelper::getValue($image, 'tmp_name');
-            $uploadedName = Joomla\String\String::trim(Joomla\Utilities\ArrayHelper::getValue($image, 'name'));
+            $uploadedName = JString::trim(Joomla\Utilities\ArrayHelper::getValue($image, 'name'));
             $errorCode    = Joomla\Utilities\ArrayHelper::getValue($image, 'error');
 
             $file = new Prism\File\Image();
@@ -273,10 +273,9 @@ class CrowdfundingModelRewards extends JModelLegacy
                 }
 
                 // Generate temporary file name
-                $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+                $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-                $generatedName = new Prism\String();
-                $generatedName->generateRandomString(12, "reward_");
+                $generatedName = Prism\Utilities\StringHelper::generateRandomString(12, "reward_");
 
                 $destFile = JPath::clean($destFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
 
@@ -298,7 +297,7 @@ class CrowdfundingModelRewards extends JModelLegacy
                 // Generate thumbnails.
 
                 // Create thumbnail.
-                $generatedName->generateRandomString(12, "reward_thumb_");
+                $generatedName = Prism\Utilities\StringHelper::generateRandomString(12, "reward_thumb_");
                 $options     = array(
                     "width"       => $params->get("rewards_image_thumb_width", 200),
                     "height"      => $params->get("rewards_image_thumb_height", 200),
@@ -308,7 +307,7 @@ class CrowdfundingModelRewards extends JModelLegacy
                 $thumbSource = $file->createThumbnail($options);
 
                 // Create square image.
-                $generatedName->generateRandomString(12, "reward_square_");
+                $generatedName = Prism\Utilities\StringHelper::generateRandomString(12, "reward_square_");
                 $options      = array(
                     "width"       => $params->get("rewards_image_square_width", 50),
                     "height"      => $params->get("rewards_image_square_height", 50),

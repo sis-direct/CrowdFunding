@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,9 +12,9 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelCategory extends JModelList
 {
-    protected $items   = null;
-    protected $numbers = null;
-    protected $params  = null;
+    protected $items;
+    protected $numbers;
+    protected $params;
 
     /**
      * Constructor.
@@ -89,6 +89,10 @@ class CrowdfundingModelCategory extends JModelList
         $value = $app->input->get("filter_featured");
         $this->setState($this->context . '.filter_featured', $value);
 
+        // Filter by user ID.
+        $value = $app->input->get("filter_user");
+        $this->setState($this->context . '.filter_user', $value);
+
         // Set category id
         $catId = $app->input->get("id", 0, "uint");
         $this->setState($this->context . '.category_id', $catId);
@@ -139,6 +143,7 @@ class CrowdfundingModelCategory extends JModelList
         $id .= ':' . $this->getState($this->context . '.filter_date');
         $id .= ':' . $this->getState($this->context . '.filter_funding_state');
         $id .= ':' . $this->getState($this->context . '.filter_featured');
+        $id .= ':' . $this->getState($this->context . '.filter_user');
 
         return parent::getStoreId($id);
     }
@@ -163,9 +168,9 @@ class CrowdfundingModelCategory extends JModelList
                 'list.select',
                 'a.id, a.title, a.short_desc, a.image, a.user_id, a.catid, a.featured, ' .
                 'a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, a.funding_type, ' .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
                 'b.name AS user_name, ' .
-                $query->concatenate(array("c.id", "c.alias"), ":") . " AS catslug"
+                $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug'
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', 'a'));
@@ -189,56 +194,56 @@ class CrowdfundingModelCategory extends JModelList
 
     protected function getOrderString()
     {
-        $params    = $this->getState("params");
+        $params    = $this->getState('params');
 
-        $order     = $this->getState("list.ordering");
-        $orderDirn = $this->getState("list.direction");
+        $order     = $this->getState('list.ordering');
+        $orderDirn = $this->getState('list.direction');
 
         if (!is_numeric($order)) {
-            $order     = $params->get("items_order", Crowdfunding\Constants::ORDER_BY_START_DATE);
-            $orderDirn = $params->get("items_order_direction", "desc");
+            $order     = $params->get('items_order', Crowdfunding\Constants::ORDER_BY_START_DATE);
+            $orderDirn = $params->get('items_order_direction', 'desc');
         }
 
         // Convert direction to uppercase.
-        $orderDirn = Joomla\String\String::strtoupper($orderDirn);
+        $orderDirn = JString::strtoupper($orderDirn);
 
         // Validate directions.
-        $allowedDirns = array("ASC", "DESC");
-        if (!in_array($orderDirn, $allowedDirns)) {
-            $orderDirn = "ASC";
+        $allowedDirns = array('ASC', 'DESC');
+        if (!in_array($orderDirn, $allowedDirns, true)) {
+            $orderDirn = 'ASC';
         }
 
-        $fundingEndSort = ", a.funding_end ASC";
+        $fundingEndSort = ', a.funding_end ASC';
 
         switch ($order) {
 
             case Crowdfunding\Constants::ORDER_BY_NAME:
-                $orderCol = "a.title";
+                $orderCol = 'a.title';
                 break;
 
             case Crowdfunding\Constants::ORDER_BY_CREATED_DATE:
-                $orderCol = "a.created";
+                $orderCol = 'a.created';
                 break;
 
             case Crowdfunding\Constants::ORDER_BY_START_DATE:
-                $orderCol = "a.funding_start";
+                $orderCol = 'a.funding_start';
                 break;
 
             case Crowdfunding\Constants::ORDER_BY_END_DATE:
-                $orderCol = "a.funding_end";
-                $fundingEndSort = "";
+                $orderCol = 'a.funding_end';
+                $fundingEndSort = '';
                 break;
 
             case Crowdfunding\Constants::ORDER_BY_POPULARITY:
-                $orderCol = "a.hits";
+                $orderCol = 'a.hits';
                 break;
 
             case Crowdfunding\Constants::ORDER_BY_FUNDING:
-                $orderCol = "a.funded";
+                $orderCol = 'a.funded';
                 break;
 
             default: // Ordering
-                $orderCol = "a.ordering";
+                $orderCol = 'a.ordering';
                 break;
         }
 
@@ -257,9 +262,9 @@ class CrowdfundingModelCategory extends JModelList
         $db     = JFactory::getDbo();
 
         // Filter by featured state.
-        $featured = $this->getState($this->context . ".filter_featured");
-        if (!is_null($featured)) {
-            if (!$featured) {
+        $value = $this->getState($this->context . '.filter_featured');
+        if (null !== $value) {
+            if (!$value) {
                 $query->where('a.featured = 0');
             } else {
                 $query->where('a.featured = 1');
@@ -267,44 +272,50 @@ class CrowdfundingModelCategory extends JModelList
         }
 
         // Filter by category ID
-        $categoryId = $this->getState($this->context . ".category_id", 0);
-        if (!empty($categoryId)) {
-            $query->where('a.catid = ' . (int)$categoryId);
+        $value = (int)$this->getState($this->context . '.category_id', 0);
+        if ($value > 0) {
+            $query->where('a.catid = ' . $value);
         }
 
         // Filter by project type
-        $projectTypeId = $this->getState($this->context . ".filter_projecttype", 0);
-        if (!empty($projectTypeId)) {
-            $query->where('a.type_id = ' . (int)$projectTypeId);
+        $value = (int)$this->getState($this->context . '.filter_projecttype', 0);
+        if ($value > 0) {
+            $query->where('a.type_id = ' . $value);
+        }
+
+        // Filter by user.
+        $value = (int)$this->getState($this->context . '.filter_user', 0);
+        if ($value > 0) {
+            $query->where('a.user_id = ' . $value);
         }
 
         // Filter by country
-        $countryCode = $this->getState($this->context . ".filter_country");
-        if (!empty($countryCode)) {
-            $query->innerJoin($db->quoteName("#__crowdf_locations", "l") . " ON a.location_id = l.id");
-            $query->where('l.country_code = ' . $db->quote($countryCode));
+        $value = $this->getState($this->context . '.filter_country');
+        if (JString::strlen($value) > 0) {
+            $query->innerJoin($db->quoteName('#__crowdf_locations', 'l') . ' ON a.location_id = l.id');
+            $query->where('l.country_code = ' . $db->quote($value));
         }
 
         // Filter by location
-        $locationId = $this->getState($this->context . ".filter_location");
-        if (!empty($locationId)) {
-            $query->where('a.location_id = ' . (int)$locationId);
+        $value = (int)$this->getState($this->context . '.filter_location');
+        if ($value > 0) {
+            $query->where('a.location_id = ' . (int)$value);
         }
 
         // Filter by funding type
-        $filterFundingType = Joomla\String\String::strtoupper(Joomla\String\String::trim($this->getState($this->context . ".filter_fundingtype")));
-        if (!empty($filterFundingType)) {
-            $allowedFundingTypes = array("FIXED", "FLEXIBLE");
-            if (in_array($filterFundingType, $allowedFundingTypes)) {
-                $query->where('a.funding_type = ' . $db->quote($filterFundingType));
+        $value = JString::strtoupper(JString::trim($this->getState($this->context . '.filter_fundingtype')));
+        if (JString::strlen($value) > 0) {
+            $allowedFundingTypes = array('FIXED', 'FLEXIBLE');
+            if (in_array($value, $allowedFundingTypes, true)) {
+                $query->where('a.funding_type = ' . $db->quote($value));
             }
         }
 
         // Filter by phrase
-        $phrase = $this->getState($this->context . ".filter_phrase");
-        if (!empty($phrase)) {
-            $escaped = $db->escape($phrase, true);
-            $quoted  = $db->quote("%" . $escaped . "%", false);
+        $value = $this->getState($this->context . '.filter_phrase');
+        if (JString::strlen($value) > 0) {
+            $escaped = $db->escape($value, true);
+            $quoted  = $db->quote('%' . $escaped . '%', false);
             $query->where('a.title LIKE ' . $quoted);
         }
     }

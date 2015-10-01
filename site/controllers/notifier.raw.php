@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -60,7 +60,7 @@ class CrowdfundingControllerNotifier extends JControllerLegacy
 
         // Prepare context
         $filter         = new JFilterInput();
-        $paymentService = Joomla\String\String::trim(Joomla\String\String::strtolower($this->input->getCmd("payment_service")));
+        $paymentService = JString::trim(JString::strtolower($this->input->getCmd("payment_service")));
         $paymentService = $filter->clean($paymentService, "ALNUM");
         $this->context  = (!empty($paymentService)) ? 'com_crowdfunding.notify.' . $paymentService : 'com_crowdfunding.notify';
 
