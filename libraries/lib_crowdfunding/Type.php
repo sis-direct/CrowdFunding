@@ -25,7 +25,6 @@ class Type extends Prism\Database\TableImmutable
     protected $id = 0;
     protected $title;
     protected $description;
-    protected $params = array();
 
     /**
      * Load a data about a type from database.
@@ -45,9 +44,9 @@ class Type extends Prism\Database\TableImmutable
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.description, a.params")
-            ->from($this->db->quoteName("#__crowdf_types", "a"))
-            ->where("a.id = " . (int)$keys);
+            ->select('a.id, a.title, a.description, a.params')
+            ->from($this->db->quoteName('#__crowdf_types', 'a'))
+            ->where('a.id = ' . (int)$keys);
 
         $this->db->setQuery($query);
         $result = $this->db->loadAssoc();
@@ -77,17 +76,16 @@ class Type extends Prism\Database\TableImmutable
      */
     public function bind($data, $ignored = array())
     {
-        if (isset($data["params"])) {
-            $this->setParams($data["params"]);
-            unset($data["params"]);
+        if (array_key_exists('params', $data)) {
+            $this->setParams($data['params']);
+            unset($data['params']);
         }
 
         foreach ($data as $key => $value) {
-            if (!in_array($key, $ignored)) {
+            if (!in_array($key, $ignored, true)) {
                 $this->$key = $value;
             }
         }
-
     }
 
     /**
@@ -108,7 +106,7 @@ class Type extends Prism\Database\TableImmutable
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -201,14 +199,14 @@ class Type extends Prism\Database\TableImmutable
      */
     public function setParams($params)
     {
+        $this->params = array();
+        
         if (is_string($params)) {
             $this->params = (array)json_decode($params, true);
         } elseif (is_object($params)) {
             $this->params = ArrayHelper::fromObject($params);
         } elseif (is_array($params)) {
             $this->params = $params;
-        } else {
-            $this->params = array();
         }
 
         return $this;
@@ -272,8 +270,8 @@ class Type extends Prism\Database\TableImmutable
     public function isRewardsEnabled()
     {
         $rewards = false;
-        if (isset($this->params["rewards_enabled"])) {
-            $rewards = (!$this->params["rewards_enabled"]) ? false : true;
+        if (array_key_exists('rewards_enabled', $this->params)) {
+            $rewards = (!$this->params['rewards_enabled']) ? false : true;
         }
 
         return $rewards;

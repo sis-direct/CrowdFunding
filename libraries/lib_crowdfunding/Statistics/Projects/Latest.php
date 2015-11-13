@@ -11,7 +11,7 @@ namespace Crowdfunding\Statistics\Projects;
 
 defined('JPATH_PLATFORM') or die;
 
-\JLoader::register("Crowdfunding\\Statistics\\Projects\\Base", JPATH_LIBRARIES . "/crowdfunding/statistics/projects/base.php");
+\JLoader::register('Crowdfunding\\Statistics\\Projects\\Base', JPATH_LIBRARIES . '/crowdfunding/statistics/projects/base.php');
 
 /**
  * This class loads statistics about projects.
@@ -43,9 +43,9 @@ class Latest extends Base
         $query = $this->getQuery();
 
         $query
-            ->where("a.published = 1")
-            ->where("a.approved = 1")
-            ->order("a.funding_start DESC");
+            ->where('a.published = 1')
+            ->where('a.approved = 1')
+            ->order('a.funding_start DESC');
 
         $this->db->setQuery($query, 0, (int)$limit);
 
@@ -74,9 +74,9 @@ class Latest extends Base
         $query = $this->getQuery();
 
         $query
-            ->where("a.published = 1")
-            ->where("a.approved = 1")
-            ->order("a.created DESC");
+            ->where('a.published = 1')
+            ->where('a.approved = 1')
+            ->order('a.created DESC');
 
         $this->db->setQuery($query, 0, (int)$limit);
 

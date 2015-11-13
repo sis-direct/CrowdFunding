@@ -107,12 +107,43 @@ class CrowdfundingModelReward extends JModelAdmin
         $row->set("published", $published);
         $row->set("project_id", $projectId);
 
+        $this->prepareTable($row);
 
         $row->store();
 
         return $row->get("id");
     }
 
+    /**
+     * Prepare project images before saving.
+     *
+     * @param   JTable $table
+     *
+     * @throws Exception
+     *
+     * @since    1.6
+     */
+    protected function prepareTable($table)
+    {
+        // Set order value
+        if (!$table->get('id') and !$table->get('ordering')) {
+
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query
+                ->select('MAX(a.ordering)')
+                ->from($db->quoteName('#__crowdf_rewards', 'a'))
+                ->where('a.project_id = '. (int)$table->get('project_id'));
+
+            $db->setQuery($query, 0, 1);
+
+            $max = $db->loadResult();
+
+            $table->set('ordering', $max + 1);
+        }
+    }
+    
     /**
      * Upload an image.
      *
@@ -336,5 +367,21 @@ class CrowdfundingModelReward extends JModelAdmin
 
         $db->setQuery($query);
         $db->execute();
+    }
+
+    /**
+     * A protected method to get a set of ordering conditions.
+     *
+     * @param    object $table A record object.
+     *
+     * @return    array    An array of conditions to add to add to ordering queries.
+     * @since    1.6
+     */
+    protected function getReorderConditions($table)
+    {
+        $condition   = array();
+        $condition[] = 'project_id = ' . (int)$table->project_id;
+
+        return $condition;
     }
 }

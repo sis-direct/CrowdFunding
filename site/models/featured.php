@@ -12,9 +12,9 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelFeatured extends JModelList
 {
-    protected $items = null;
-    protected $numbers = null;
-    protected $params = null;
+    protected $items;
+    protected $numbers;
+    protected $params;
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ class CrowdfundingModelFeatured extends JModelList
      */
     protected function populateState($ordering = 'ordering', $direction = 'ASC')
     {
-        parent::populateState("a.ordering", "ASC");
+        parent::populateState('a.ordering', 'ASC');
 
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -60,12 +60,11 @@ class CrowdfundingModelFeatured extends JModelList
         $this->setState('params', $params);
 
         // Set limit
-        $value = $params->get("items_limit", $app->get('list_limit', 20));
+        $value = $params->get('items_limit', $app->get('list_limit', 20));
         $this->setState('list.limit', $value);
 
         $value = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-
     }
 
     /**
@@ -108,9 +107,9 @@ class CrowdfundingModelFeatured extends JModelList
                 'list.select',
                 'a.id, a.title, a.short_desc, a.image, a.user_id, a.catid, a.featured, ' .
                 'a.goal, a.funded, a.funding_start, a.funding_end, a.funding_days, a.funding_type, ' .
-                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
                 'b.name AS user_name, ' .
-                $query->concatenate(array("c.id", "c.alias"), ":") . " AS catslug"
+                $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug'
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', 'a'));
@@ -118,8 +117,8 @@ class CrowdfundingModelFeatured extends JModelList
         $query->innerJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
 
         // Filter by category ID
-        $categoryId = $this->getState($this->context . ".category_id", 0);
-        if (!empty($categoryId)) {
+        $categoryId = (int)$this->getState($this->context . '.category_id', 0);
+        if ($categoryId > 0) {
             $query->where('a.catid = ' . (int)$categoryId);
         }
 
@@ -137,29 +136,29 @@ class CrowdfundingModelFeatured extends JModelList
 
     protected function getOrderString()
     {
-        $params    = $this->getState("params");
-        $order     = $params->get("items_order", "start_date");
-        $orderDirn = $params->get("items_order_direction", "desc");
+        $params    = $this->getState('params');
+        $order     = $params->get('items_order', 'start_date');
+        $orderDirn = JString::strtoupper($params->get('items_order_direction', 'DESC'));
 
-        $allowedDirns = array("asc", "desc");
-        if (!in_array($orderDirn, $allowedDirns)) {
-            $orderDirn = "ASC";
+        $allowedDirns = array('ASC', 'DESC');
+        if (!in_array($orderDirn, $allowedDirns, true)) {
+            $orderDirn = 'ASC';
         } else {
             $orderDirn = JString::strtoupper($orderDirn);
         }
 
         switch ($order) {
 
-            case "ordering":
-                $orderCol = "a.ordering";
+            case 'ordering':
+                $orderCol = 'a.ordering';
                 break;
 
-            case "added":
-                $orderCol = "a.id";
+            case 'added':
+                $orderCol = 'a.id';
                 break;
 
             default: // Start date
-                $orderCol = "a.funding_start";
+                $orderCol = 'a.funding_start';
                 break;
 
         }
@@ -169,34 +168,27 @@ class CrowdfundingModelFeatured extends JModelList
         return $orderString;
     }
 
-    public function prepareItems($items)
+    public function prepareItems(array $items)
     {
         $result = array();
 
-        if (!empty($items)) {
-            foreach ($items as $key => $item) {
+        foreach ($items as $key => $item) {
 
-                $result[$key] = $item;
+            $result[$key] = $item;
 
-                // Calculate funding end date
-                if (!empty($item->funding_days)) {
-
-                    $fundingStartDate = new Crowdfunding\Date($item->funding_start);
-                    $fundingEndDate = $fundingStartDate->calculateEndDate($item->funding_days);
-                    $result[$key]->funding_end = $fundingEndDate->format("Y-m-d");
-
-                }
-
-                // Calculate funded percentage.
-                $percent = new Prism\Math();
-                $percent->calculatePercentage($item->funded, $item->goal, 0);
-                $result[$key]->funded_percents = (string)$percent;
-
-                // Calculate days left
-                $today = new Crowdfunding\Date();
-                $result[$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
-
+            // Calculate funding end date
+            if ((int)$item->funding_days > 0) {
+                $fundingStartDate = new Crowdfunding\Date($item->funding_start);
+                $fundingEndDate = $fundingStartDate->calculateEndDate($item->funding_days);
+                $result[$key]->funding_end = $fundingEndDate->format('Y-m-d');
             }
+
+            // Calculate funded percentage.
+            $result[$key]->funded_percents = Prism\Utilities\MathHelper::calculatePercentage($item->funded, $item->goal, 0);
+
+            // Calculate days left
+            $today = new Crowdfunding\Date();
+            $result[$key]->days_left       = $today->calculateDaysLeft($item->funding_days, $item->funding_start, $item->funding_end);
         }
 
         return $result;

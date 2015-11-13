@@ -9,14 +9,14 @@
 
 // no direct access
 defined('_JEXEC') or die; ?>
-<?php if (!empty($this->item)) { ?>
+<?php if (is_object($this->item)) { ?>
     <div class="row">
         <div class="col-md-12">
             <div class="thumbnail cf-project">
                 <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug)); ?>" class="cf-thumnails-thumb" target="_blank">
                     <img src="<?php echo $this->item->link_image; ?>" alt="<?php echo $this->escape($this->item->title); ?>"
-                         width="<?php echo $this->params->get("image_width"); ?>"
-                         height="<?php echo $this->params->get("image_height"); ?>">
+                         width="<?php echo $this->params->get('image_width'); ?>"
+                         height="<?php echo $this->params->get('image_height'); ?>">
                 </a>
 
                 <div class="caption">
@@ -27,26 +27,26 @@ defined('_JEXEC') or die; ?>
                     </h3>
                     <?php if (!is_null($this->socialProfileLink)) { ?>
                         <div class="font-xxsmall">
-                            <?php echo JText::sprintf("COM_CROWDFUNDING_BY_S", JHtml::_("crowdfunding.socialProfileLink", $this->socialProfileLink, $this->item->user_name, array("target" => "_blank"))); ?>
+                            <?php echo JText::sprintf('COM_CROWDFUNDING_BY_S', JHtml::_('crowdfunding.socialProfileLink', $this->socialProfileLink, $this->item->user_name, array('target' => '_blank'))); ?>
                         </div>
                     <?php } ?>
 
-                    <p><?php echo JHtmlString::truncate($this->item->short_desc, $this->params->get("discover_description_length", 255), true, false); ?></p>
+                    <p><?php echo JHtmlString::truncate($this->item->short_desc, $this->params->get('discover_description_length', 255), true, false); ?></p>
 
-                    <?php echo JHtml::_("crowdfunding.progressbar", $this->item->funded_percents, $this->item->days_left, $this->item->funding_type); ?>
+                    <?php echo JHtml::_('crowdfunding.progressbar', $this->item->funded_percents, $this->item->days_left, $this->item->funding_type); ?>
 
                     <div class="row">
                         <div class="col-md-4">
                             <div class="bolder"><?php echo $this->item->funded_percents; ?>%</div>
-                            <div class="text-uppercase"><?php echo JText::_("COM_CROWDFUNDING_FUNDED"); ?></div>
+                            <div class="text-uppercase"><?php echo JText::_('COM_CROWDFUNDING_FUNDED'); ?></div>
                         </div>
                         <div class="col-md-4">
                             <div class="bolder"><?php echo $this->amount->setValue($this->item->funded)->formatCurrency(); ?></div>
-                            <div class="text-uppercase"><?php echo JText::_("COM_CROWDFUNDING_RAISED"); ?></div>
+                            <div class="text-uppercase"><?php echo JText::_('COM_CROWDFUNDING_RAISED'); ?></div>
                         </div>
                         <div class="col-md-4">
                             <div class="bolder"><?php echo $this->item->days_left; ?></div>
-                            <div class="text-uppercase"><?php echo JText::_("COM_CROWDFUNDING_DAYS_LEFT"); ?></div>
+                            <div class="text-uppercase"><?php echo JText::_('COM_CROWDFUNDING_DAYS_LEFT'); ?></div>
                         </div>
                     </div>
                 </div>

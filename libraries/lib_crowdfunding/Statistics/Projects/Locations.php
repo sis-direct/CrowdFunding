@@ -11,7 +11,7 @@ namespace Crowdfunding\Statistics\Projects;
 
 defined('JPATH_PLATFORM') or die;
 
-\JLoader::register("Crowdfunding\\Statistics\\Projects\\Base", JPATH_LIBRARIES . "/crowdfunding/statistics/projects/base.php");
+\JLoader::register('Crowdfunding\\Statistics\\Projects\\Base', JPATH_LIBRARIES . '/crowdfunding/statistics/projects/base.php');
 
 /**
  * This class loads statistics about projects in locations.
@@ -50,24 +50,22 @@ class Locations extends Base
     {
         $query = $this->getQuery();
 
-        $query->select("a.location_id, COUNT(a.id) as project_number");
-        $query->select("l.name as location_name");
+        $query->select('a.location_id, COUNT(a.id) as project_number');
+        $query->select('l.name as location_name');
 
-        $query->innerJoin($this->db->quoteName("#__crowdf_locations", "l") . " ON a.location_id = l.id");
-        $query->group("a.location_id");
+        $query->innerJoin($this->db->quoteName('#__crowdf_locations', 'l') . ' ON a.location_id = l.id');
+        $query->group('a.location_id');
 
         $this->prepareFilters($query, $options);
         $this->prepareOrder($query, $options);
 
         // Filter by number of projects in the results.
-        if (isset($options["having"])) {
-            if (!empty($options["having"])) {
-                $query->having("project_number >= " . (int)$options["having"]);
-            }
+        if (!empty($options['having'])) {
+            $query->having('project_number >= ' . (int)$options['having']);
         }
 
         // Get the limit of results.
-        $limit = (isset($options["limit"])) ?: 10;
+        $limit = (!empty($options['limit'])) ? $options['limit'] : 10;
 
         $this->db->setQuery($query, 0, (int)$limit);
 

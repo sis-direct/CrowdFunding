@@ -51,15 +51,15 @@ class Location extends Prism\Database\TableImmutable
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published")
-            ->from($this->db->quoteName("#__crowdf_locations", "a"));
+            ->select('a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published')
+            ->from($this->db->quoteName('#__crowdf_locations', 'a'));
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName($key) ." = " . $this->db->quote($value));
+                $query->where($this->db->quoteName($key) .' = ' . $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
 
         $this->db->setQuery($query);
@@ -86,7 +86,7 @@ class Location extends Prism\Database\TableImmutable
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -145,7 +145,7 @@ class Location extends Prism\Database\TableImmutable
      */
     public function getName($includeCountryCode = false)
     {
-        return (!$includeCountryCode) ? $this->name : $this->name . ", " . $this->country_code;
+        return (!$includeCountryCode) ? $this->name : $this->name . ', ' . $this->country_code;
     }
 
     /**
@@ -200,11 +200,11 @@ class Location extends Prism\Database\TableImmutable
      * }
      * </code>
      *
-     * @return string
+     * @return bool
      */
     public function isPublished()
     {
-        return (bool)$this->published;
+        return (bool)((int)$this->published === Prism\Constants::PUBLISHED);
     }
 
     /**

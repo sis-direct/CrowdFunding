@@ -34,20 +34,20 @@ defined('_JEXEC') or die;?>
                     </thead>
                     <tbody>
                         <?php foreach($this->items as $item) {
-                            $classRow = (!$item->reward_state) ? "" : 'class="success"';
+                            $classRow = (!$item->reward_state) ? '' : 'class="success"';
                             $socialProfileLink = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->receiver_id);?>
                         <tr <?php echo $classRow; ?>>
                             <td>
                                 <?php echo JHtml::_('crowdfunding.socialProfileLink', $socialProfileLink, $item->name); ?>
                             </td>
                             <td class="hidden-phone">
-                                <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getTransactionsRoute()."&filter_search=id:".$item->transaction_id); ?>">
+                                <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getTransactionsRoute().'&filter_search=id:'.$item->transaction_id); ?>">
                                     <?php echo $item->txn_id; ?>
                                 </a>
                             </td>
                             <td class="text-center">
                                 <?php
-                                $canEdit = ($this->userId != $item->receiver_id) ? false : true;
+                                $canEdit = ((int)$this->userId === (int)$item->receiver_id);
                                 echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward_name, $item->transaction_id, $item->reward_state, $canEdit, $this->redirectUrl);
                                 ?>
                             </td>
@@ -74,14 +74,14 @@ defined('_JEXEC') or die;?>
                         <p><?php echo $this->escape($this->reward->getDescription()); ?></p>
 
                         <?php if ($this->reward->getImage()) { ?>
-                            <img src="../<?php echo $this->imagesFolder . "/".$this->reward->getImageThumbnail(); ?>" />
+                            <img src="../<?php echo $this->imagesFolder . '/'.$this->reward->getImageThumbnail(); ?>" />
                         <?php } ?>
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <?php echo JText::_("COM_CROWDFUNDING_NUMBER_OF_REWARDS"); ?>
+                        <?php echo JText::_('COM_CROWDFUNDING_NUMBER_OF_REWARDS'); ?>
                     </td>
                     <td>
                         <?php echo JHtml::_('crowdfunding.rewardsNumber', $this->reward->getNumber()); ?>
@@ -89,7 +89,7 @@ defined('_JEXEC') or die;?>
                 </tr>
                 <tr>
                     <td>
-                        <?php echo JText::_("COM_CROWDFUNDING_DISTRIBUTED"); ?>
+                        <?php echo JText::_('COM_CROWDFUNDING_DISTRIBUTED'); ?>
                     </td>
                     <td>
                         <?php echo $this->reward->getDistributed(); ?>
@@ -97,7 +97,7 @@ defined('_JEXEC') or die;?>
                 </tr>
                 <tr>
                     <td>
-                        <?php echo JText::_("COM_CROWDFUNDING_AVAILABLE"); ?>
+                        <?php echo JText::_('COM_CROWDFUNDING_AVAILABLE'); ?>
                     </td>
                     <td>
                         <?php echo JHtml::_('crowdfunding.rewardsAvailable', $this->reward->getNumber(), $this->reward->getDistributed()); ?>
@@ -105,7 +105,7 @@ defined('_JEXEC') or die;?>
                 </tr>
                 <tr>
                     <td>
-                        <?php echo JText::_("COM_CROWDFUNDING_DELIVERY_UNTIL_DATE"); ?>
+                        <?php echo JText::_('COM_CROWDFUNDING_DELIVERY_UNTIL_DATE'); ?>
                     </td>
                     <td>
                         <?php echo $this->deliveryDate; ?>
@@ -117,9 +117,9 @@ defined('_JEXEC') or die;?>
         </div>
     </div>
 </div>
-<a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getFormRoute($this->reward->getProjectId(), "manager")); ?>" class="btn btn-default">
+<a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getFormRoute($this->reward->getProjectId(), 'manager')); ?>" class="btn btn-default">
     <span class="fa fa-chevron-left"></span>
-    <?php echo JText::_("COM_CROWDFUNDING_BACK_PROJECT_MANAGER"); ?>
+    <?php echo JText::_('COM_CROWDFUNDING_BACK_PROJECT_MANAGER'); ?>
 </a>
 <?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>
     <div class="pagination">

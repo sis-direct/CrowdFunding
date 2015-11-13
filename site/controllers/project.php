@@ -25,13 +25,12 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return   CrowdfundingModelProject    The model.
      * @since    1.5
      */
     public function getModel($name = 'Project', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -43,10 +42,10 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
@@ -54,12 +53,12 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $terms  = Joomla\Utilities\ArrayHelper::getValue($data, "terms", false, "bool");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
+        $terms  = Joomla\Utilities\ArrayHelper::getValue($data, 'terms', false, 'bool');
 
         $redirectOptions = array(
-            "view" => "project",
-            "id"   => $itemId
+            'view' => 'project',
+            'id'   => $itemId
         );
 
         $model = $this->getModel();
@@ -73,7 +72,7 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -83,9 +82,9 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
             return;
         }
 
-        if (!empty($itemId)) { // Validate owner if the item is not new.
+        if ($itemId > 0) { // Validate owner if the item is not new.
 
-            $userId = JFactory::getUser()->get("id");
+            $userId = JFactory::getUser()->get('id');
 
             $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $itemId, $userId);
             if (!$validator->isValid()) {
@@ -95,9 +94,9 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
 
         } else { // Verify terms of use during the process of creating a project.
 
-            if ($params->get("project_terms", 0) and !$terms) {
-                $redirectOptions = array("view" => "project");
-                $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED"), $redirectOptions);
+            if ($params->get('project_terms', 0) and !$terms) {
+                $redirectOptions = array('view' => 'project');
+                $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_TERMS_NOT_ACCEPTED'), $redirectOptions);
                 return;
             }
 
@@ -108,13 +107,13 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
         JPluginHelper::importPlugin('content');
 
         // Trigger onContentValidate event.
-        $context = $this->option . ".basic";
-        $results = $dispatcher->trigger("onContentValidate", array($context, &$validData, &$params));
+        $context = $this->option . '.basic';
+        $results = $dispatcher->trigger('onContentValidate', array($context, &$validData, &$params));
 
         // If there is an error, redirect to current step.
         foreach ($results as $result) {
-            if ($result["success"] == false) {
-                $this->displayWarning(Joomla\Utilities\ArrayHelper::getValue($result, "message"), $redirectOptions);
+            if ((bool)$result['success'] === false) {
+                $this->displayWarning(Joomla\Utilities\ArrayHelper::getValue($result, 'message'), $redirectOptions);
                 return;
             }
         }
@@ -125,13 +124,13 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
             $itemId = $model->save($validData);
 
             // Set the project ID to redirect options.
-            $redirectOptions["id"] = $itemId;
+            $redirectOptions['id'] = $itemId;
 
             // Get the images from the session.
             $images = $app->getUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT);
 
             // Store the images to the project record.
-            if (!empty($images) and !empty($itemId)) {
+            if (($images !== null and is_array($images)) and $itemId > 0) {
 
                 // Get the folder where the images will be stored
                 $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
@@ -157,12 +156,12 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
 
         // Redirect to next page
         $redirectOptions = array(
-            "view"   => "project",
-            "layout" => "funding",
-            "id"     => $itemId
+            'view'   => 'project',
+            'layout' => 'funding',
+            'id'     => $itemId
         );
 
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_PROJECT_SUCCESSFULLY_SAVED"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_PROJECT_SUCCESSFULLY_SAVED'), $redirectOptions);
     }
 
     /**
@@ -171,22 +170,22 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
     public function removeImage()
     {
         // Check for request forgeries.
-        JSession::checkToken("get") or jexit(JText::_('JINVALID_TOKEN'));
+        JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
         // Check for registered user
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
 
         // Get item id
-        $itemId          = $this->input->get->getInt("id");
+        $itemId          = $this->input->get->getInt('id');
         $redirectOptions = array(
-            "view" => "project"
+            'view' => 'project'
         );
 
         // Validate project owner.
@@ -197,16 +196,14 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
         }
 
         try {
-
             $model = $this->getModel();
             $model->removeImage($itemId, $userId);
-
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
-        $redirectOptions["id"] = $itemId;
+        $redirectOptions['id'] = $itemId;
         $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
     }
 }

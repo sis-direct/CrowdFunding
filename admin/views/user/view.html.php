@@ -79,13 +79,13 @@ class CrowdfundingViewUser extends JViewLegacy
         $amounts   = $statistics->getAmounts();
 
         if (!empty($amounts["invested"])) {
-            $this->investedAmount = (float)$amounts["invested"]->amount;
-            $this->investedTransactions = (int)$amounts["invested"]->number;
+            $this->investedAmount = (float)$amounts["invested"]['amount'];
+            $this->investedTransactions = (int)$amounts["invested"]['number'];
         }
 
         if (!empty($amounts["received"])) {
-            $this->receivedAmount = (float)$amounts["received"]->amount;
-            $this->receivedTransactions = (int)$amounts["received"]->number;
+            $this->receivedAmount = (float)$amounts["received"]['amount'];
+            $this->receivedTransactions = (int)$amounts["received"]['number'];
         }
 
         // Get social profile

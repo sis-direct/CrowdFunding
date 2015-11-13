@@ -42,7 +42,7 @@ class CrowdfundingModelComments extends JModelList
         /** @var $app JApplicationSite */
 
         // Get project ID
-        $value = $app->input->get("id", 0, "uint");
+        $value = $app->input->get('id', 0, 'uint');
         $this->setState($this->getName() . '.id', $value);
 
         // Load the component parameters.
@@ -83,7 +83,8 @@ class CrowdfundingModelComments extends JModelList
     {
         // Create a new query object.
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
+        
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
@@ -118,15 +119,15 @@ class CrowdfundingModelComments extends JModelList
 
     public function getForm()
     {
-        $name   = $this->option . ".comment";
-        $source = "comment";
+        $name   = $this->option . '.comment';
+        $source = 'comment';
 
         $options = array(
             'control'   => 'jform',
             'load_data' => false
         );
 
-        $data = array("project_id" => $this->state->get($this->getName() . ".id"));
+        $data = array('project_id' => $this->state->get($this->getName() . '.id'));
 
         // Get the form.
         JForm::addFormPath(JPATH_COMPONENT . '/models/forms');

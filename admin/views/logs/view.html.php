@@ -38,14 +38,14 @@ class CrowdfundingViewLogs extends JViewLegacy
     protected $sidebar;
 
     protected $includeFiles = array(
-        "/error_log",
-        "/php_errorlog"
+        '/error_log',
+        '/php_errorlog'
     );
 
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
+        $this->option = JFactory::getApplication()->input->get('option');
     }
 
     public function display($tpl = null)
@@ -59,9 +59,6 @@ class CrowdfundingViewLogs extends JViewLegacy
         $logFiles->load();
 
         $this->numberLogFilse = count($logFiles);
-
-        // Add submenu
-        CrowdfundingHelper::addSubmenu($this->getName());
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -82,11 +79,11 @@ class CrowdfundingViewLogs extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
         if ($this->saveOrder) {
             $this->saveOrderingUrl = 'index.php?option=' . $this->option . '&task=' . $this->getName() . '.saveOrderAjax&format=raw';
-            JHtml::_('sortablelist.sortable', $this->getName() . 'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
+            JHtml::_('sortablelist.sortable', $this->getName() . 'List', 'adminForm', JString::strtolower($this->listDirn), $this->saveOrderingUrl);
         }
 
         $this->sortFields = array(
@@ -95,7 +92,6 @@ class CrowdfundingViewLogs extends JViewLegacy
             'a.record_date' => JText::_('JDATE'),
             'a.id'          => JText::_('JGRID_HEADING_ID')
         );
-
     }
 
     /**
@@ -103,9 +99,12 @@ class CrowdfundingViewLogs extends JViewLegacy
      */
     protected function addSidebar()
     {
+        // Add submenu
+        CrowdfundingHelper::addSubmenu($this->getName());
+
         JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
 
-        $filters = new Crowdfunding\Filters(JFactory::getDbo());
+        $filters = Crowdfunding\Filters::getInstance(JFactory::getDbo());
         $types   = $filters->getLogTypes();
 
         JHtmlSidebar::addFilter(
@@ -131,16 +130,16 @@ class CrowdfundingViewLogs extends JViewLegacy
         $bar->appendButton(
             'Link',
             'eye-open',
-            JText::sprintf("COM_CROWDFUNDING_VIEW_LOG_FILES_BUTTON", $this->numberLogFilse),
-            JRoute::_("index.php?option=com_crowdfunding&view=log&layout=files")
+            JText::sprintf('COM_CROWDFUNDING_VIEW_LOG_FILES_BUTTON', $this->numberLogFilse),
+            JRoute::_('index.php?option=com_crowdfunding&view=log&layout=files')
         );
 
-        $bar->appendButton('Link', 'refresh', JText::_("COM_CROWDFUNDING_RELOAD"), JRoute::_("index.php?option=com_crowdfunding&view=logs"));
+        $bar->appendButton('Link', 'refresh', JText::_('COM_CROWDFUNDING_RELOAD'), JRoute::_('index.php?option=com_crowdfunding&view=logs'));
 
-        JToolbarHelper::custom('logs.removeall', "trash", "", JText::_("COM_CROWDFUNDING_DELETE_ALL"), false);
-        JToolbarHelper::deleteList(JText::_("COM_CROWDFUNDING_DELETE_ITEMS_QUESTION"), "logs.delete");
+        JToolbarHelper::custom('logs.removeall', 'trash', '', JText::_('COM_CROWDFUNDING_DELETE_ALL'), false);
+        JToolbarHelper::deleteList(JText::_('COM_CROWDFUNDING_DELETE_ITEMS_QUESTION'), 'logs.delete');
         JToolbarHelper::divider();
-        JToolbarHelper::custom('logs.backToDashboard', "dashboard", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
+        JToolbarHelper::custom('logs.backToDashboard', 'dashboard', '', JText::_('COM_CROWDFUNDING_DASHBOARD'), false);
     }
 
     /**

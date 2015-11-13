@@ -43,7 +43,7 @@ class JFormFieldCfTypes extends JFormFieldList
         $options = array();
 
         // Get types
-        $filters = new Crowdfunding\Filters(JFactory::getDbo());
+        $filters = Crowdfunding\Filters::getInstance(JFactory::getDbo());
 
         $typesOptions = $filters->getProjectsTypes();
 

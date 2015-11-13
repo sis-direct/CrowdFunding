@@ -41,7 +41,7 @@ defined('_JEXEC') or die;
     <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_CREATED', 'a.created', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="hidden-phone"><?php echo JText::_("COM_CROWDFUNDING_TYPE"); ?></th>
+    <th width="10%" class="hidden-phone"><?php echo JText::_('COM_CROWDFUNDING_TYPE'); ?></th>
     <th width="5%" class="nowrap">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_OWNER', 'd.name', $this->listDirn, $this->listOrder); ?>
     </th>

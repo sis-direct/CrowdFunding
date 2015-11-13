@@ -29,7 +29,7 @@ class JFormRuleCfCategory extends JFormRule
     public function test(SimpleXMLElement $element, $value, $group = null, JRegistry $input = null, JForm $form = null)
     {
         // If the field is empty and not required, the field is valid.
-        $required = ((string)$element['required'] == 'true' || (string)$element['required'] == 'required');
+        $required = ((string)$element['required'] === 'true' or (string)$element['required'] === 'required');
 
         if ($required and !$value) {
             return false;
@@ -42,8 +42,8 @@ class JFormRuleCfCategory extends JFormRule
         // Build the query.
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName("#__categories", "a"))
-            ->where('a.extension = ' . $db->quote("com_crowdfunding"))
+            ->from($db->quoteName('#__categories', 'a'))
+            ->where('a.extension = ' . $db->quote('com_crowdfunding'))
             ->where('a.published = 1');
 
         // Set and query the database.

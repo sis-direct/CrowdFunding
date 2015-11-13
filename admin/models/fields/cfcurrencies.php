@@ -43,9 +43,9 @@ class JFormFieldCfCurrencies extends JFormFieldList
         $query = $db->getQuery(true);
 
         $query
-            ->select('a.id AS value, ' . $query->concatenate(array("a.code", "a.title"), " - ") . ' AS text')
+            ->select('a.id AS value, ' . $query->concatenate(array('a.code', 'a.title'), ' - ') . ' AS text')
             ->from($db->quoteName('#__crowdf_currencies', 'a'))
-            ->order("a.code ASC");
+            ->order('a.code ASC');
 
         // Get the options.
         $db->setQuery($query);

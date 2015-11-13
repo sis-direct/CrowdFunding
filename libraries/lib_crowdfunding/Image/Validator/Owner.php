@@ -13,7 +13,7 @@ use Prism;
 
 defined('JPATH_BASE') or die;
 
-\JLoader::register("Prism\\File\\Validator", JPATH_LIBRARIES . "/prism/file/validator.php");
+\JLoader::register("Prism\\File\\Validator", JPATH_LIBRARIES . '/prism/file/validator.php');
 
 /**
  * This class provides functionality validation image owner.
@@ -65,16 +65,16 @@ class Owner extends Prism\File\Validator
     {
         $subQuery = $this->db->getQuery(true);
         $subQuery
-            ->select("b.project_id")
-            ->from($this->db->quoteName("#__crowdf_images", "b"))
-            ->where("b.id = " . (int)$this->imageId);
+            ->select('b.project_id')
+            ->from($this->db->quoteName('#__crowdf_images', 'b'))
+            ->where('b.id = ' . (int)$this->imageId);
 
         $query = $this->db->getQuery(true);
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id = (" . $subQuery . ")")
-            ->where("a.user_id = " . (int)$this->userId);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = (' . $subQuery . ')')
+            ->where('a.user_id = ' . (int)$this->userId);
 
         $this->db->setQuery($query, 0, 1);
         $result = $this->db->loadResult();

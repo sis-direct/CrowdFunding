@@ -51,17 +51,17 @@ defined('_JEXEC') or die;?>
             		    </a>
                         <?php if(!empty($item->txn_id)) { ?>
                         <div class="font-smaller">
-                            <?php echo JText::sprintf("COM_CROWDFUNDING_TRANSACTION_ID_S", $item->txn_id); ?>
+                            <?php echo JText::sprintf('COM_CROWDFUNDING_TRANSACTION_ID_S', $item->txn_id); ?>
                         </div>
                         <?php } ?>
         		    </td>
             		<td class="text-center"><?php echo $this->amount->setValue($item->txn_amount)->formatCurrency(); ?></td>
-            		<td class="text-center hidden-phone"><?php echo JHtml::_("crowdfunding.name", $item->investor); ?></td>
+            		<td class="text-center hidden-phone"><?php echo JHtml::_('crowdfunding.name', $item->investor); ?></td>
             		<td class="text-center hidden-phone"><?php echo $this->escape($item->receiver); ?></td>
             		<td class="text-center hidden-phone"><?php echo JHtml::_('date', $item->txn_date, JText::_('DATE_FORMAT_LC3')); ?></td>
             		<td class="text-center hidden-phone">
             		    <?php 
-            		    $canEdit = ($this->userId != $item->receiver_id) ? false : true;
+            		    $canEdit = ($this->userId === $item->receiver_id);
             		    echo JHtml::_('crowdfunding.reward', $item->reward_id, $item->reward, $item->id, $item->reward_state, $canEdit, $this->redirectUrl); ?>
             		</td>
             		<td class="text-center hidden-phone">

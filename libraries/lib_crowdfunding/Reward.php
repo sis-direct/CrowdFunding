@@ -25,8 +25,8 @@ class Reward extends Prism\Database\Table
     protected $title;
     protected $description;
     protected $amount;
-    protected $number;
-    protected $distributed;
+    protected $number = 0;
+    protected $distributed = 0;
     protected $delivery;
     protected $shipping;
     protected $image;
@@ -34,7 +34,7 @@ class Reward extends Prism\Database\Table
     protected $image_square;
     protected $published;
     protected $project_id;
-    protected $user_id;
+    protected $user_id = 0;
     protected $available = 0;
 
     /**
@@ -59,27 +59,23 @@ class Reward extends Prism\Database\Table
 
         $query
             ->select(
-                "a.id, a.title, a.description, a.amount, a.number, a.distributed, a.delivery, " .
-                "a.shipping, a.image, a.image_thumb, a.image_square, a.published, a.project_id, " .
-                "b.user_id"
+                'a.id, a.title, a.description, a.amount, a.number, a.distributed, a.delivery, ' .
+                'a.shipping, a.image, a.image_thumb, a.image_square, a.published, a.project_id, ' .
+                'b.user_id'
             )
-            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
-            ->innerJoin($this->db->quoteName("#__crowdf_projects", "b") . " ON a.project_id = b.id");
+            ->from($this->db->quoteName('#__crowdf_rewards', 'a'))
+            ->innerJoin($this->db->quoteName('#__crowdf_projects', 'b') . ' ON a.project_id = b.id');
 
         if (!is_array($keys)) {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         } else {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) . "=" . $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) . '=' . $this->db->quote($value));
             }
         }
 
         $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
-
-        if (!$result) {
-            $result = array();
-        }
+        $result = (array)$this->db->loadAssoc();
 
         $this->bind($result);
 
@@ -115,20 +111,20 @@ class Reward extends Prism\Database\Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__crowdf_rewards"))
-            ->set($this->db->quoteName("title") . "=" . $this->db->quote($this->title))
-            ->set($this->db->quoteName("description") . "=" . $this->db->quote($this->description))
-            ->set($this->db->quoteName("amount") . "=" . $this->db->quote($this->amount))
-            ->set($this->db->quoteName("number") . "=" . (int)$this->number)
-            ->set($this->db->quoteName("distributed") . "=" . (int)$this->distributed)
-            ->set($this->db->quoteName("delivery") . "=" . $this->db->quote($this->delivery))
-            ->set($this->db->quoteName("shipping") . "=" . $this->db->quote($this->shipping))
-            ->set($this->db->quoteName("image") . "=" . $this->db->quote($this->image))
-            ->set($this->db->quoteName("image_thumb") . "=" . $this->db->quote($this->image_thumb))
-            ->set($this->db->quoteName("image_square") . "=" . $this->db->quote($this->image_square))
-            ->set($this->db->quoteName("published") . "=" . $this->db->quote($this->published))
-            ->set($this->db->quoteName("project_id") . "=" . (int)$this->project_id)
-            ->where($this->db->quoteName("id") ."=". (int)$this->id);
+            ->update($this->db->quoteName('#__crowdf_rewards'))
+            ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
+            ->set($this->db->quoteName('description') . '=' . $this->db->quote($this->description))
+            ->set($this->db->quoteName('amount') . '=' . $this->db->quote($this->amount))
+            ->set($this->db->quoteName('number') . '=' . (int)$this->number)
+            ->set($this->db->quoteName('distributed') . '=' . (int)$this->distributed)
+            ->set($this->db->quoteName('delivery') . '=' . $this->db->quote($this->delivery))
+            ->set($this->db->quoteName('shipping') . '=' . $this->db->quote($this->shipping))
+            ->set($this->db->quoteName('image') . '=' . $this->db->quote($this->image))
+            ->set($this->db->quoteName('image_thumb') . '=' . $this->db->quote($this->image_thumb))
+            ->set($this->db->quoteName('image_square') . '=' . $this->db->quote($this->image_square))
+            ->set($this->db->quoteName('published') . '=' . $this->db->quote($this->published))
+            ->set($this->db->quoteName('project_id') . '=' . (int)$this->project_id)
+            ->where($this->db->quoteName('id') .'='. (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -139,19 +135,19 @@ class Reward extends Prism\Database\Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->insert($this->db->quoteName("#__crowdf_rewards"))
-            ->set($this->db->quoteName("title") . "=" . $this->db->quote($this->title))
-            ->set($this->db->quoteName("description") . "=" . $this->db->quote($this->description))
-            ->set($this->db->quoteName("amount") . "=" . $this->db->quote($this->amount))
-            ->set($this->db->quoteName("number") . "=" . (int)$this->number)
-            ->set($this->db->quoteName("distributed") . "=" . (int)$this->distributed)
-            ->set($this->db->quoteName("delivery") . "=" . $this->db->quote($this->delivery))
-            ->set($this->db->quoteName("shipping") . "=" . $this->db->quote($this->shipping))
-            ->set($this->db->quoteName("image") . "=" . $this->db->quote($this->image))
-            ->set($this->db->quoteName("image_thumb") . "=" . $this->db->quote($this->image_thumb))
-            ->set($this->db->quoteName("image_square") . "=" . $this->db->quote($this->image_square))
-            ->set($this->db->quoteName("published") . "=" . $this->db->quote($this->published))
-            ->set($this->db->quoteName("project_id") . "=" . (int)$this->project_id);
+            ->insert($this->db->quoteName('#__crowdf_rewards'))
+            ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
+            ->set($this->db->quoteName('description') . '=' . $this->db->quote($this->description))
+            ->set($this->db->quoteName('amount') . '=' . $this->db->quote($this->amount))
+            ->set($this->db->quoteName('number') . '=' . (int)$this->number)
+            ->set($this->db->quoteName('distributed') . '=' . (int)$this->distributed)
+            ->set($this->db->quoteName('delivery') . '=' . $this->db->quote($this->delivery))
+            ->set($this->db->quoteName('shipping') . '=' . $this->db->quote($this->shipping))
+            ->set($this->db->quoteName('image') . '=' . $this->db->quote($this->image))
+            ->set($this->db->quoteName('image_thumb') . '=' . $this->db->quote($this->image_thumb))
+            ->set($this->db->quoteName('image_square') . '=' . $this->db->quote($this->image_square))
+            ->set($this->db->quoteName('published') . '=' . $this->db->quote($this->published))
+            ->set($this->db->quoteName('project_id') . '=' . (int)$this->project_id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -177,7 +173,7 @@ class Reward extends Prism\Database\Table
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -348,7 +344,7 @@ class Reward extends Prism\Database\Table
      */
     public function getNumber()
     {
-        return $this->number;
+        return (int)$this->number;
     }
 
     /**
@@ -367,7 +363,7 @@ class Reward extends Prism\Database\Table
      */
     public function getProjectId()
     {
-        return $this->project_id;
+        return (int)$this->project_id;
     }
 
     /**
@@ -386,7 +382,7 @@ class Reward extends Prism\Database\Table
      */
     public function getDistributed()
     {
-        return $this->distributed;
+        return (int)$this->distributed;
     }
 
     /**
@@ -398,8 +394,9 @@ class Reward extends Prism\Database\Table
      * $reward    = new Crowdfunding\Reward();
      * $reward->setDb(\JFactory::getDbo());
      * $reward->load($rewardId);
-     * $reward->increaseDistributed();
-     * $reward->store();
+     *
+     * $reward->increaseDistributed(1);
+     * $reward->updateDistributed();
      * </code>
      *
      * @param integer
@@ -415,6 +412,32 @@ class Reward extends Prism\Database\Table
     }
 
     /**
+     * Decrease the number of distributed rewards.
+     *
+     * <code>
+     * $rewardId = 1;
+     *
+     * $reward    = new Crowdfunding\Reward();
+     * $reward->setDb(\JFactory::getDbo());
+     * $reward->load($rewardId);
+     *
+     * $reward->decreaseDistributed(3);
+     * $reward->updateDistributed();
+     * </code>
+     *
+     * @param integer
+     */
+    public function decreaseDistributed($number = 1)
+    {
+        $distributed = (int)$this->distributed - (int)$number;
+
+        if ($distributed < $this->number) {
+            $this->distributed = $distributed;
+            $this->available   = $this->number - $this->distributed;
+        }
+    }
+
+    /**
      * Update the number of distributed rewards.
      *
      * <code>
@@ -423,6 +446,7 @@ class Reward extends Prism\Database\Table
      * $reward    = new Crowdfunding\Reward();
      * $reward->setDb(\JFactory::getDbo());
      * $reward->load($rewardId);
+     *
      * $reward->increaseDistributed();
      * $reward->updateDistributed();
      * </code>
@@ -432,9 +456,9 @@ class Reward extends Prism\Database\Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__crowdf_rewards"))
-            ->set($this->db->quoteName("distributed") . "=" . (int)$this->distributed)
-            ->where($this->db->quoteName("id") ."=". (int)$this->id);
+            ->update($this->db->quoteName('#__crowdf_rewards'))
+            ->set($this->db->quoteName('distributed') . '=' . (int)$this->distributed)
+            ->where($this->db->quoteName('id') .'='. (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -459,7 +483,7 @@ class Reward extends Prism\Database\Table
      */
     public function isLimited()
     {
-        return (!empty($this->number)) ? true : false;
+        return (bool)($this->number > 0);
     }
 
     /**
@@ -474,11 +498,11 @@ class Reward extends Prism\Database\Table
      * $available = $reward->getAvailable();
      * </code>
      *
-     * @return integer
+     * @return int
      */
     public function getAvailable()
     {
-        return $this->available;
+        return (int)$this->available;
     }
 
     protected function calculateAvailable()
@@ -513,14 +537,14 @@ class Reward extends Prism\Database\Table
 
         // Count number of selections.
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.reward_id = " . (int)$this->id);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.reward_id = ' . (int)$this->id);
 
         $this->db->setQuery($query, 0, 1);
-        $number = $this->db->loadResult();
+        $number = (int)$this->db->loadResult();
 
-        return (!$number) ? false : true;
+        return (bool)($number > 0);
     }
 
     /**
@@ -538,18 +562,18 @@ class Reward extends Prism\Database\Table
     public function trash()
     {
         if (!$this->id) {
-            throw new \RuntimeException("LIB_CROWDFUNDING_INVALID_REWARD");
+            throw new \RuntimeException('LIB_CROWDFUNDING_INVALID_REWARD');
         }
 
-        // Set the state to "trashed" value.
+        // Set the state to 'trashed' value.
         $this->published = Prism\Constants::TRASHED;
 
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__crowdf_rewards"))
-            ->set($this->db->quoteName("published") . "=" . $this->db->quote($this->published))
-            ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+            ->update($this->db->quoteName('#__crowdf_rewards'))
+            ->set($this->db->quoteName('published') . '=' . $this->db->quote($this->published))
+            ->where($this->db->quoteName('id') . '=' . (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();

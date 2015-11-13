@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if (strcmp("five_steps", $this->wizardType) == 0) {
+if (strcmp('five_steps', $this->wizardType) === 0) {
     $layout      = new JLayoutFile('project_wizard');
 } else {
     $layout      = new JLayoutFile('project_wizard_six_steps');
@@ -42,22 +42,26 @@ echo $layout->render($this->layoutData);
             <?php echo $this->form->getInput('location_preview'); ?>
             </div>
 
-            <?php if(!empty($this->numberOfTypes)) {?>
+            <?php if ($this->numberOfTypes === 1) {
+                $type = $this->types[0];
+            ?>
+            <input type="hidden" name="jform[type_id]" value="<?php echo ($type instanceof Crowdfunding\Type) ? $type->getId() : 0; ?>" />
+            <?php } elseif ($this->numberOfTypes > 1) {?>
                 <div class="form-group">
                 <?php echo $this->form->getLabel('type_id'); ?>
                 <?php echo $this->form->getInput('type_id'); ?>
                 </div>
-            <?php  } else { ?>
+            <?php } else { ?>
                 <input type="hidden" name="jform[type_id]" value="0" />
             <?php }?>
             
             <?php 
-			if($this->params->get("project_terms", 0) AND $this->isNew) {
-			    $termsUrl = $this->params->get("project_terms_url", "");
+			if($this->params->get('project_terms', 0) and $this->isNew) {
+			    $termsUrl = $this->params->get('project_terms_url', '');
 			?>
 			<div class="checkbox">
                 <label>
-                    <input type="checkbox" name="jform[terms]" value="1" required="required"> <?php echo (!$termsUrl) ? JText::_("COM_CROWDFUNDING_TERMS_AGREEMENT") : JText::sprintf("COM_CROWDFUNDING_TERMS_AGREEMENT_URL", $termsUrl);?>
+                    <input type="checkbox" name="jform[terms]" value="1" required="required"> <?php echo (!$termsUrl) ? JText::_('COM_CROWDFUNDING_TERMS_AGREEMENT') : JText::sprintf('COM_CROWDFUNDING_TERMS_AGREEMENT_URL', $termsUrl);?>
                 </label>
             </div>
             <?php }?>
@@ -70,24 +74,24 @@ echo $layout->render($this->layoutData);
             
             <button type="submit" class="btn btn-primary mtb-15-0" <?php echo $this->disabledButton;?>>
             	<span class="fa fa-check"></span>
-                <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
+                <?php echo JText::_('COM_CROWDFUNDING_SAVE_AND_CONTINUE')?>
             </button>
         </form>
     </div>
 
     <div class="col-md-6">
-        <?php if(!$this->debugMode) {?>
+        <?php if (!$this->debugMode) {?>
         <div class="mb-15">
             <span class="btn btn-default fileinput-button">
                 <span class="fa fa-upload"></span>
-                <span><?php echo JText::_("COM_CROWDFUNDING_UPLOAD_IMAGE");?></span>
+                <span><?php echo JText::_('COM_CROWDFUNDING_UPLOAD_IMAGE');?></span>
                 <!-- The file input field used as target for the file upload widget -->
-                <input id="js-thumb-fileupload" type="file" name="project_image" data-url="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.uploadImage&format=raw");?>" />
+                <input id="js-thumb-fileupload" type="file" name="project_image" data-url="<?php echo JRoute::_('index.php?option=com_crowdfunding&task=project.uploadImage&format=raw');?>" />
             </span>
 
-            <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=project.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" id="js-btn-remove-image" class="btn btn-danger" style="display: <?php echo $this->displayRemoveButton; ?>">
+            <a href="<?php echo JRoute::_('index.php?option=com_crowdfunding&task=project.removeImage&id='.$this->item->id.'&'.JSession::getFormToken().'=1');?>" id="js-btn-remove-image" class="btn btn-danger" style="display: <?php echo $this->displayRemoveButton; ?>">
                 <span class="fa fa-trash"></span>
-                <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
+                <?php echo JText::_('COM_CROWDFUNDING_REMOVE_IMAGE');?>
             </a>
 
             <img src="media/com_crowdfunding/images/ajax-loader.gif" width="16" height="16" id="js-thumb-fileupload-loader" style="display: none;" />
@@ -95,17 +99,17 @@ echo $layout->render($this->layoutData);
             <div id="js-image-tools" class="mt-10" style="display: none;">
                 <a href="javascript: void(0);" class="btn btn-primary" id="js-crop-btn">
                     <span class="fa fa-check-circle"></span>
-                    <?php echo JText::_("COM_CROWDFUNDING_CROP_IMAGE");?>
+                    <?php echo JText::_('COM_CROWDFUNDING_CROP_IMAGE');?>
                 </a>
 
                 <a href="javascript: void(0);" class="btn btn-default" id="js-crop-btn-cancel">
                     <span class="fa fa-ban"></span>
-                    <?php echo JText::_("COM_CROWDFUNDING_CANCEL");?>
+                    <?php echo JText::_('COM_CROWDFUNDING_CANCEL');?>
                 </a>
             </div>
 
         </div>
-        <form action="<?php echo JRoute::_("index.php?option=com_crowdfunding");?>" method="post" id="js-image-tools-form">
+        <form action="<?php echo JRoute::_('index.php?option=com_crowdfunding');?>" method="post" id="js-image-tools-form">
             <input type="hidden" name="<?php echo JSession::getFormToken(); ?>" value="1" />
         </form>
         <?php }?>

@@ -9,15 +9,15 @@
 
 // no direct access
 defined('_JEXEC') or die;?>
-<?php if (!empty($this->items)) { ?>
+<?php if (count($this->items) > 0) { ?>
     <div id="cf-categories-list">
     <?php foreach ($this->items as $item) { ?>
         <div class="cf-category">
             <a href="<?php echo JRoute::_(CrowdfundingHelperRoute::getCategoryRoute($item->slug)); ?>" class="cf-category-thumbnail">
-                <?php if (!empty($item->image_link)) { ?>
+                <?php if (JString::strlen($item->image_link) > 0) { ?>
                     <img src="<?php echo $item->image_link; ?>" alt="<?php echo $this->escape($item->title); ?>" />
                 <?php } else { ?>
-                    <img src="<?php echo "media/com_crowdfunding/images/no_image.png"; ?>"
+                    <img src="<?php echo 'media/com_crowdfunding/images/no_image.png'; ?>"
                          alt="<?php echo $this->escape($item->title); ?>" width="200"
                          height="200" />
                 <?php } ?>
@@ -30,11 +30,11 @@ defined('_JEXEC') or die;?>
                     </a>
                     <?php
                     if ($this->displayProjectsNumber) {
-                        $number = (!isset($this->projectsNumber[$item->id])) ? 0 : $this->projectsNumber[$item->id]["number"];
-                        echo "( ". $number . " )";
+                        $number = (!array_key_exists($item->id, $this->projectsNumber)) ? 0 : $this->projectsNumber[$item->id]['number'];
+                        echo '( '. $number . ' )';
                     } ?>
                 </h3>
-                <?php if ($this->params->get("categories_display_description", true)) { ?>
+                <?php if ((bool)$this->params->get('categories_display_description', true)) { ?>
                     <p><?php echo JHtmlString::truncate($item->description, $this->descriptionLength, true, false); ?></p>
                 <?php } ?>
             </div>

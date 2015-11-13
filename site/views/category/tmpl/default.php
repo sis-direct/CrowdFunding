@@ -15,12 +15,12 @@ defined('_JEXEC') or die;
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-    <?php if ($this->params->get("display_description", 0)) {
+    <?php if ($this->params->get('display_description', 0)) {
         echo $this->item->description;
     } ?>
 
     <?php if (empty($this->items)) { ?>
-        <p class="alert alert-warning"><?php echo JText::_("COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY"); ?></p>
+        <p class="alert alert-warning"><?php echo JText::_('COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY'); ?></p>
     <?php } ?>
 
     <?php if (!empty($this->items)) {
@@ -38,8 +38,8 @@ defined('_JEXEC') or die;
 
     <?php
     if (!empty($this->displaySubcategories) and !empty($this->categories)) { ?>
-        <h4><?php echo JText::_("COM_CROWDFUNDING_SUBCATEGORIES"); ?></h4>
-        <?php echo $this->loadTemplate("categories");
+        <h4><?php echo JText::_('COM_CROWDFUNDING_SUBCATEGORIES'); ?></h4>
+        <?php echo $this->loadTemplate('categories');
     } ?>
 </div>
 <div class="clearfix">&nbsp;</div>

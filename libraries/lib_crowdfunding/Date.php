@@ -43,8 +43,9 @@ class Date extends Prism\Date
     {
         // Calculate days left
         $today = clone $this;
+        $fundingDays = (int)abs($fundingDays);
 
-        if (!empty($fundingDays)) {
+        if ($fundingDays > 0) {
 
             $validatorDate = new Prism\Validator\Date($fundingStart);
 
@@ -55,14 +56,14 @@ class Date extends Prism\Date
             }
 
             $endingDate = new \DateTime($fundingStart);
-            $endingDate->modify("+" . (int)$fundingDays . " days");
+            $endingDate->modify('+' . (int)$fundingDays . ' days');
 
         } else {
             $endingDate = new \DateTime($fundingEnd);
         }
 
         $interval = $today->diff($endingDate);
-        $daysLeft = $interval->format("%r%a");
+        $daysLeft = $interval->format('%r%a');
 
         if ($daysLeft < 0) {
             $daysLeft = 0;

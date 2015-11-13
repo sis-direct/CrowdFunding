@@ -29,7 +29,7 @@ class JFormRuleCfCountry extends JFormRule
     public function test(SimpleXMLElement $element, $value, $group = null, JRegistry $input = null, JForm $form = null)
     {
         // If the field is empty and not required, the field is valid.
-        $required = ((string)$element['required'] == 'true' || (string)$element['required'] == 'required');
+        $required = ((string)$element['required'] === 'true' || (string)$element['required'] === 'required');
 
         if ($required and !$value) {
             return false;
@@ -42,7 +42,7 @@ class JFormRuleCfCountry extends JFormRule
         // Build the query.
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName("#__crowdf_countries", "a"));
+            ->from($db->quoteName('#__crowdf_countries', 'a'));
 
         if (is_numeric($value)) {
             $query->where('a.id = ' . (int)$value);

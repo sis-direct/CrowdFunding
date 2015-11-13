@@ -39,7 +39,7 @@ class Filters
      *
      * @param \JDatabaseDriver $db Database object.
      */
-    public function __construct(\JDatabaseDriver $db = null)
+    protected function __construct(\JDatabaseDriver $db = null)
     {
         $this->db = $db;
     }
@@ -75,7 +75,7 @@ class Filters
      */
     public static function getInstance(\JDatabaseDriver $db)
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new Filters($db);
         }
 
@@ -95,11 +95,11 @@ class Filters
     public function getPaymentStatuses()
     {
         return array(
-            \JHtml::_("select.option", "completed", \JText::_("COM_CROWDFUNDING_COMPLETED")),
-            \JHtml::_("select.option", "pending", \JText::_("COM_CROWDFUNDING_PENDING")),
-            \JHtml::_("select.option", "canceled", \JText::_("COM_CROWDFUNDING_CANCELED")),
-            \JHtml::_("select.option", "refunded", \JText::_("COM_CROWDFUNDING_REFUNDED")),
-            \JHtml::_("select.option", "failed", \JText::_("COM_CROWDFUNDING_FAILED"))
+            \JHtml::_('select.option', 'completed', \JText::_('COM_CROWDFUNDING_COMPLETED')),
+            \JHtml::_('select.option', 'pending', \JText::_('COM_CROWDFUNDING_PENDING')),
+            \JHtml::_('select.option', 'canceled', \JText::_('COM_CROWDFUNDING_CANCELED')),
+            \JHtml::_('select.option', 'refunded', \JText::_('COM_CROWDFUNDING_REFUNDED')),
+            \JHtml::_('select.option', 'failed', \JText::_('COM_CROWDFUNDING_FAILED'))
         );
     }
 
@@ -116,9 +116,9 @@ class Filters
     public function getRewardDistributionStatuses()
     {
         return array(
-            \JHtml::_("select.option", "none", \JText::_("COM_CROWDFUNDING_NOT_SELECTE")),
-            \JHtml::_("select.option", "0", \JText::_("COM_CROWDFUNDING_NOT_SENT")),
-            \JHtml::_("select.option", "1", \JText::_("COM_CROWDFUNDING_SENT")),
+            \JHtml::_('select.option', 'none', \JText::_('COM_CROWDFUNDING_NOT_SELECTE')),
+            \JHtml::_('select.option', '0', \JText::_('COM_CROWDFUNDING_NOT_SENT')),
+            \JHtml::_('select.option', '1', \JText::_('COM_CROWDFUNDING_SENT')),
         );
     }
 
@@ -134,28 +134,18 @@ class Filters
      */
     public function getProjectsTypes()
     {
-        if (!isset($this->options["project_types"])) {
-
+        if (!array_key_exists('project_types', $this->options)) {
             $query = $this->db->getQuery(true);
 
             $query
-                ->select("a.id AS value, a.title AS text")
-                ->from($this->db->quoteName("#__crowdf_types", "a"));
+                ->select('a.id AS value, a.title AS text')
+                ->from($this->db->quoteName('#__crowdf_types', 'a'));
 
             $this->db->setQuery($query);
-            $results = $this->db->loadAssocList();
-
-            if (!$results) {
-                $results = array();
-            }
-
-            $this->options["project_types"] = $results;
-
-        } else {
-            $results = $this->options["project_types"];
+            $this->options['project_types'] = (array)$this->db->loadAssocList();
         }
 
-        return $results;
+        return $this->options['project_types'];
     }
 
     /**
@@ -170,29 +160,20 @@ class Filters
      */
     public function getPaymentServices()
     {
-        if (!isset($this->options["payment_services"])) {
-
+        if (!array_key_exists('payment_services', $this->options)) {
             $query = $this->db->getQuery(true);
 
             $query
-                ->select("a.service_provider AS value, a.service_provider AS text")
-                ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-                ->group("a.service_provider");
+                ->select('a.service_alias AS value, a.service_provider AS text')
+                ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+                ->where('a.service_alias != ""')
+                ->group('a.service_provider');
 
             $this->db->setQuery($query);
-            $results = $this->db->loadAssocList();
-
-            if (!$results) {
-                $results = array();
-            }
-
-            $this->options["payment_services"] = $results;
-
-        } else {
-            $results = $this->options["payment_services"];
+            $this->options['payment_services'] = (array)$this->db->loadAssocList();
         }
 
-        return $results;
+        return $this->options['payment_services'];
     }
 
     /**
@@ -208,40 +189,34 @@ class Filters
      *
      * @return array
      */
-    public function getCountries($index = "id", $force = false)
+    public function getCountries($index = 'id', $force = false)
     {
-        if (!isset($this->options["countries"]) or $force) {
-
+        if (!array_key_exists('countries', $this->options) or $force) {
             $query = $this->db->getQuery(true);
 
             switch ($index) {
 
-                case "code":
-                    $query->select("a.code AS value, a.name AS text");
+                case 'code':
+                    $query->select('a.code AS value, a.name AS text');
                     break;
 
-                case "code4":
-                    $query->select("a.code4 AS value, a.name AS text");
+                case 'code4':
+                    $query->select('a.code4 AS value, a.name AS text');
                     break;
 
                 default:
-                    $query->select("a.id AS value, a.name AS text");
+                    $query->select('a.id AS value, a.name AS text');
                     break;
             }
 
-            $query->from($this->db->quoteName("#__crowdf_countries", "a"));
+            $query->from($this->db->quoteName('#__crowdf_countries', 'a'));
 
             $this->db->setQuery($query);
 
-            $results = $this->db->loadObjectList();
-
-            $this->options["countries"] = $results;
-
-        } else {
-            $results = $this->options["countries"];
+            $this->options['countries'] = (array)$this->db->loadAssocList();
         }
 
-        return $results;
+        return $this->options['countries'];
     }
 
     /**
@@ -256,20 +231,18 @@ class Filters
      */
     public function getLogTypes()
     {
-        $query = $this->db->getQuery(true);
+        if (!array_key_exists('log_types', $this->options)) {
+            $query = $this->db->getQuery(true);
 
-        $query
-            ->select("a.type AS value, a.type AS text")
-            ->from($this->db->quoteName("#__crowdf_logs", "a"))
-            ->group("a.type");
+            $query
+                ->select('a.type AS value, a.type AS text')
+                ->from($this->db->quoteName('#__crowdf_logs', 'a'))
+                ->group('a.type');
 
-        $this->db->setQuery($query);
-        $types = $this->db->loadAssocList();
-
-        if (!$types) {
-            $types = array();
+            $this->db->setQuery($query);
+            $this->options['log_types'] = (array)$this->db->loadAssocList();
         }
 
-        return $types;
+        return $this->options['log_types'];
     }
 }

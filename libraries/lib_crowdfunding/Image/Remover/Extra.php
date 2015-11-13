@@ -67,9 +67,9 @@ class Extra
         // Get the image
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.image, a.thumb")
-            ->from($this->db->quoteName("#__crowdf_images", "a"))
-            ->where("a.id = " . (int)$this->imageId);
+            ->select('a.image, a.thumb')
+            ->from($this->db->quoteName('#__crowdf_images', 'a'))
+            ->where('a.id = ' . (int)$this->imageId);
 
         $this->db->setQuery($query);
         $row = $this->db->loadObject();
@@ -91,8 +91,8 @@ class Extra
             // Delete the record
             $query = $this->db->getQuery(true);
             $query
-                ->delete($this->db->quoteName("#__crowdf_images"))
-                ->where($this->db->quoteName("id") . " = " . (int)$this->imageId);
+                ->delete($this->db->quoteName('#__crowdf_images'))
+                ->where($this->db->quoteName('id') . ' = ' . (int)$this->imageId);
 
             $this->db->setQuery($query);
             $this->db->execute();

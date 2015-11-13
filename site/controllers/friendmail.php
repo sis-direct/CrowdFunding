@@ -25,7 +25,7 @@ class CrowdfundingControllerFriendMail extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    CrowdfundingModelFriendMail    The model.
      * @since    1.5
      */
     public function getModel($name = 'FriendMail', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
@@ -40,28 +40,28 @@ class CrowdfundingControllerFriendMail extends Prism\Controller\Form\Frontend
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $redirectOptions = array(
-            "view" => "discover"
+            'view' => 'discover'
         );
 
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Joomla\Registry\Registry */
 
-        if (!$params->get("security_display_friend_form", 0)) {
+        if (!$params->get('security_display_friend_form', 0)) {
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_CANT_SEND_MAIL'), $redirectOptions);
             return;
         }
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "uint");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'uint');
 
         // Get project
         $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         // Prepare redirect link
-        $link            = CrowdfundingHelperRoute::getEmbedRoute($item->getSlug(), $item->getCatSlug(), "email");
+        $link            = CrowdfundingHelperRoute::getEmbedRoute($item->getSlug(), $item->getCatSlug(), 'email');
         $redirectOptions = array(
-            "force_direction" => $link
+            'force_direction' => $link
         );
 
         $model = $this->getModel();
@@ -71,7 +71,7 @@ class CrowdfundingControllerFriendMail extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -93,6 +93,6 @@ class CrowdfundingControllerFriendMail extends Prism\Controller\Form\Frontend
         }
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_FRIEND_MAIL_SUCCESSFULLY_SEND"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_FRIEND_MAIL_SUCCESSFULLY_SEND'), $redirectOptions);
     }
 }

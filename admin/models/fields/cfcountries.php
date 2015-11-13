@@ -40,11 +40,11 @@ class JFormFieldCfCountries extends JFormFieldList
      */
     protected function getOptions()
     {
-        $indexes = array("id", "code");
-        $index   = (string)$this->element["index"];
+        $indexes = array('id', 'code');
+        $index   = (string)$this->element['index'];
 
-        if (!in_array($index, $indexes)) {
-            $index = "id";
+        if (!in_array($index, $indexes, true)) {
+            $index = 'id';
         }
 
         $db    = JFactory::getDbo();
@@ -53,7 +53,7 @@ class JFormFieldCfCountries extends JFormFieldList
         $query
             ->select('a.'.$index.' AS value, a.name AS text')
             ->from($db->quoteName('#__crowdf_countries', 'a'))
-            ->order("a.name ASC");
+            ->order('a.name ASC');
 
         // Get the options.
         $db->setQuery($query);

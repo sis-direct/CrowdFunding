@@ -34,25 +34,20 @@ class CrowdfundingViewReport extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
     public function display($tpl = null)
     {
-        // Get model state.
-        $this->state = $this->get('State');
-        $this->item  = $this->get("Item");
-        $this->form  = $this->get("Form");
+        $this->option = JFactory::getApplication()->input->get('option');
+        
+        $this->state  = $this->get('State');
+        $this->item   = $this->get('Item');
+        $this->form   = $this->get('Form');
 
         // Get params
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
 
         // Set a link to project page
 //        $uri  = JUri::getInstance();
-//        $this->link = $uri->toString(array("scheme", "host")) . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
+//        $this->link = $uri->toString(array('scheme', 'host')) . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug), false);
 
         $this->prepareDocument();
 
@@ -81,9 +76,9 @@ class CrowdfundingViewReport extends JViewLegacy
         } else {
 
             if (!$this->item) {
-                $metaDescription = JText::_("COM_CROWDFUNDING_REPORT_CAMPAIGN");
+                $metaDescription = JText::_('COM_CROWDFUNDING_REPORT_CAMPAIGN');
             } else {
-                $metaDescription = JText::sprintf("COM_CROWDFUNDING_REPORT_S", $this->item->title);
+                $metaDescription = JText::sprintf('COM_CROWDFUNDING_REPORT_S', $this->item->title);
             }
 
             $this->document->setDescription($metaDescription);
@@ -98,8 +93,8 @@ class CrowdfundingViewReport extends JViewLegacy
         }
 
         // Breadcrumb
-        $pathway           = $app->getPathWay();
-        $currentBreadcrumb = (!$this->item) ? JText::_("COM_CROWDFUNDING_REPORT_CAMPAIGN") : JHtmlString::truncate($this->item->title, 16);
+        $pathway           = $app->getPathway();
+        $currentBreadcrumb = (!$this->item) ? JText::_('COM_CROWDFUNDING_REPORT_CAMPAIGN') : JHtmlString::truncate($this->item->title, 16);
         $pathway->addItem($currentBreadcrumb, '');
 
         // Add scripts
@@ -135,9 +130,9 @@ class CrowdfundingViewReport extends JViewLegacy
 
         // Prepare page title
         if (!$this->item) {
-            $title = JText::_("COM_CROWDFUNDING_REPORT_CAMPAIGN");
+            $title = JText::_('COM_CROWDFUNDING_REPORT_CAMPAIGN');
         } else {
-            $title = JText::sprintf("COM_CROWDFUNDING_REPORT_S", $this->item->title);
+            $title = JText::sprintf('COM_CROWDFUNDING_REPORT_S', $this->item->title);
         }
 
         // Add title before or after Site Name

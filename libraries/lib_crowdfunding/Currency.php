@@ -40,14 +40,15 @@ class Currency extends Prism\Database\TableImmutable
      *
      * @param \JDatabaseDriver $db
      * @param int             $id
+     * @param array           $options
      *
      * @return null|self
      */
-    public static function getInstance(\JDatabaseDriver $db, $id)
+    public static function getInstance(\JDatabaseDriver $db, $id, array $options = array())
     {
-        if (!isset(self::$instances[$id])) {
+        if (!array_key_exists($id, self::$instances)) {
             $item = new Currency($db);
-            $item->load($id);
+            $item->load($id, $options);
 
             self::$instances[$id] = $item;
         }
@@ -75,15 +76,15 @@ class Currency extends Prism\Database\TableImmutable
     {
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
+            ->select('a.id, a.title, a.code, a.symbol, a.position')
+            ->from($this->db->quoteName('#__crowdf_currencies', 'a'));
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName($key) ." = " . $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) .' = ' . $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
 
         $this->db->setQuery($query);
@@ -110,7 +111,7 @@ class Currency extends Prism\Database\TableImmutable
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -172,6 +173,6 @@ class Currency extends Prism\Database\TableImmutable
      */
     public function getPosition()
     {
-        return $this->position;
+        return (int)$this->position;
     }
 }

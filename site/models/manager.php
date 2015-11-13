@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JLoader::register("CrowdfundingModelProjectItem", CROWDFUNDING_PATH_COMPONENT_SITE . "/models/projectitem.php");
+JLoader::register('CrowdfundingModelProjectItem', CROWDFUNDING_PATH_COMPONENT_SITE . '/models/projectitem.php');
 
 class CrowdfundingModelManager extends CrowdfundingModelProjectItem
 {
@@ -28,23 +28,19 @@ class CrowdfundingModelManager extends CrowdfundingModelProjectItem
 
         $query
             ->select(
-                "a.id AS transaction_id, a.receiver_id, a.reward_state, a.txn_id, a.reward_id, " .
-                "b.title AS reward, ".
-                "c.name, c.email"
+                'a.id AS transaction_id, a.receiver_id, a.reward_state, a.txn_id, a.reward_id, ' .
+                'b.title AS reward, b.distributed, '.
+                'c.name, c.email'
             )
-            ->from($db->quoteName("#__crowdf_transactions", "a"))
-            ->leftJoin($db->quoteName("#__crowdf_rewards", "b") . " ON a.reward_id = b.id")
-            ->leftJoin($db->quoteName("#__users", "c") . " ON a.receiver_id = c.id")
-            ->where("a.project_id = ". (int)$projectId)
-            ->where("a.reward_id > 0 ");
+            ->from($db->quoteName('#__crowdf_transactions', 'a'))
+            ->leftJoin($db->quoteName('#__crowdf_rewards', 'b') . ' ON a.reward_id = b.id')
+            ->leftJoin($db->quoteName('#__users', 'c') . ' ON a.receiver_id = c.id')
+            ->where('a.project_id = '. (int)$projectId)
+            ->where('a.reward_id > 0 ');
 
         $db->setQuery($query);
 
-        $results = $db->loadObjectList();
-
-        if (!$results) {
-            $results = array();
-        }
+        $results = (array)$db->loadObjectList();
 
         return $results;
     }

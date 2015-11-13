@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JLoader::register("CrowdfundingModelCategory", CROWDFUNDING_PATH_COMPONENT_SITE."/models/category.php");
+JLoader::register('CrowdfundingModelCategory', CROWDFUNDING_PATH_COMPONENT_SITE.'/models/category.php');
 
 class CrowdfundingModelDiscover extends CrowdfundingModelCategory
 {

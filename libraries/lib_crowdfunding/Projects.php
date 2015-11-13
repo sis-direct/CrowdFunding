@@ -50,10 +50,10 @@ class Projects extends Prism\Database\ArrayObject
      */
     public function load($options = array())
     {
-        $ids = (!empty($options['ids'])) ? $options['ids'] : array();
+        $ids = (!array_key_exists('ids', $options)) ? array() : (array)$options['ids'];
         $ids = ArrayHelper::toInteger($ids);
 
-        $usersIds = (!empty($options['users_ids'])) ? $options['users_ids'] : array();
+        $usersIds = (!array_key_exists('users_ids', $options)) ? array() : (array)$options['users_ids'];
         $usersIds = ArrayHelper::toInteger($usersIds);
         
         if (!$ids and !$usersIds) {
@@ -164,13 +164,13 @@ class Projects extends Prism\Database\ArrayObject
     {
         // Filter by state published.
         $value = ArrayHelper::getValue($options, 'published');
-        if ((null !== $value) and is_numeric($value)) {
+        if ($value !== null and is_numeric($value)) {
             $query->where('a.published = ' . (int)$value);
         }
 
         // Filter by state approved.
         $value = ArrayHelper::getValue($options, 'approved');
-        if ((null !== $value) and is_numeric($value)) {
+        if ($value !== null and is_numeric($value)) {
             $query->where('a.approved = ' . (int)$value);
         }
     }

@@ -43,16 +43,11 @@ class CrowdfundingViewProjects extends JViewLegacy
      */
     protected $app;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-
-        $this->app    = JFactory::getApplication();
-        $this->option = $this->app->input->get('option');
-    }
-
     public function display($tpl = null)
     {
+        $this->app    = JFactory::getApplication();
+        $this->option = $this->app->input->get('option');
+
         $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), 'notice');

@@ -13,9 +13,9 @@ use Joomla\Registry\Registry;
 
 defined('JPATH_PLATFORM') or die;
 
-jimport("joomla.filesystem.file");
-jimport("joomla.filesystem.path");
-jimport("joomla.filesystem.folder");
+jimport('joomla.filesystem.file');
+jimport('joomla.filesystem.path');
+jimport('joomla.filesystem.folder');
 
 /**
  * This class provides functionality that manage log files.
@@ -50,7 +50,7 @@ class Files implements \Iterator, \Countable, \ArrayAccess
      *
      * @param array $files
      */
-    public function __construct($files = array())
+    public function __construct(array $files = array())
     {
         $this->files = $files;
     }
@@ -73,7 +73,7 @@ class Files implements \Iterator, \Countable, \ArrayAccess
         $config    = \JFactory::getConfig();
         /** @var  $config Registry */
 
-        $logFolder = $config->get("log_path");
+        $logFolder = $config->get('log_path');
 
         $files = \JFolder::files($logFolder);
         if (!is_array($files)) {
@@ -81,12 +81,12 @@ class Files implements \Iterator, \Countable, \ArrayAccess
         }
 
         foreach ($files as $key => $file) {
-            if (strcmp("index.html", $file) != 0) {
+            if (strcmp('index.html', $file) !== 0) {
                 $this->items[] = \JPath::clean($logFolder . DIRECTORY_SEPARATOR . $files[$key]);
             }
         }
 
-        if (!empty($this->files)) {
+        if (count($this->files) > 0) {
 
             foreach ($this->files as $fileName) {
 
@@ -114,7 +114,7 @@ class Files implements \Iterator, \Countable, \ArrayAccess
 
     public function current()
     {
-        return (!isset($this->items[$this->position])) ? null : $this->items[$this->position];
+        return (!array_key_exists($this->position, $this->items)) ? null : $this->items[$this->position];
     }
 
     public function key()
@@ -129,7 +129,7 @@ class Files implements \Iterator, \Countable, \ArrayAccess
 
     public function valid()
     {
-        return isset($this->items[$this->position]);
+        return array_key_exists($this->position, $this->items);
     }
 
     public function count()
@@ -139,7 +139,7 @@ class Files implements \Iterator, \Countable, \ArrayAccess
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->items[] = $value;
         } else {
             $this->items[$offset] = $value;
@@ -148,7 +148,7 @@ class Files implements \Iterator, \Countable, \ArrayAccess
 
     public function offsetExists($offset)
     {
-        return isset($this->items[$offset]);
+        return array_key_exists($offset, $this->items);
     }
 
     public function offsetUnset($offset)
@@ -158,6 +158,6 @@ class Files implements \Iterator, \Countable, \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return isset($this->items[$offset]) ? $this->items[$offset] : null;
+        return array_key_exists($offset, $this->items) ? $this->items[$offset] : null;
     }
 }

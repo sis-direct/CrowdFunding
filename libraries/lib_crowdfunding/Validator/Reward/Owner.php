@@ -42,8 +42,8 @@ class Owner implements ValidatorInterface
     public function __construct(\JDatabaseDriver $db, $rewardId, $userId)
     {
         $this->db        = $db;
-        $this->rewardId  = $rewardId;
-        $this->userId    = $userId;
+        $this->rewardId  = (int)$rewardId;
+        $this->userId    = (int)$userId;
     }
 
     /**
@@ -63,16 +63,20 @@ class Owner implements ValidatorInterface
      */
     public function isValid()
     {
+        if (!$this->rewardId or !$this->userId) {
+            return false;
+        }
+
         $query = $this->db->getQuery(true);
         $query
-            ->select("b.user_id")
-            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
-            ->innerJoin($this->db->quoteName("#__crowdf_projects", "b") . " ON a.project_id = b.id")
-            ->where("a.id = " . (int)$this->rewardId);
+            ->select('b.user_id')
+            ->from($this->db->quoteName('#__crowdf_rewards', 'a'))
+            ->innerJoin($this->db->quoteName('#__crowdf_projects', 'b') . ' ON a.project_id = b.id')
+            ->where('a.id = ' . (int)$this->rewardId);
 
         $this->db->setQuery($query);
-        $userId = $this->db->loadResult();
+        $userId = (int)$this->db->loadResult();
 
-        return (bool)($this->userId == $userId);
+        return (bool)($this->userId === $userId);
     }
 }

@@ -48,8 +48,8 @@ class Owner implements ValidatorInterface
     public function __construct(\JDatabaseDriver $db, $projectId, $userId)
     {
         $this->db        = $db;
-        $this->projectId = $projectId;
-        $this->userId    = $userId;
+        $this->projectId = (int)$projectId;
+        $this->userId    = (int)$userId;
     }
 
     /**
@@ -72,14 +72,13 @@ class Owner implements ValidatorInterface
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id = " . (int)$this->projectId)
-            ->where("a.user_id = " . (int)$this->userId);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = ' . (int)$this->projectId)
+            ->where('a.user_id = ' . (int)$this->userId);
 
         $this->db->setQuery($query, 0, 1);
-        $result = $this->db->loadResult();
 
-        return (bool)$result;
+        return (bool)$this->db->loadResult();
     }
 }

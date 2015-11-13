@@ -48,23 +48,17 @@ class Locations extends Prism\Database\ArrayObject
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published")
-            ->from($this->db->quoteName("#__crowdf_locations", "a"));
+            ->select('a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published')
+            ->from($this->db->quoteName('#__crowdf_locations', 'a'));
 
-        $ids = (!isset($options["ids"])) ? null : (array)$options["ids"];
-        if (!empty($ids)) {
+        $ids = (!array_key_exists('ids', $options)) ? null : (array)$options['ids'];
+        if ($ids !== null and is_array($ids)) {
             $ids = ArrayHelper::toInteger($ids);
-            $query->where("a.id IN ( " . implode(",", $ids) . " )");
+            $query->where('a.id IN ( ' . implode(',', $ids) . ' )');
         }
 
         $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**
@@ -127,45 +121,11 @@ class Locations extends Prism\Database\ArrayObject
         $caseWhen .= ' END as name';
 
         $query
-            ->select("a.id, " . $caseWhen)
-            ->from($this->db->quoteName("#__crowdf_locations", "a"))
-            ->where($this->db->quoteName("a.name") . " LIKE " . $search);
+            ->select('a.id, ' . $caseWhen)
+            ->from($this->db->quoteName('#__crowdf_locations', 'a'))
+            ->where($this->db->quoteName('a.name') . ' LIKE ' . $search);
 
         $this->db->setQuery($query, 0, 8);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
-    }
-
-    /**
-     * Prepare an array that will be used as options in drop down form element.
-     *
-     * <code>
-     * $string = "Plov";
-     *
-     * $locations   = new Crowdfunding\Locations(\JFactory::getDbo());
-     * $locations->loadByString($string);
-     *
-     * $options = $locations->toOptions();
-     * </code>
-     *
-     * @return array
-     */
-    public function toOptions()
-    {
-        $options = array();
-
-        foreach ($this->items as $item) {
-            $options[] = array(
-                "id" => $item["id"],
-                "name" => $item["name"]
-            );
-        }
-
-        return $options;
+        $this->items = (array)$this->db->loadAssocList();
     }
 }

@@ -30,7 +30,7 @@ class CrowdfundingViewCategories extends JViewLegacy
     protected $items;
     protected $pagination;
 
-    protected $allowedLayouts = array("grid", "list");
+    protected $allowedLayouts = array('grid', 'list');
     protected $templateView;
     protected $descriptionLength;
     protected $displayProjectsNumber;
@@ -45,25 +45,21 @@ class CrowdfundingViewCategories extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
     public function display($tpl = null)
     {
+        $this->option     = JFactory::getApplication()->input->get('option');
+
         $this->items      = $this->get('Items');
         $this->state      = $this->get('State');
         $this->pagination = $this->get('Pagination');
 
-        $this->params     = $this->state->get("params");
+        $this->params     = $this->state->get('params');
 
-        $this->displayProjectsNumber = $this->params->get("categories_display_projects_number", 0);
-        $this->numberInRow = $this->params->get("categories_categories_row", 3);
+        $this->displayProjectsNumber = $this->params->get('categories_display_projects_number', 0);
+        $this->numberInRow = $this->params->get('categories_categories_row', 3);
 
         // Get description length
-        $this->descriptionLength = $this->params->get("categories_description_length", 128);
+        $this->descriptionLength = $this->params->get('categories_description_length', 128);
 
         // Load projects number.
         if ($this->displayProjectsNumber) {
@@ -75,27 +71,27 @@ class CrowdfundingViewCategories extends JViewLegacy
             $categories = new Crowdfunding\Categories();
             $categories->setDb(JFactory::getDbo());
 
-            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => Prism\Constants::PUBLISHED, "approved" => Prism\Constants::APPROVED));
+            $this->projectsNumber = $categories->getProjectsNumber($ids, array('state' => Prism\Constants::PUBLISHED, 'approved' => Prism\Constants::APPROVED));
         }
 
         // Prepare items parameters.
-        if (!empty($this->items)) {
+        if (is_array($this->items)) {
             $this->items = CrowdfundingHelper::prepareCategories($this->items, $this->numberInRow);
         }
 
         // Get layout
-        $layout = $this->params->get("categories_layout", "grid");
-        $this->templateView = (in_array($layout, $this->allowedLayouts)) ? $layout : "grid";
+        $layout = $this->params->get('categories_layout', 'grid');
+        $this->templateView = (in_array($layout, $this->allowedLayouts, true)) ? $layout : 'grid';
 
         // Get params
         /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
+        $params = $this->state->get('params');
         $this->params = $params;
 
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
         $this->prepareDocument();
 
@@ -163,9 +159,9 @@ class CrowdfundingViewCategories extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
 

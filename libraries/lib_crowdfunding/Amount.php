@@ -64,10 +64,10 @@ class Amount
         // Create options object.
         $this->options = new Registry;
 
-        if (!is_null($options) and ($options instanceof Registry)) {
-            $this->setOption("intl", $options->get("locale_intl", false));
-            $this->setOption("format", $options->get("amount_format", ""));
-            $this->setOption("fraction_digits", $options->get("fraction_digits", 2));
+        if ($options !== null and ($options instanceof Registry)) {
+            $this->setOption('intl', $options->get('locale_intl', false));
+            $this->setOption('format', $options->get('amount_format', ''));
+            $this->setOption('fraction_digits', $options->get('fraction_digits', 2));
         }
     }
 
@@ -134,20 +134,20 @@ class Amount
      */
     public function formatCurrency()
     {
-        $intl             = (bool)$this->options->get("intl", false);
-        $fractionDigits   = abs($this->options->get("fraction_digits", 2));
-        $format           = $this->options->get("format");
+        $intl             = (bool)$this->options->get('intl', false);
+        $fractionDigits   = abs($this->options->get('fraction_digits', 2));
+        $format           = $this->options->get('format');
 
         $amount           = $this->value;
 
         // Use number_format.
-        if (!$intl and !empty($format)) {
+        if (!$intl and \JString::strlen($format) > 0) {
             $value = $this->formatNumber($this->value);
 
             if (!$this->currency->getSymbol()) { // Symbol
                 $amount = $value . $this->currency->getCode();
             } else { // Code
-                if (0 == $this->currency->getPosition()) { // Symbol at beginning.
+                if (0 === $this->currency->getPosition()) { // Symbol at beginning.
                     $amount = $this->currency->getSymbol() . $value;
                 } else { // Symbol at end.
                     $amount = $value . $this->currency->getSymbol();
@@ -157,12 +157,12 @@ class Amount
 
         // Use PHP Intl library.
         if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-            $locale = $this->options->get("locale");
+            $locale = $this->options->get('locale');
 
             // Get current locale code.
             if (!$locale) {
                 $lang   = \JFactory::getLanguage();
-                $locale = str_replace("-", "_", $lang->getTag());
+                $locale = str_replace('-', '_', $lang->getTag());
             }
 
             $numberFormat = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
@@ -196,23 +196,23 @@ class Amount
      */
     public function format()
     {
-        $intl             = (bool)$this->options->get("intl", false);
-        $fractionDigits   = abs($this->options->get("fraction_digits", 2));
+        $intl             = (bool)$this->options->get('intl', false);
+        $fractionDigits   = abs($this->options->get('fraction_digits', 2));
 
         // Format the amount by function number_format.
-        $format           = $this->options->get("format");
-        if (!$intl and !empty($format)) {
+        $format           = $this->options->get('format');
+        if (!$intl and \JString::strlen($format) > 0) {
             return $this->formatNumber($this->value);
         }
 
         // Use PHP Intl library to format the amount.
         if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-            $locale = $this->options->get("locale");
+            $locale = $this->options->get('locale');
 
             // Get current locale code.
             if (!$locale) {
                 $lang   = \JFactory::getLanguage();
-                $locale = str_replace("-", "_", $lang->getTag());
+                $locale = str_replace('-', '_', $lang->getTag());
             }
 
             $numberFormat = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
@@ -239,17 +239,17 @@ class Amount
      */
     public function parse()
     {
-        $intl             = (bool)$this->getOption("intl", false);
-        $fractionDigits   = abs($this->getOption("fraction_digits", 2));
+        $intl             = (bool)$this->getOption('intl', false);
+        $fractionDigits   = abs($this->getOption('fraction_digits', 2));
 
         // Use PHP Intl library to format the amount.
         if ($intl and extension_loaded('intl')) { // Generate currency string using PHP NumberFormatter ( Internationalization Functions )
-            $locale = $this->getOption("locale");
+            $locale = $this->getOption('locale');
 
             // Get current locale code.
             if (!$locale) {
                 $lang   = \JFactory::getLanguage();
-                $locale = str_replace("-", "_", $lang->getTag());
+                $locale = str_replace('-', '_', $lang->getTag());
             }
 
             $numberFormat = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
@@ -274,21 +274,21 @@ class Amount
     protected function parseAmount($value)
     {
         // Parse a string like this 1.560,25. The result is 1560.25.
-        if (1 === preg_match("/\.?[0-9]{3},[0-9]{1,3}$/i", $value)) {
-            $value = str_replace(".", "", $value);
-            $value = str_replace(",", ".", $value);
+        if (1 === preg_match('/\.?[0-9]{3},[0-9]{1,3}$/i', $value)) {
+            $value = str_replace('.', '', $value);
+            $value = str_replace(',', '.', $value);
             return (float)$value;
         }
 
         // Parse a string like this 45,00. The result is 45.00.
-        if (1 === preg_match("/,[0-9]{1,3}$/i", $value)) {
-            $value = str_replace(",", ".", $value);
+        if (1 === preg_match('/,[0-9]{1,3}$/i', $value)) {
+            $value = str_replace(',', '.', $value);
             return (float)$value;
         }
 
         // Parse a string like this 1,560.25. The result is 1560.25.
-        if (1 === preg_match("/^[0-9]+,[0-9]{3}\./i", $value)) {
-            $value = str_replace(",", "", $value);
+        if (1 === preg_match('/^[0-9]+,[0-9]{3}\./i', $value)) {
+            $value = str_replace(',', '', $value);
             return (float)$value;
         }
 
@@ -329,12 +329,12 @@ class Amount
             return 0;
         }
 
-        $format = $this->options->get("format");
-        $format = explode("/", $format);
+        $format = $this->options->get('format');
+        $format = explode('/', $format);
 
-        if (!empty($format)) {
+        if ((false !== $format) and count($format) > 0) {
 
-            $value = (false !== strpos($value, ",")) ? $this->parse() : $value;
+            $value = (false !== strpos($value, ',')) ? $this->parse() : $value;
 
             $count = count($format);
 

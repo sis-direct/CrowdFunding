@@ -11,7 +11,7 @@ namespace Crowdfunding\Statistics\Projects;
 
 defined('JPATH_PLATFORM') or die;
 
-\JLoader::register("Crowdfunding\\Statistics\\Projects\\Base", JPATH_LIBRARIES . "/crowdfunding/statistics/projects/base.php");
+\JLoader::register('Crowdfunding\\Statistics\\Projects\\Base', JPATH_LIBRARIES . '/crowdfunding/statistics/projects/base.php');
 
 /**
  * This class loads statistics about projects.
@@ -38,16 +38,16 @@ class MostFunded extends Base
     public function load($limit = 5)
     {
         // Get current date
-        jimport("joomla.date.date");
+        jimport('joomla.date.date');
         $date  = new \JDate();
         $today = $date->toSql();
 
         $query = $this->getQuery();
 
         $query
-            ->where("( a.published = 1 AND a.approved = 1 )")
-            ->where("( a.funding_start <= " . $this->db->quote($today) . " AND a.funding_end >= " . $this->db->quote($today) . " )")
-            ->order("a.funded DESC");
+            ->where('( a.published = 1 AND a.approved = 1 )')
+            ->where('( a.funding_start <= ' . $this->db->quote($today) . ' AND a.funding_end >= ' . $this->db->quote($today) . ' )')
+            ->order('a.funded DESC');
 
         $this->db->setQuery($query, 0, (int)$limit);
 

@@ -56,6 +56,8 @@ jQuery(document).ready(function() {
 	}
 
     jQuery('#jform_location_preview').typeahead({
+        displayField: 'text',
+        valueField: 'value',
         ajax : {
             url: "index.php?option=com_crowdfunding&format=raw&task=project.loadLocation",
             method: "get",

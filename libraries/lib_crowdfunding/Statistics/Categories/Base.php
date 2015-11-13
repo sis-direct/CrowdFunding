@@ -46,11 +46,11 @@ abstract class Base
 
         $query
             ->select(
-                "a.id, a.title, a.description, a.params " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug "
+                'a.id, a.title, a.description, a.params ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug '
             )
-            ->from($this->db->quoteName("#__categories", "a"))
-            ->where("a.extension = " . $this->db->quote("com_crowdfunding"));
+            ->from($this->db->quoteName('#__categories', 'a'))
+            ->where('a.extension = ' . $this->db->quote('com_crowdfunding'));
 
         return $query;
     }

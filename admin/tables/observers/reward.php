@@ -62,7 +62,7 @@ class CrowdfundingObserverReward extends JTableObserver
     public function onBeforeDelete($pk)
     {
         $userId       = CrowdfundingHelper::getUserIdByRewardId($this->table->id);
-        $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
+        $imagesFolder = CrowdfundingHelper::getImagesFolder($userId, JPATH_ROOT);
 
         // Remove image.
         if (!empty($this->table->image)) {

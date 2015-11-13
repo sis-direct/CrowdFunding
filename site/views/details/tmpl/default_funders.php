@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;?>
 <?php
-if (!empty($this->items)) {
+if (count($this->items) > 0) {
     foreach ($this->items as $item) {
 
         $socialProfile = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($item->id);
@@ -28,7 +28,7 @@ if (!empty($this->items)) {
 
                 <div class="media">
                     <div class="media-left">
-                        <a class="cf-funder-picture" href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile; ?>">
+                        <a class="cf-funder-picture" href="<?php echo (!$socialProfile) ? 'javascript: void(0);' : $socialProfile; ?>">
                             <img class="media-object" src="<?php echo $socialAvatar; ?>" />
                         </a>
                     </div>
@@ -41,10 +41,10 @@ if (!empty($this->items)) {
                                         <?php echo $this->escape($item->name); ?>
                                     </a>
                                 <?php } else { ?>
-                                    <?php echo (!$item->name) ? JText::_("COM_CROWDFUNDING_ANONYMOUS") : $this->escape($item->name); ?>
+                                    <?php echo (!$item->name) ? JText::_('COM_CROWDFUNDING_ANONYMOUS') : $this->escape($item->name); ?>
                                 <?php } ?>
                             </h5>
-                            <?php echo JHtml::_("crowdfunding.profileLocation", $socialLocation, $socialCountryCode); ?>
+                            <?php echo JHtml::_('crowdfunding.profileLocation', $socialLocation, $socialCountryCode); ?>
                         </div>
 
                         <?php if(!empty($this->displayAmounts)) { ?>

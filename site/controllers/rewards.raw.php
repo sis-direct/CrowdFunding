@@ -25,13 +25,12 @@ class CrowdfundingControllerRewards extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    CrowdfundingModelRewards    The model.
+     * @return    CrowdfundingModelRewards  The model.
      * @since    1.5
      */
     public function getModel($name = 'Rewards', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -46,7 +45,7 @@ class CrowdfundingControllerRewards extends JControllerLegacy
         // Get the input
         $app    = JFactory::getApplication();
         $pks    = $app->input->post->get('rid', array(), 'array');
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
 
         $response = new Prism\Response\Json();
 
@@ -104,7 +103,7 @@ class CrowdfundingControllerRewards extends JControllerLegacy
             } else {
 
                 // Get the folder where the images are stored
-                $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
+                $imagesFolder = CrowdfundingHelper::getImagesFolder($userId, JPATH_ROOT);
                 $model->remove($rewardId, $imagesFolder);
 
             }
@@ -153,7 +152,7 @@ class CrowdfundingControllerRewards extends JControllerLegacy
         // Get the input
         $rewardId = $this->input->post->get('rid', 0, 'int');
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
 
         $response = new Prism\Response\Json();
 
@@ -168,10 +167,10 @@ class CrowdfundingControllerRewards extends JControllerLegacy
             JFactory::getApplication()->close();
         }
 
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Joomla\Registry\Registry */
 
-        if (!$params->get("rewards_images", 0)) {
+        if (!$params->get('rewards_images', 0)) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
                 ->setText(JText::_('COM_CROWDFUNDING_ERROR_INVALID_REWARD'))
@@ -199,7 +198,7 @@ class CrowdfundingControllerRewards extends JControllerLegacy
         try {
 
             // Get the folder where the images will be stored
-            $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
+            $imagesFolder = CrowdfundingHelper::getImagesFolder($userId, JPATH_ROOT);
 
             $model->removeImage($rewardId, $imagesFolder);
 

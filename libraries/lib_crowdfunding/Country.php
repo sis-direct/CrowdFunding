@@ -48,15 +48,15 @@ class Country extends Prism\Database\TableImmutable
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.currency, a.code")
-            ->from($this->db->quoteName("#__crowdf_countries", "a"));
+            ->select('a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.currency, a.code')
+            ->from($this->db->quoteName('#__crowdf_countries', 'a'));
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName($key) ." = " . $this->db->quote($value));
+                $query->where($this->db->quoteName($key) .' = ' . $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
 
         $this->db->setQuery($query);
@@ -83,7 +83,7 @@ class Country extends Prism\Database\TableImmutable
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**

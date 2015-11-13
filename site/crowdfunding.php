@@ -10,8 +10,8 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-jimport("Prism.init");
-jimport("Crowdfunding.init");
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 $controller = JControllerLegacy::getInstance('Crowdfunding');
 $controller->execute(JFactory::getApplication()->input->getCmd('task'));

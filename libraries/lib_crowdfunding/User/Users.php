@@ -44,17 +44,17 @@ class Users extends Prism\Database\ArrayObject
     public function load($options = array())
     {
         // Filter by users IDs.
-        $ids = ArrayHelper::getValue($options, "ids", array(), "array");
+        $ids = ArrayHelper::getValue($options, 'ids', array(), 'array');
         $ids = ArrayHelper::toInteger($ids);
 
-        if (!empty($ids)) {
+        if (count($ids) > 0) {
             $query = $this->db->getQuery(true);
 
             $query
-                ->select("a.id, a.name, a.email")
-                ->from($this->db->quoteName("#__users", "a"));
+                ->select('a.id, a.name, a.email')
+                ->from($this->db->quoteName('#__users', 'a'));
 
-            $query->where("a.id IN (" . implode(",", $ids) . ")");
+            $query->where('a.id IN (' . implode(',', $ids) . ')');
 
             $this->db->setQuery($query);
 
@@ -83,10 +83,11 @@ class Users extends Prism\Database\ArrayObject
      */
     public function getUser($userId)
     {
-        $item = null;
+        $item   = null;
+        $userId = (int)$userId;
 
         foreach ($this->items as $user) {
-            if ($userId == $user["id"]) {
+            if ($userId === (int)$user['id']) {
                 $item = new User(\JFactory::getDbo());
                 $item->bind($user);
                 break;

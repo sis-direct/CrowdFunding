@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if (strcmp("five_steps", $this->wizardType) == 0) {
+if (strcmp('five_steps', $this->wizardType) === 0) {
     $layout      = new JLayoutFile('project_wizard');
 } else {
     $layout      = new JLayoutFile('project_wizard_six_steps');
@@ -25,7 +25,7 @@ echo $layout->render($this->layoutData);
             <div class="form-group">
                 <?php echo $this->form->getLabel('pitch_video'); ?>
                 <?php echo $this->form->getInput('pitch_video'); ?>
-				<span class="help-block"><?php echo JText::_("COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK");?></span>
+				<span class="help-block"><?php echo JText::_('COM_CROWDFUNDING_FIELD_FUNDING_VIDEO_HELP_BLOCK');?></span>
             </div>
 
             <div class="form-group">
@@ -35,12 +35,12 @@ echo $layout->render($this->layoutData);
             </div>
 
             <?php if(!empty($this->pitchImage)) {?>
-            <img src="<?php echo $this->imageFolder."/".$this->pitchImage;?>" class="img-thumbnail" />
+            <img src="<?php echo $this->imageFolder.'/'.$this->pitchImage;?>" class="img-thumbnail" />
             <br /><br />
                 <?php if(!$this->debugMode) {?>
-                <a href="<?php echo JRoute::_("index.php?option=com_crowdfunding&task=story.removeImage&id=".$this->item->id."&".JSession::getFormToken()."=1");?>" class="btn btn-danger" role="button">
+                <a href="<?php echo JRoute::_('index.php?option=com_crowdfunding&task=story.removeImage&id='.$this->item->id.'&'.JSession::getFormToken().'=1');?>" class="btn btn-danger" role="button">
                    <span class="fa fa-trash"></span>
-                   <?php echo JText::_("COM_CROWDFUNDING_REMOVE_IMAGE");?>
+                   <?php echo JText::_('COM_CROWDFUNDING_REMOVE_IMAGE');?>
                 </a>
                 <?php }?>
             <?php }?>
@@ -56,7 +56,7 @@ echo $layout->render($this->layoutData);
 
             <button type="submit" class="btn btn-primary mtb-15-0" <?php echo $this->disabledButton;?>>
                 <span class="fa fa-check"></span>
-                <?php echo JText::_("COM_CROWDFUNDING_SAVE_AND_CONTINUE")?>
+                <?php echo JText::_('COM_CROWDFUNDING_SAVE_AND_CONTINUE');?>
             </button>
         </div>
         

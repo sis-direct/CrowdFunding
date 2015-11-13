@@ -44,30 +44,26 @@ class Currencies extends Prism\Database\ArrayObject
     public function load($options = array())
     {
         // Get IDs.
-        $ids = (!isset($options["ids"])) ? array() : $options["ids"];
+        $ids = (!array_key_exists('ids', $options)) ? array() : $options['ids'];
         $ids = ArrayHelper::toInteger($ids);
 
         // Get codes.
-        $codes = (!isset($options["codes"])) ? array() : $options["codes"];
+        $codes = (!array_key_exists('codes', $options)) ? array() : $options['codes'];
 
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
+            ->select('a.id, a.title, a.code, a.symbol, a.position')
+            ->from($this->db->quoteName('#__crowdf_currencies', 'a'));
 
-        if (!empty($ids) or !empty($codes)) {
-
-            if (!empty($ids)) { // Load by IDs
-                $query->where("a.id IN ( " . implode(",", $ids) . " )");
-
-            } elseif (!empty($codes)) { // Load by codes
-                foreach ($codes as $key => $value) {
-                    $codes[$key] = $this->db->quote($value);
-                }
-
-                $query->where("a.code IN ( " . implode(",", $codes) . " )");
+        if (count($ids) > 0) { // Load by IDs
+            $query->where('a.id IN ( ' . implode(',', $ids) . ' )');
+        } elseif (count($codes) > 0) { // Load by codes
+            foreach ($codes as $key => $value) {
+                $codes[$key] = $this->db->quote($value);
             }
+
+            $query->where('a.code IN ( ' . implode(',', $codes) . ' )');
         }
 
         $this->db->setQuery($query);
@@ -98,13 +94,13 @@ class Currencies extends Prism\Database\ArrayObject
     public function getCurrencyByCode($code)
     {
         if (!$code) {
-            throw new \UnexpectedValueException(\JText::_("LIB_CROWDFUNDING_INVALID_CURRENCY_ABBREVIATION"));
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_CURRENCY_ABBREVIATION'));
         }
 
         $currency = null;
 
         foreach ($this->items as $item) {
-            if (strcmp($code, $item["code"]) == 0) {
+            if (strcmp($code, $item['code']) === 0) {
                 $currency = new Currency();
                 $currency->bind($item);
                 break;
@@ -138,14 +134,16 @@ class Currencies extends Prism\Database\ArrayObject
      */
     public function getCurrency($id)
     {
+        $id = (int)$id;
+
         if (!$id) {
-            throw new \UnexpectedValueException(\JText::_("LIB_CROWDFUNDING_INVALID_CURRENCY_ID"));
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_CURRENCY_ID'));
         }
 
         $currency = null;
 
         foreach ($this->items as $item) {
-            if ($id == $item["id"]) {
+            if ($id === (int)$item['id']) {
                 $currency = new Currency();
                 $currency->bind($item);
                 break;

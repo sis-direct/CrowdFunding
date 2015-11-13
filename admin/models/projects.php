@@ -112,7 +112,7 @@ class CrowdfundingModelProjects extends JModelList
     protected function getListQuery()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver*/
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -127,8 +127,8 @@ class CrowdfundingModelProjects extends JModelList
                 'b.title AS category, ' .
                 'c.title AS type, ' .
                 'd.name AS username,' .
-                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
-                $query->concatenate(array("b.id", "b.alias"), ":") . ' AS catslug'
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
         );
         $query->from($db->quoteName('#__crowdf_projects', 'a'));
@@ -137,8 +137,8 @@ class CrowdfundingModelProjects extends JModelList
         $query->leftJoin($db->quoteName('#__users', 'd') . ' ON a.user_id = d.id');
 
         // Filter by category
-        $categoryId = $this->getState('filter.category_id');
-        if (!empty($categoryId)) {
+        $categoryId = (int)$this->getState('filter.category_id');
+        if ($categoryId > 0) {
             $query->where('b.id = ' . (int)$categoryId);
         }
 
@@ -167,21 +167,21 @@ class CrowdfundingModelProjects extends JModelList
         }
 
         // Filter by type
-        $typeId = $this->getState('filter.type_id');
-        if (!empty($typeId)) {
+        $typeId = (int)$this->getState('filter.type_id');
+        if ($typeId > 0) {
             $query->where('a.type_id = ' . (int)$typeId);
         }
 
         // Filter by search in title
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
             } elseif (stripos($search, 'uid:') === 0) {
                 $query->where('a.user_id = ' . (int)substr($search, 4));
             } else {
                 $escaped = $db->escape($search, true);
-                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('a.title LIKE ' . $quoted);
             }
         }
@@ -197,7 +197,7 @@ class CrowdfundingModelProjects extends JModelList
     {
         $orderCol  = $this->getState('list.ordering', 'a.created');
         $orderDirn = $this->getState('list.direction', 'asc');
-        if ($orderCol == 'a.ordering') {
+        if ($orderCol === 'a.ordering') {
             $orderCol = 'a.catid ' . $orderDirn . ', a.ordering';
         }
 

@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class CrowdfundingController extends JControllerLegacy
 {
-    protected $cacheableViews = array("categories", "category", "discover", "featured");
+    protected $cacheableViews = array('categories', 'category', 'discover', 'featured');
 
     /**
      * Method to display a view.
@@ -31,10 +31,10 @@ class CrowdfundingController extends JControllerLegacy
         $viewName = $this->input->getCmd('view', 'discover');
         $this->input->set('view', $viewName);
 
-        JHtml::stylesheet("com_crowdfunding/frontend.style.css", false, true, false);
+        JHtml::stylesheet('com_crowdfunding/frontend.style.css', false, true, false);
 
         // Cache some views.
-        if (in_array($viewName, $this->cacheableViews)) {
+        if (in_array($viewName, $this->cacheableViews, true)) {
             $cachable = true;
         }
 

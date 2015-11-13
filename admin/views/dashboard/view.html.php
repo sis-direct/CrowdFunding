@@ -43,25 +43,25 @@ class CrowdfundingViewDashboard extends JViewLegacy
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
+        $this->option = JFactory::getApplication()->input->get('option');
     }
 
     public function display($tpl = null)
     {
-        $this->state  = $this->get("State");
-        $this->params = $this->state->get("params");
+        $this->state  = $this->get('State');
+        $this->params = $this->state->get('params');
 
         $this->version = new Crowdfunding\Version();
 
         // Load Prism library version
-        if (!class_exists("Prism\\Version")) {
-            $this->prismVersion = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD");
+        if (!class_exists('Prism\\Version')) {
+            $this->prismVersion = JText::_('COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD');
         } else {
             $prismVersion       = new Prism\Version();
             $this->prismVersion = $prismVersion->getShortVersion();
 
-            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, "<")) {
-                $this->prismVersionLowerMessage = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_LOWER_VERSION");
+            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, '<')) {
+                $this->prismVersionLowerMessage = JText::_('COM_CROWDFUNDING_PRISM_LIBRARY_LOWER_VERSION');
             }
         }
 
@@ -82,7 +82,7 @@ class CrowdfundingViewDashboard extends JViewLegacy
         $this->latestCreated->loadByCreated(5);
 
         // Get currency.
-        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
 
         $this->amount = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
@@ -112,7 +112,7 @@ class CrowdfundingViewDashboard extends JViewLegacy
      */
     protected function addToolbar()
     {
-        JToolbarHelper::title(JText::_("COM_CROWDFUNDING_DASHBOARD"));
+        JToolbarHelper::title(JText::_('COM_CROWDFUNDING_DASHBOARD'));
 
         JToolbarHelper::preferences('com_crowdfunding');
         JToolbarHelper::divider();

@@ -42,7 +42,7 @@ class CrowdfundingModelUpdates extends JModelList
         /** @var $app JApplicationSite * */
 
         // Get project ID
-        $value = $app->input->get("id", 0, "uint");
+        $value = $app->input->get('id', 0, 'uint');
         $this->setState($this->getName() . '.id', $value);
 
         // Load the component parameters.
@@ -120,8 +120,8 @@ class CrowdfundingModelUpdates extends JModelList
 
     public function getForm()
     {
-        $name   = $this->option . ".update";
-        $source = "update";
+        $name   = $this->option . '.update';
+        $source = 'update';
 
         $options = array(
             'control'   => 'jform',
@@ -129,7 +129,7 @@ class CrowdfundingModelUpdates extends JModelList
         );
 
         $data = array(
-            "project_id" => $this->getState($this->getName() . ".id")
+            'project_id' => $this->getState($this->getName() . '.id')
         );
 
         // Get the form.

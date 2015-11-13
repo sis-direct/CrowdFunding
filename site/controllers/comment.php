@@ -25,7 +25,7 @@ class CrowdfundingControllerComment extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    CrowdfundingModelComment    The model.
      * @since    1.5
      */
     public function getModel($name = 'Comment', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
@@ -39,10 +39,10 @@ class CrowdfundingControllerComment extends Prism\Controller\Form\Frontend
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
@@ -50,13 +50,13 @@ class CrowdfundingControllerComment extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'project_id');
 
         // Get project
         $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         $redirectOptions = array(
-            "force_direction" => CrowdfundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "comments")
+            'force_direction' => CrowdfundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), 'comments')
         );
 
         $model = $this->getModel();
@@ -66,7 +66,7 @@ class CrowdfundingControllerComment extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -90,6 +90,6 @@ class CrowdfundingControllerComment extends Prism\Controller\Form\Frontend
         }
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_COMMENT_SUCCESSFULLY_SEND"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_COMMENT_SUCCESSFULLY_SEND'), $redirectOptions);
     }
 }

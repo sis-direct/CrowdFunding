@@ -22,13 +22,13 @@ class CrowdfundingModelNotifier extends JModelLegacy
         /** @var $app JApplicationSite */
 
         // Send email to the administrator
-        $subject = JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_PROCESS_SUBJECT");
-        $body    = JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_PROCESS_BODY");
-        $return  = JFactory::getMailer()->sendMail($app->get("mailfrom"), $app->get("fromname"), $app->get("mailfrom"), $subject, $body);
+        $subject = JText::_('COM_CROWDFUNDING_ERROR_PAYMENT_PROCESS_SUBJECT');
+        $body    = JText::_('COM_CROWDFUNDING_ERROR_PAYMENT_PROCESS_BODY');
+        $return  = JFactory::getMailer()->sendMail($app->get('mailfrom'), $app->get('fromname'), $app->get('mailfrom'), $subject, $body);
 
         // Check for an error.
         if ($return !== true) {
-            $error = JText::sprintf("COM_CROWDFUNDING_ERROR_MAIL_SENDING_ADMIN");
+            $error = JText::sprintf('COM_CROWDFUNDING_ERROR_MAIL_SENDING_ADMIN');
             JLog::add($error);
         }
     }
@@ -36,11 +36,11 @@ class CrowdfundingModelNotifier extends JModelLegacy
     /**
      * Remove a record of payment session from the database.
      *
-     * @param object $session
+     * @param stdClass $session
      */
     public function closePaymentSession($session)
     {
-        if (!empty($session->id)) {
+        if (is_object($session) and (int)$session->id > 0) {
             $intention = new Crowdfunding\Intention(JFactory::getDbo());
 
             $intention->setId($session->id);

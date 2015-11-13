@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if (strcmp("five_steps", $this->wizardType) == 0) {
+if (strcmp('five_steps', $this->wizardType) === 0) {
     $layout      = new JLayoutFile('project_wizard');
 } else {
     $layout      = new JLayoutFile('project_wizard_six_steps');
@@ -24,11 +24,15 @@ if (!empty($this->item->event->onExtrasDisplay)) {
 }
 ?>
 
+<form action="javascript: void(0);" method="post" id="js-cfextras-form-token">
+    <?php echo JHtml::_('form.token'); ?>
+</form>
+
 <div class="row">
     <div class="col-md-12">
-        <a class="btn btn-primary" <?php echo $this->disabledButton;?> href="<?php echo JRoute::_("index.php?option=com_crowdfunding&view=project&layout=manager&id=".(int)$this->item->id); ?>">
+        <a class="btn btn-primary" <?php echo $this->disabledButton;?> href="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=project&layout=manager&id='.(int)$this->item->id); ?>">
             <span class="fa fa-check"></span>
-            <?php echo JText::_("COM_CROWDFUNDING_CONTINUE_NEXT_STEP");?>
+            <?php echo JText::_('COM_CROWDFUNDING_CONTINUE_NEXT_STEP');?>
         </a>
     </div>
 </div>

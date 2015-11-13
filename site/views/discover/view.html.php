@@ -45,42 +45,37 @@ class CrowdfundingViewDiscover extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->getCmd("option");
-    }
-
     public function display($tpl = null)
     {
-        // Initialise variables
-        $this->state      = $this->get("State");
+        $this->option     = JFactory::getApplication()->input->getCmd('option');
+        
+        $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
         // Get params
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
         /** @var  $this->params Joomla\Registry\Registry */
 
-        $this->numberInRow       = $this->params->get("items_row", 3);
+        $this->numberInRow       = (int)$this->params->get('items_row', 3);
         $this->items             = CrowdfundingHelper::prepareItems($this->items, $this->numberInRow);
 
         // Get the folder with images
-        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
+        $this->imageFolder = $this->params->get('images_directory', 'images/crowdfunding');
 
         // Get currency
-        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
         $this->amount = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
 
-        $this->displayCreator = $this->params->get("integration_display_creator", true);
+        $this->displayCreator = (bool)$this->params->get('integration_display_creator', true);
 
         // Prepare social integration.
-        if (!empty($this->displayCreator)) {
+        if ($this->displayCreator !== false) {
             $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
                 array(
-                    "social_platform" => $this->params->get("integration_social_platform"),
-                    "users_ids" => CrowdfundingHelper::fetchUserIds($this->items)
+                    'social_platform' => $this->params->get('integration_social_platform'),
+                    'users_ids' => CrowdfundingHelper::fetchUserIds($this->items)
                 )
             );
 
@@ -90,14 +85,14 @@ class CrowdfundingViewDiscover extends JViewLegacy
         }
 
         $this->layoutData = array(
-            "items" => $this->items,
-            "params" => $this->params,
-            "amount" => $this->amount,
-            "socialProfiles" => $this->socialProfiles,
-            "imageFolder" => $this->imageFolder,
-            "titleLength" => $this->params->get("discover_title_length", 0),
-            "descriptionLength" => $this->params->get("discover_description_length", 0),
-            "span"  => (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4
+            'items' => $this->items,
+            'params' => $this->params,
+            'amount' => $this->amount,
+            'socialProfiles' => $this->socialProfiles,
+            'imageFolder' => $this->imageFolder,
+            'titleLength' => $this->params->get('discover_title_length', 0),
+            'descriptionLength' => $this->params->get('discover_description_length', 0),
+            'span'  => ($this->numberInRow > 0) ? round(12 / $this->numberInRow) : 4
         );
 
         $this->prepareDocument();
@@ -128,7 +123,6 @@ class CrowdfundingViewDiscover extends JViewLegacy
         if ($this->params->get('menu-meta_keywords')) {
             $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
-
     }
 
     private function preparePageHeading()
@@ -160,9 +154,9 @@ class CrowdfundingViewDiscover extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
 

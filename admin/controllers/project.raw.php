@@ -44,7 +44,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
     public function loadLocation()
     {
         // Get the input
-        $query = $this->input->get->get('query', "", 'string');
+        $query = $this->input->get->getString('query');
 
         $response = new Prism\Response\Json();
 
@@ -53,7 +53,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
             $locations = new Crowdfunding\Locations(JFactory::getDbo());
             $locations->loadByString($query);
             
-            $locationData = $locations->toOptions();
+            $locationData = $locations->toOptions('id', 'name');
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());

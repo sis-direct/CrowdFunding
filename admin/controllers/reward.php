@@ -92,9 +92,8 @@ class CrowdfundingControllerReward extends Prism\Controller\Form\Backend
                 $reward->load($itemId);
 
                 // Get the folder where the images will be stored
-                $imagesFolder = CrowdfundingHelper::getImagesFolder($reward->getUserId());
+                $imagesFolder = CrowdfundingHelper::getImagesFolder($reward->getUserId(), JPATH_ROOT);
 
-                jimport("joomla.filesystem.folder");
                 if (!JFolder::exists($imagesFolder)) {
                     CrowdfundingHelper::createFolder($imagesFolder);
                 }
@@ -147,7 +146,7 @@ class CrowdfundingControllerReward extends Prism\Controller\Form\Backend
             return;
         }
 
-        $imagesFolder = CrowdfundingHelper::getImagesFolder($reward->getUserId());
+        $imagesFolder = CrowdfundingHelper::getImagesFolder($reward->getUserId(), JPATH_ROOT);
 
         try {
 

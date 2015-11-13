@@ -41,11 +41,11 @@ class Rewards extends Prism\Database\ArrayObject
      *
      * @return null|self
      */
-    public static function getInstance(\JDatabaseDriver $db, $options = array())
+    public static function getInstance(\JDatabaseDriver $db, array $options = array())
     {
-        $projectId = (!isset($options["project_id"])) ? 0 : $options["project_id"];
+        $projectId = (!array_key_exists('project_id', $options)) ? 0 : (int)$options['project_id'];
 
-        if (!isset(self::$instances[$projectId])) {
+        if (!array_key_exists($projectId, self::$instances)) {
             $item = new Rewards($db);
             $item->load($options);
 
@@ -77,28 +77,28 @@ class Rewards extends Prism\Database\ArrayObject
      */
     public function load($options = array())
     {
-        $projectId = (!isset($options["project_id"])) ? 0 : $options["project_id"];
+        $projectId = (!array_key_exists('project_id', $options)) ? 0 : (int)$options['project_id'];
 
-        $query = $this->db->getQuery(true);
+        if ($projectId > 0) {
+            $query = $this->db->getQuery(true);
 
-        $query
-            ->select(
-                "a.id, a.title, a.description, a.amount, a.number, a.distributed, " .
-                "a.delivery, a.image, a.image_thumb, a.image_square"
-            )
-            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
-            ->where("a.project_id = " . (int)$projectId);
+            $query
+                ->select(
+                    'a.id, a.title, a.description, a.amount, a.number, a.distributed, ' .
+                    'a.delivery, a.image, a.image_thumb, a.image_square'
+                )
+                ->from($this->db->quoteName('#__crowdf_rewards', 'a'))
+                ->where('a.project_id = ' . (int)$projectId);
 
-        // Get state
-        $state = ArrayHelper::getValue($options, "state", 0, "int");
-        if (!empty($state)) {
-            $query->where("a.published = " . (int)$state);
+            // Get state
+            $state = ArrayHelper::getValue($options, 'state');
+            if ($state !== null) {
+                $query->where('a.published = ' . (int)$state);
+            }
+
+            $this->db->setQuery($query);
+            $this->items = (array)$this->db->loadAssocList();
         }
-
-        $this->db->setQuery($query);
-        $results = (array)$this->db->loadAssocList();
-
-        $this->items = $results;
     }
 
     /**
@@ -122,26 +122,26 @@ class Rewards extends Prism\Database\ArrayObject
         $keys = $this->getKeys();
         $keys = ArrayHelper::toInteger($keys);
 
-        if (!$keys) {
-            return array();
+        $result = array();
+
+        if (count($keys) > 0) {
+            $query = $this->db->getQuery(true);
+
+            $query
+                ->select('a.reward_id, COUNT(a.id) AS funders')
+                ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+                ->group('a.reward_id')
+                ->where('a.reward_id IN ( ' . implode(',', $keys) . ' )');
+
+            $this->db->setQuery($query);
+            $result = (array)$this->db->loadAssocList('reward_id');
+
+            foreach ($this->items as &$item) {
+                $item['funders'] = (!array_key_exists($item['id'], $result)) ? 0 : (int)$result[$item['id']]['funders'];
+            }
+
+            unset($item);
         }
-
-        $query = $this->db->getQuery(true);
-
-        $query
-            ->select("a.reward_id, COUNT(a.id) AS funders")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->group("a.reward_id")
-            ->where("a.reward_id IN ( " . implode(",", $keys) . " )");
-
-        $this->db->setQuery($query);
-        $result = (array)$this->db->loadAssocList("reward_id");
-
-        foreach ($this->items as &$item) {
-            $item["funders"] = (!isset($result[$item["id"]])) ? 0 : $result[$item["id"]]["funders"];
-        }
-
-        unset($item);
 
         return $result;
     }

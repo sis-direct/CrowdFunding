@@ -66,7 +66,7 @@ class CrowdfundingViewReward extends JViewLegacy
         if (!empty($this->item->id)) {
             $userId = CrowdfundingHelper::getUserIdByRewardId($this->item->id);
             $uri = JUri::getInstance();
-            $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdfundingHelper::getImagesFolderUri($userId, JPATH_BASE);
+            $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdfundingHelper::getImagesFolderUri($userId);
         }
 
         $app = JFactory::getApplication();

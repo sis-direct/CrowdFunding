@@ -112,11 +112,11 @@ class CrowdfundingModelReport extends JModelForm
             $query = $db->getQuery(true);
 
             $query
-                ->select("a.id, a.title")
-                ->from($db->quoteName("#__crowdf_projects", "a"))
-                ->where("a.id = " . (int)$id)
-                ->where("a.published = 1")
-                ->where("a.approved  = 1");
+                ->select('a.id, a.title')
+                ->from($db->quoteName('#__crowdf_projects', 'a'))
+                ->where('a.id = ' . (int)$id)
+                ->where('a.published = 1')
+                ->where('a.approved  = 1');
 
             $db->setQuery($query, 0, 1);
             $result = $db->loadObject();
@@ -139,17 +139,19 @@ class CrowdfundingModelReport extends JModelForm
      *
      * @return    mixed        The record id on success, null on failure.
      * @since    1.6
+     *
+     * @throws RuntimeException
      */
     public function save($data)
     {
-        $projectId   = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
-        $subject     = Joomla\Utilities\ArrayHelper::getValue($data, "subject");
-        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
-        $email       = Joomla\Utilities\ArrayHelper::getValue($data, "email");
-        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
+        $projectId   = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
+        $subject     = Joomla\Utilities\ArrayHelper::getValue($data, 'subject');
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, 'description');
+        $email       = Joomla\Utilities\ArrayHelper::getValue($data, 'email');
+        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', 0, 'int');
 
         if (!$projectId) {
-            throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
+            throw new RuntimeException(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'));
         }
 
         if (!$email) {
@@ -163,18 +165,18 @@ class CrowdfundingModelReport extends JModelForm
         $row = $this->getTable();
         /** @var $row CrowdfundingTableReport */
 
-        $row->set("subject", $subject);
-        $row->set("description", $description);
-        $row->set("email", $email);
-        $row->set("user_id", $userId);
-        $row->set("project_id", $projectId);
+        $row->set('subject', $subject);
+        $row->set('description', $description);
+        $row->set('email', $email);
+        $row->set('user_id', $userId);
+        $row->set('project_id', $projectId);
 
         $row->store(true);
 
         // Trigger the event onContentAfterSave.
         $this->triggerEventAfterReport($row);
 
-        return $row->get("id");
+        return $row->get('id');
     }
 
     /**
@@ -182,7 +184,7 @@ class CrowdfundingModelReport extends JModelForm
      *
      * @param CrowdfundingTableReport $table
      *
-     * @throws Exception
+     * @throws RuntimeException
      */
     protected function triggerEventAfterReport($table)
     {
@@ -198,10 +200,10 @@ class CrowdfundingModelReport extends JModelForm
         JPluginHelper::importPlugin('content');
 
         // Trigger the onContentAfterSave event.
-        $results = $dispatcher->trigger("onContentAfterReport", array($context, &$report));
+        $results = $dispatcher->trigger('onContentAfterReport', array($context, &$report));
 
         if (in_array(false, $results, true)) {
-            throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_DURING_REPORTING_PROCESS"));
+            throw new RuntimeException(JText::_('COM_CROWDFUNDING_ERROR_DURING_REPORTING_PROCESS'));
         }
     }
 }

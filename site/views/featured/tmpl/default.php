@@ -15,7 +15,8 @@ defined('_JEXEC') or die;
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-    <?php if (!empty($this->items)) {
+    <?php
+    if (is_array($this->items) and count($this->items) > 0) {
         $layout      = new JLayoutFile('items_grid');
         echo $layout->render($this->layoutData);
     } ?>

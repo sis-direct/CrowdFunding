@@ -48,7 +48,7 @@ class CrowdfundingViewProject extends JViewLegacy
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
+        $this->option = JFactory::getApplication()->input->get('option');
     }
 
     public function display($tpl = null)
@@ -58,19 +58,19 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->form  = $this->get('Form');
 
         // Prepare parameters
-        $params = $this->state->get("params");
+        $params = $this->state->get('params');
         /** @var $params Joomla\Registry\Registry */
         $this->params = $params;
 
-        $imagesFolder    = $this->params->get("images_directory", "images/crowdfunding");
+        $imagesFolder    = $this->params->get('images_directory', 'images/crowdfunding');
         $this->imagesUrl = JUri::root() . $imagesFolder;
 
         // Set minimum values - days, amount,...
-        $this->minAmount = $this->params->get("project_amount_minimum", 100);
-        $this->maxAmount = $this->params->get("project_amount_maximum");
+        $this->minAmount = $this->params->get('project_amount_minimum', 100);
+        $this->maxAmount = $this->params->get('project_amount_maximum');
 
-        $this->minDays = $this->params->get("project_days_minimum", 30);
-        $this->maxDays = $this->params->get("project_days_maximum");
+        $this->minDays = $this->params->get('project_days_minimum', 30);
+        $this->maxDays = $this->params->get('project_days_maximum');
 
         $this->prepareFundingDurationType();
 
@@ -83,15 +83,15 @@ class CrowdfundingViewProject extends JViewLegacy
 
     protected function prepareFundingDurationType()
     {
-        $this->fundingDuration = $this->params->get("project_funding_duration");
+        $this->fundingDuration = $this->params->get('project_funding_duration');
 
         switch ($this->fundingDuration) {
 
-            case "days": // Only days type is enabled
+            case 'days': // Only days type is enabled
                 $this->checkedDays = 'checked="checked"';
                 break;
 
-            case "date": // Only date type is enabled
+            case 'date': // Only date type is enabled
                 $this->checkedDate = 'checked="checked"';
                 break;
 
@@ -100,9 +100,9 @@ class CrowdfundingViewProject extends JViewLegacy
                 $fundingStartDateValidator = new Prism\Validator\Date($this->item->funding_end);
 
                 $this->checkedDays = 0;
-                $this->checkedDate = "";
+                $this->checkedDate = '';
 
-                if (!empty($this->item->funding_days)) {
+                if ($this->item->funding_days > 0) {
                     $this->checkedDays = 'checked="checked"';
                     $this->checkedDate = '';
                 } elseif ($fundingStartDateValidator->isValid()) {
@@ -126,7 +126,7 @@ class CrowdfundingViewProject extends JViewLegacy
     protected function addToolbar()
     {
         JFactory::getApplication()->input->set('hidemainmenu', true);
-        $isNew = ($this->item->id == 0);
+        $isNew = ((int)$this->item->id === 0);
 
         $this->documentTitle = $isNew ? JText::_('COM_CROWDFUNDING_NEW_PROJECT') : JText::_('COM_CROWDFUNDING_EDIT_PROJECT');
 
@@ -161,7 +161,7 @@ class CrowdfundingViewProject extends JViewLegacy
         JHtml::_('prism.ui.bootstrap2FileInput');
         JHtml::_('prism.ui.bootstrap2Typeahead');
 
-        JHtml::_("prism.ui.joomlaHelper");
+        JHtml::_('prism.ui.joomlaHelper');
 
         $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
     }

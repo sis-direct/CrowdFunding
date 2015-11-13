@@ -50,22 +50,22 @@ class Updates extends Prism\Database\ArrayObject
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.description, a.record_date, a.project_id")
-            ->from($this->db->quoteName("#__crowdf_updates", "a"));
+            ->select('a.id, a.title, a.description, a.record_date, a.project_id')
+            ->from($this->db->quoteName('#__crowdf_updates', 'a'));
 
         // Filter by project ID.
-        $projectId = ArrayHelper::getValue($options, "project_id", 0, "int");
-        $query->where("a.project_id = " . (int)$projectId);
+        $projectId = ArrayHelper::getValue($options, 'project_id', 0, 'int');
+        $query->where('a.project_id = ' . (int)$projectId);
 
         // Filter by period.
-        $period = ArrayHelper::getValue($options, "period", 0, "int");
-        if (!empty($period) and ($period > 0)) {
-            $query->where("a.record_date >= DATE_SUB(NOW(), INTERVAL ".$period." DAY)");
+        $period = ArrayHelper::getValue($options, 'period', 0, 'int');
+        if ($period > 0) {
+            $query->where('a.record_date >= DATE_SUB(NOW(), INTERVAL '.$period.' DAY)');
         }
 
         // Set limit.
-        $limit = ArrayHelper::getValue($options, "limit", 0, "int");
-        if (!empty($limit)) {
+        $limit = ArrayHelper::getValue($options, 'limit', 0, 'int');
+        if ($limit > 0) {
             $this->db->setQuery($query, 0, $limit);
         } else {
             $this->db->setQuery($query);
@@ -87,26 +87,25 @@ class Updates extends Prism\Database\ArrayObject
      * @param int $state 1 = Sent; 0 = Not sent;
      * @param null|array $ids
      */
-    public function changeState($state, $ids = null)
+    public function changeState($state, array $ids = array())
     {
-        if (is_null($ids) and !empty($this->items)) {
+        if (count($ids) === 0 and count($this->items) > 0) {
             $ids = $this->getKeys();
         }
 
-        if (!in_array($state, $this->allowedStates)) {
+        if (!in_array($state, $this->allowedStates, true)) {
             $state = 0;
         }
 
-        if (!empty($ids)) {
+        if (count($ids) > 0) {
             $query = $this->db->getQuery(true);
             $query
-                ->update($this->db->quoteName("#__crowdf_updates"))
-                ->set($this->db->quoteName("state") ."=". (int)$state)
-                ->where($this->db->quoteName("id") ." IN (".implode(",", $ids).")");
+                ->update($this->db->quoteName('#__crowdf_updates'))
+                ->set($this->db->quoteName('state') .'='. (int)$state)
+                ->where($this->db->quoteName('id') .' IN ('.implode(',', $ids).')');
 
             $this->db->setQuery($query);
             $this->db->execute();
         }
-
     }
 }

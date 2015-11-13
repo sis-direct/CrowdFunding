@@ -11,7 +11,7 @@ namespace Crowdfunding\Statistics\Transactions;
 
 defined('JPATH_PLATFORM') or die;
 
-\JLoader::register("Crowdfunding\\Statistics\\Transactions\\Base", JPATH_LIBRARIES . "/crowdfunding/statistics/transactions/base.php");
+\JLoader::register('Crowdfunding\\Statistics\\Transactions\\Base', JPATH_LIBRARIES . '/crowdfunding/statistics/transactions/base.php');
 
 /**
  * This class loads statistics about transactions.
@@ -43,7 +43,7 @@ class Latest extends Base
     {
         $query = $this->getQuery();
 
-        $query->order("a.txn_date DESC");
+        $query->order('a.txn_date DESC');
 
         $this->db->setQuery($query, 0, (int)$limit);
 

@@ -45,10 +45,10 @@ class CrowdfundingModelTransactions extends JModelList
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $value = JFactory::getUser()->get("id");
+        $value = JFactory::getUser()->get('id');
         $this->setState('filter.receiver_id', $value);
 
-        $value = $app->input->getString("filter_search");
+        $value = $app->input->getString('filter_search');
         $this->setState('filter.search', $value);
 
         // Load the component parameters.
@@ -100,8 +100,8 @@ class CrowdfundingModelTransactions extends JModelList
                 'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, ' .
                 'a.project_id, a.reward_id, a.investor_id, a.receiver_id, a.service_provider, a.reward_state, ' .
                 'b.title AS project, ' .
-                $query->concatenate(array("b.id", "b.alias"), ":") . ' AS slug, ' .
-                $query->concatenate(array("c.id", "c.alias"), ":") . ' AS catslug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug, ' .
                 'd.title AS reward, ' .
                 'e.name AS investor, ' .
                 'f.name AS receiver'
@@ -117,12 +117,12 @@ class CrowdfundingModelTransactions extends JModelList
 
         // Filter by search phrase or ID.
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
             } else {
                 $escaped = $db->escape($search, true);
-                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('b.title LIKE ' . $quoted);
             }
         }

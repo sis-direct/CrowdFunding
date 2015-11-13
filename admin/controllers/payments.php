@@ -27,27 +27,26 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
     protected $projectId;
 
-    protected $text_prefix = "COM_CROWDFUNDING";
+    protected $text_prefix = 'COM_CROWDFUNDING';
 
     public function __construct($config = array())
     {
         parent::__construct($config);
 
-        $this->option = $this->input->getCmd("option");
+        $this->option = $this->input->getCmd('option');
 
         // Prepare log object
-        $registry = JRegistry::getInstance("com_crowdfunding");
+        $registry = JRegistry::getInstance('com_crowdfunding');
         /** @var $registry Joomla\Registry\Registry */
 
-        $fileName  = $registry->get("logger.file");
-        $tableName = $registry->get("logger.table");
+        $fileName  = $registry->get('logger.file');
+        $tableName = $registry->get('logger.table');
 
-        $file = JPath::clean(JFactory::getApplication()->get("log_path") . DIRECTORY_SEPARATOR . $fileName);
+        $file = JPath::clean(JFactory::getApplication()->get('log_path') . DIRECTORY_SEPARATOR . $fileName);
 
         $this->log = new Prism\Log\Log();
-        $this->log->addWriter(new Prism\Log\Writer\Database(JFactory::getDbo(), $tableName));
-        $this->log->addWriter(new Prism\Log\Writer\File($file));
-
+        $this->log->addAdapter(new Prism\Log\Adapter\Database(JFactory::getDbo(), $tableName));
+        $this->log->addAdapter(new Prism\Log\Adapter\File($file));
     }
 
     /**
@@ -57,51 +56,49 @@ class CrowdfundingControllerPayments extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return   CrowdfundingModelPayments    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Payments', $prefix = '', $config = array('ignore_request' => true))
+    public function getModel($name = 'Payments', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
-    public function docapture()
+    public function doCapture()
     {
         // Get component parameters
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var $params Joomla\Registry\Registry */
 
         // Check for disabled payment functionality
-        if ($params->get("debug_payment_disabled", 0)) {
-            throw new Exception(JText::_($this->text_prefix . "_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE"));
+        if ($params->get('debug_payment_disabled', 0)) {
+            throw new Exception(JText::_($this->text_prefix . '_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE'));
         }
 
         $app = JFactory::getApplication();
         /** @var $app JApplicationAdministrator */
 
-        $cid    = $this->input->get("cid", array(), "array");
-
-        JArrayHelper::toInteger($cid);
+        $cid = $this->input->get('cid', array(), 'array');
+        $cid = Joomla\Utilities\ArrayHelper::toInteger($cid);
 
         $messages = array();
 
         // Trigger the event
         try {
 
-            if (!empty($cid)) {
+            if (count($cid) > 0) {
 
                 $options = array(
-                    "ids" => $cid,
-                    "txn_status" => "pending"
+                    'ids' => $cid,
+                    'txn_status' => 'pending'
                 );
 
                 $items = new Crowdfunding\Transactions(JFactory::getDbo());
                 $items->load($options);
 
-                if (count($items) == 0) {
-                    throw new UnexpectedValueException(JText::_($this->text_prefix . "_ERROR_INVALID_TRANSACTIONS"));
+                if (count($items) === 0) {
+                    throw new UnexpectedValueException(JText::_($this->text_prefix . '_ERROR_INVALID_TRANSACTIONS'));
                 }
 
                 // Import Crowdfunding Payment Plugins
@@ -110,13 +107,15 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
                 foreach ($items as $item) {
 
-                    $context = $this->option . '.payments.capture.' . JString::strtolower(str_replace(" ", "", $item->service_provider));
+                    $item    = Joomla\Utilities\ArrayHelper::toObject($item);
+
+                    $context = $this->option . '.payments.capture.' . $item->service_alias;
 
                     // Trigger onContentPreparePayment event.
-                    $results = $dispatcher->trigger("onPaymentsCapture", array($context, &$item, &$params));
+                    $results = $dispatcher->trigger('onPaymentsCapture', array($context, &$item, &$params));
 
                     foreach ($results as $message) {
-                        if (!is_null($message) and is_array($message)) {
+                        if ($message !== null and is_array($message)) {
                             $messages[] = $message;
                         }
                     }
@@ -125,67 +124,66 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
         } catch (UnexpectedValueException $e) {
 
-            $this->setMessage($e->getMessage(), "notice");
-            $this->setRedirect(JRoute::_("index.php?option=" . $this->option . "&view=transactions", false));
+            $this->setMessage($e->getMessage(), 'notice');
+            $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=transactions', false));
             return;
 
         } catch (Exception $e) {
 
             // Store log data in the database
             $this->log->add(
-                JText::_($this->text_prefix . "_ERROR_SYSTEM"),
-                "CONTROLLER_PAYMENTS_DOCAPTURE_ERROR",
+                JText::_($this->text_prefix . '_ERROR_SYSTEM'),
+                'CONTROLLER_PAYMENTS_DOCAPTURE_ERROR',
                 $e->getMessage()
             );
 
-            throw new Exception(JText::_($this->text_prefix . "_ERROR_SYSTEM"));
+            throw new Exception(JText::_($this->text_prefix . '_ERROR_SYSTEM'));
         }
 
         // Set messages.
-        if (!empty($messages)) {
+        if (count($messages) > 0) {
             foreach ($messages as $message) {
-                $app->enqueueMessage($message["text"], $message["type"]);
+                $app->enqueueMessage($message['text'], $message['type']);
             }
         }
 
-        $this->setRedirect(JRoute::_("index.php?option=" . $this->option . "&view=transactions", false));
+        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=transactions', false));
 
     }
 
-    public function dovoid()
+    public function doVoid()
     {
         // Get component parameters
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var $params Joomla\Registry\Registry */
 
         // Check for disabled payment functionality
-        if ($params->get("debug_payment_disabled", 0)) {
-            throw new Exception(JText::_($this->text_prefix . "_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE"));
+        if ($params->get('debug_payment_disabled', 0)) {
+            throw new Exception(JText::_($this->text_prefix . '_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE'));
         }
 
         $app = JFactory::getApplication();
         /** @var $app JApplicationAdministrator */
 
-        $cid    = $this->input->get("cid", array(), "array");
-
-        JArrayHelper::toInteger($cid);
+        $cid = $this->input->get('cid', array(), 'array');
+        $cid = Joomla\Utilities\ArrayHelper::toInteger($cid);
 
         $messages = array();
         
         try {
 
-            if (!empty($cid)) {
+            if (count($cid) > 0) {
 
                 $options = array(
-                    "ids" => $cid,
-                    "txn_status" => "pending"
+                    'ids' => $cid,
+                    'txn_status' => 'pending'
                 );
 
                 $items = new Crowdfunding\Transactions(JFactory::getDbo());
                 $items->load($options);
 
-                if (count($items) == 0) {
-                    throw new UnexpectedValueException(JText::_($this->text_prefix . "_ERROR_INVALID_TRANSACTIONS"));
+                if (count($items) === 0) {
+                    throw new UnexpectedValueException(JText::_($this->text_prefix . '_ERROR_INVALID_TRANSACTIONS'));
                 }
 
                 // Import Crowdfunding Payment Plugins
@@ -194,26 +192,25 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
                 foreach ($items as $item) {
 
-                    $context = $this->option . '.payments.void.' . JString::strtolower(str_replace(" ", "", $item->service_provider));
+                    $item    = Joomla\Utilities\ArrayHelper::toObject($item);
+
+                    $context = $this->option . '.payments.void.' . $item->service_alias;
 
                     // Trigger onContentPreparePayment event.
-                    $results = $dispatcher->trigger("onPaymentsVoid", array($context, &$item, &$params));
+                    $results = $dispatcher->trigger('onPaymentsVoid', array($context, &$item, &$params));
 
                     foreach ($results as $message) {
-                        if (!is_null($message) and is_array($message)) {
+                        if ($message !== null and is_array($message)) {
                             $messages[] = $message;
                         }
                     }
-
                 }
-
-
             }
 
         } catch (UnexpectedValueException $e) {
 
-            $this->setMessage($e->getMessage(), "notice");
-            $this->setRedirect(JRoute::_("index.php?option=" . $this->option . "&view=transactions", false));
+            $this->setMessage($e->getMessage(), 'notice');
+            $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=transactions', false));
 
             return;
 
@@ -221,22 +218,21 @@ class CrowdfundingControllerPayments extends JControllerLegacy
 
             // Store log data in the database
             $this->log->add(
-                JText::_($this->text_prefix . "_ERROR_SYSTEM"),
-                "CONTROLLER_PAYMENTS_DOCAPTURE_ERROR",
+                JText::_($this->text_prefix . '_ERROR_SYSTEM'),
+                'CONTROLLER_PAYMENTS_DOCAPTURE_ERROR',
                 $e->getMessage()
             );
 
-            throw new Exception(JText::_($this->text_prefix . "_ERROR_SYSTEM"));
-
+            throw new Exception(JText::_($this->text_prefix . '_ERROR_SYSTEM'));
         }
 
         // Set messages.
-        if (!empty($messages)) {
+        if (count($messages) > 0) {
             foreach ($messages as $message) {
-                $app->enqueueMessage($message["text"], $message["type"]);
+                $app->enqueueMessage($message['text'], $message['type']);
             }
         }
 
-        $this->setRedirect(JRoute::_("index.php?option=" . $this->option . "&view=transactions", false));
+        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=transactions', false));
     }
 }

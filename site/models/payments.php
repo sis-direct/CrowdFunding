@@ -15,7 +15,7 @@ class CrowdfundingModelPayments extends JModelLegacy
     /**
      * @param int $projectId
      * @param Joomla\Registry\Registry $params
-     * @param object $paymentSession
+     * @param stdClass $paymentSession
      *
      * @return stdClass
      * @throws UnexpectedValueException
@@ -26,15 +26,15 @@ class CrowdfundingModelPayments extends JModelLegacy
         $project->load($projectId);
 
         if (!$project->getId()) {
-            throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
+            throw new UnexpectedValueException(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'));
         }
 
         if ($project->isCompleted()) {
-            throw new UnexpectedValueException(JText::_("COM_CROWDFUNDING_ERROR_COMPLETED_PROJECT"));
+            throw new UnexpectedValueException(JText::_('COM_CROWDFUNDING_ERROR_COMPLETED_PROJECT'));
         }
 
         // Get currency
-        $currency   = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get("project_currency"));
+        $currency   = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get('project_currency'));
 
         // Create amount object.
         $amount   = new Crowdfunding\Amount($params);
@@ -49,6 +49,7 @@ class CrowdfundingModelPayments extends JModelLegacy
         $item->rewardId       = $paymentSession->rewardId;
         $item->starting_date  = $project->getFundingStart();
         $item->ending_date    = $project->getFundingEnd();
+        $item->user_id        = $project->getUserId();
 
         $item->amount         = $paymentSession->amount;
         $item->currencyCode   = $currency->getCode();

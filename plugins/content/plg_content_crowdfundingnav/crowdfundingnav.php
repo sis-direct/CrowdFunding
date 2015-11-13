@@ -21,11 +21,6 @@ jimport('joomla.plugin.plugin');
 class plgContentCrowdfundingNav extends JPlugin
 {
     /**
-     * @var Joomla\Registry\Registry
-     */
-    public $params;
-
-    /**
      * @param string  $context
      * @param object $article
      * @param Joomla\Registry\Registry $params
@@ -48,70 +43,70 @@ class plgContentCrowdfundingNav extends JPlugin
 
         // Check document type
         $docType = $doc->getType();
-        if (strcmp("html", $docType) != 0) {
+        if (strcmp('html', $docType) !== 0) {
             return null;
         }
 
-        if (strcmp("com_crowdfunding.details", $context) != 0) {
+        if (strcmp('com_crowdfunding.details', $context) !== 0) {
             return null;
         }
 
         // Load language
         $this->loadLanguage();
 
-        $itemId = $app->input->getInt("id");
+        $itemId = $app->input->getInt('id');
         $stats  = CrowdfundingHelper::getProjectData($itemId);
 
-        $screen = $app->input->getCmd("screen", "home");
+        $screen = $app->input->getCmd('screen', 'home');
 
         $html = '<ul class="nav nav-pills cf-plg-navigation">';
 
-        if ($this->params->get("display_home")) {
+        if ($this->params->get('display_home')) {
             $class = 'class="cf-plg-nav-home';
-            if (strcmp($screen, "home") == 0) {
+            if (strcmp($screen, 'home') === 0) {
                 $class .= ' active';
             }
             $class .= '"';
 
-            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)) . '">' . JText::_("PLG_CONTENT_CROWDFUNDINGNAV_HOME") . "</a></li>";
+            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug)) . '">' . JText::_('PLG_CONTENT_CROWDFUNDINGNAV_HOME') . "</a></li>";
         }
 
-        if ($this->params->get("display_updates")) {
+        if ($this->params->get('display_updates')) {
             $class = 'class="cf-plg-nav-updates';
-            if (strcmp($screen, "updates") == 0) {
+            if (strcmp($screen, 'updates') === 0) {
                 $class .= ' active';
             }
             $class .= '"';
 
-            $stat = '<span class="badge">' . Joomla\Utilities\ArrayHelper::getValue($stats, "updates", 0) . '</span>';
-            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "updates")) . '">' . JText::_("PLG_CONTENT_CROWDFUNDINGNAV_UPDATES") . ' ' . $stat . '</a></li>';
+            $stat = '<span class="badge">' . Joomla\Utilities\ArrayHelper::getValue($stats, 'updates', 0) . '</span>';
+            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "updates")) . '">' . JText::_('PLG_CONTENT_CROWDFUNDINGNAV_UPDATES') . ' ' . $stat . '</a></li>';
         }
 
-        if ($this->params->get("display_comments")) {
+        if ($this->params->get('display_comments')) {
             $class = 'class="cf-plg-nav-comments';
-            if (strcmp($screen, "comments") == 0) {
+            if (strcmp($screen, 'comments') === 0) {
                 $class .= ' active';
             }
             $class .= '"';
 
-            if (!$params->get("comments_enabled", 1)) {
+            if (!$params->get('comments_enabled', 1)) {
                 $stat = '<span class="cf-dclabel">&nbsp;</span>';
             } else {
-                $stat = '<span class="badge">' . Joomla\Utilities\ArrayHelper::getValue($stats, "comments", 0) . '</span>';
+                $stat = '<span class="badge">' . Joomla\Utilities\ArrayHelper::getValue($stats, 'comments', 0) . '</span>';
             }
 
-            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "comments")) . '">' . JText::_("PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS") . ' ' . $stat . '</a></li>';
+            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, 'comments')) . '">' . JText::_('PLG_CONTENT_CROWDFUNDINGNAV_COMMENTS') . ' ' . $stat . '</a></li>';
         }
 
-        if ($this->params->get("display_funders")) {
+        if ($this->params->get('display_funders')) {
             $class = 'class="cf-plg-nav-funders';
-            if (strcmp($screen, "funders") == 0) {
+            if (strcmp($screen, 'funders') === 0) {
                 $class .= ' active';
             }
             $class .= '"';
 
-            $stat = '<span class="badge">' . Joomla\Utilities\ArrayHelper::getValue($stats, "funders", 0) . '</span>';
-            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, "funders")) . '">' . JText::_("PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS") . ' ' . $stat . '</a></li>';
+            $stat = '<span class="badge">' . Joomla\Utilities\ArrayHelper::getValue($stats, 'funders', 0) . '</span>';
+            $html .= '<li ' . $class . '><a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($article->slug, $article->catslug, 'funders')) . '">' . JText::_('PLG_CONTENT_CROWDFUNDINGNAV_FUNDERS') . ' ' . $stat . '</a></li>';
         }
 
         $html .= '</ul>';

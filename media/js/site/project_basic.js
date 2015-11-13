@@ -44,7 +44,8 @@ jQuery(document).ready(function () {
         },
         async: true,
         limit: 5,
-        display: "name"
+        display: "text",
+        name: "value"
     });
 
     $inputTypeahead.bind('typeahead:select', function(event, suggestion) {

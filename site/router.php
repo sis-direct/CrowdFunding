@@ -49,7 +49,6 @@ function CrowdfundingBuildRoute(&$query)
 
     // If is set view and Itemid missing, we have to put the view to the segments
     if (isset($query['view'])) {
-//    if (isset($query['view'])) {
         $view = $query['view'];
     } else {
         return $segments;

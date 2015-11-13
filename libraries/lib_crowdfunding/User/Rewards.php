@@ -23,20 +23,6 @@ defined('JPATH_PLATFORM') or die;
 class Rewards extends Prism\Database\ArrayObject
 {
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $rewards   = new Crowdfunding\User\Rewards(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load data about user rewards by user ID.
      *
      * <code>
@@ -60,23 +46,23 @@ class Rewards extends Prism\Database\ArrayObject
         $query = $this->getQuery();
 
         // Filter by user ID.
-        $userId = ArrayHelper::getValue($options, "user_id", 0, "int");
-        if (!empty($userId)) {
-            $query->where("a.receiver_id = " . (int)$userId);
+        $userId = ArrayHelper::getValue($options, 'user_id', 0, 'int');
+        if ($userId > 0) {
+            $query->where('a.receiver_id = ' . (int)$userId);
         }
 
         // Filter by project ID.
-        $projectId = ArrayHelper::getValue($options, "project_id", 0, "int");
-        if (!empty($projectId)) {
-            $query->where("a.project_id = " . (int)$projectId);
+        $projectId = ArrayHelper::getValue($options, 'project_id', 0, 'int');
+        if ($projectId > 0) {
+            $query->where('a.project_id = ' . (int)$projectId);
         }
 
         // Filter by reward ID.
-        $rewardId = ArrayHelper::getValue($options, "reward_id", 0, "int");
-        if (!empty($rewardId)) {
-            $query->where("a.reward_id = " .(int)$rewardId);
+        $rewardId = ArrayHelper::getValue($options, 'reward_id', 0, 'int');
+        if ($rewardId > 0) {
+            $query->where('a.reward_id = ' .(int)$rewardId);
         } else {
-            $query->where("a.reward_id > 0");
+            $query->where('a.reward_id > 0');
         }
 
         $this->db->setQuery($query);
@@ -90,15 +76,15 @@ class Rewards extends Prism\Database\ArrayObject
 
         $query
             ->select(
-                "a.id AS transaction_id, a.receiver_id, a.reward_state, a.txn_id, a.reward_id, a.project_id, " .
-                "b.title AS reward_name, ".
-                "c.name, c.email, " .
-                "d.title AS project"
+                'a.id AS transaction_id, a.receiver_id, a.reward_state, a.txn_id, a.reward_id, a.project_id, ' .
+                'b.title AS reward_name, '.
+                'c.name, c.email, ' .
+                'd.title AS project'
             )
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->leftJoin($this->db->quoteName("#__crowdf_rewards", "b"). " ON a.reward_id = b.id")
-            ->leftJoin($this->db->quoteName("#__users", "c") . " ON a.receiver_id = c.id")
-            ->leftJoin($this->db->quoteName("#__crowdf_projects", "d") . " ON a.project_id = d.id");
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->leftJoin($this->db->quoteName('#__crowdf_rewards', 'b'). ' ON a.reward_id = b.id')
+            ->leftJoin($this->db->quoteName('#__users', 'c') . ' ON a.receiver_id = c.id')
+            ->leftJoin($this->db->quoteName('#__crowdf_projects', 'd') . ' ON a.project_id = d.id');
 
         return $query;
     }

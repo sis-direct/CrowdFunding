@@ -1,6 +1,12 @@
 Crowdfunding Platform Release Notes
 ==========================
 
+###v2.3
+* Added functionality for rewards ordering.
+* Fixed the calendar on rewards view (project wizard).
+* Fixed selection of locations ( typeaheads ).
+* Added section "Tools".
+
 ###v2.2
 * Added information about the license.
 * Replaced where it was used Joomla\String\String with JString.

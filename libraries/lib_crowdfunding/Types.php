@@ -40,9 +40,9 @@ class Types extends Prism\Database\ArrayObject
      *
      * @return self
      */
-    public static function getInstance(\JDatabaseDriver $db, $options = array())
+    public static function getInstance(\JDatabaseDriver $db, array $options = array())
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new Types($db);
             self::$instance->load($options);
         }
@@ -95,26 +95,26 @@ class Types extends Prism\Database\ArrayObject
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.description, a.params")
-            ->from($this->db->quoteName("#__crowdf_types", "a"));
+            ->select('a.id, a.title, a.description, a.params')
+            ->from($this->db->quoteName('#__crowdf_types', 'a'));
 
         // Order by column
-        if (isset($options["order_column"])) {
+        if (array_key_exists('order_column', $options)) {
 
-            $orderString = $this->db->quoteName($options["order_column"]);
+            $orderString = $this->db->quoteName($options['order_column']);
 
             // Order direction
-            if (isset($options["order_direction"])) {
-                $orderString .= (strcmp("DESC", $options["order_direction"])) ? " DESC" : " ASC";
+            if (array_key_exists('order_direction', $options)) {
+                $orderString .= (strcmp('DESC', $options['order_direction'])) ? ' DESC' : ' ASC';
             }
 
             $query->order($orderString);
         }
 
         $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
+        $results = (array)$this->db->loadAssocList();
 
-        if (!empty($results)) {
+        if (count($results) > 0) {
 
             foreach ($results as $result) {
                 $type = new Type(\JFactory::getDbo());

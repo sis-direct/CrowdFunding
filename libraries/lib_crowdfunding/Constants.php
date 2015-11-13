@@ -20,9 +20,9 @@ defined('JPATH_PLATFORM') or die;
 class Constants
 {
     // Session contexts
-    const PAYMENT_SESSION_CONTEXT = "payment_session_project";
-    const CROPPED_IMAGES_CONTEXT  = "cropped_images_project";
-    const TEMPORARY_IMAGE_CONTEXT = "temporary_image_project";
+    const PAYMENT_SESSION_CONTEXT = 'payment_session_project';
+    const CROPPED_IMAGES_CONTEXT  = 'cropped_images_project';
+    const TEMPORARY_IMAGE_CONTEXT = 'temporary_image_project';
 
     // Filtering
     const FILTER_STARTED_SOON = 1;

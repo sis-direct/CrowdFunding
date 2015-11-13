@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelCommentItem extends JModelItem
 {
-    protected $item;
+    protected $item = array();
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -56,17 +56,21 @@ class CrowdfundingModelCommentItem extends JModelItem
      *
      * @param    integer  $id  The id of the object to get.
      *
-     * @return    mixed    Object on success, false on failure.
+     * @return    stdClass|null    Object on success, false on failure.
      */
-    public function getItem($id = null)
+    public function getItem($id = 0)
     {
-        if (empty($id)) {
-            $id = $this->getState($this->getName() . '.id');
+        if ((int)$id === 0) {
+            $id = (int)$this->getState($this->getName() . '.id');
+        }
+
+        if ($id === 0) {
+            return null;
         }
 
         $storedId = $this->getStoreId($id);
 
-        if (!isset($this->item[$storedId])) {
+        if (!array_key_exists($storedId, $this->item)) {
             $this->item[$storedId] = null;
 
             // Get a level row instance.
@@ -74,25 +78,28 @@ class CrowdfundingModelCommentItem extends JModelItem
             $table->load($id);
 
             // Attempt to load the row.
-            if ($table->get("id")) {
-                $this->item[$storedId] = $table;
+            if ($table->get('id')) {
+                $properties = $table->getProperties();
+                $this->item[$storedId] = Joomla\Utilities\ArrayHelper::toObject($properties);
+
+                unset($table);
             }
         }
 
         return $this->item[$storedId];
     }
 
-    public function remove($itemId, $userId = null)
+    public function remove($itemId, $userId = 0)
     {
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
         $query
-            ->delete($db->quoteName("#__crowdf_comments"))
-            ->where($db->quoteName("id") ." = " . (int)$itemId);
+            ->delete($db->quoteName('#__crowdf_comments'))
+            ->where($db->quoteName('id') .' = ' . (int)$itemId);
 
-        if (!empty($userId)) {
-            $query->where($db->quoteName("user_id") . "=" . (int)$userId);
+        if ((int)$userId > 0) {
+            $query->where($db->quoteName('user_id') . '=' . (int)$userId);
         }
 
         $db->setQuery($query);

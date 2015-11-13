@@ -25,12 +25,12 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    CrowdfundingModelFunding    The model.
      * @since    1.5
      */
     public function getModel($name = 'Funding', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
-        JLoader::register("CrowdfundingModelProject", JPATH_COMPONENT . DIRECTORY_SEPARATOR . "models" . DIRECTORY_SEPARATOR . "project.php");
+        JLoader::register('CrowdfundingModelProject', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'project.php');
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
@@ -41,10 +41,10 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
@@ -52,16 +52,16 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
 
         $redirectOptions = array(
-            "view"   => "project",
-            "layout" => "funding",
-            "id"     => $itemId
+            'view'   => 'project',
+            'layout' => 'funding',
+            'id'     => $itemId
         );
 
         // Parse formatted amount.
-        $data["goal"] = CrowdfundingHelper::parseAmount($data["goal"]);
+        $data['goal'] = CrowdfundingHelper::parseAmount($data['goal']);
 
         $model = $this->getModel();
         /** @var $model CrowdfundingModelFunding */
@@ -70,7 +70,7 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -98,13 +98,13 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
         JPluginHelper::importPlugin('content');
 
         // Trigger onContentValidate event.
-        $context = $this->option . ".funding";
-        $results = $dispatcher->trigger("onContentValidate", array($context, &$validData, &$params));
+        $context = $this->option . '.funding';
+        $results = $dispatcher->trigger('onContentValidate', array($context, &$validData, &$params));
 
         // If there is an error, redirect to current step.
         foreach ($results as $result) {
-            if ($result["success"] == false) {
-                $this->displayWarning(Joomla\Utilities\ArrayHelper::getValue($result, "message"), $redirectOptions);
+            if ((bool)$result['success'] === false) {
+                $this->displayWarning(Joomla\Utilities\ArrayHelper::getValue($result, 'message'), $redirectOptions);
                 return;
             }
         }
@@ -114,7 +114,7 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
             // Save data
             $itemId = $model->save($validData);
 
-            $redirectOptions["id"] = $itemId;
+            $redirectOptions['id'] = $itemId;
 
         } catch (RuntimeException $e) {
             $this->displayWarning($e->getMessage(), $redirectOptions);
@@ -126,11 +126,11 @@ class CrowdfundingControllerFunding extends Prism\Controller\Form\Frontend
 
         // Redirect to next page
         $redirectOptions = array(
-            "view"   => "project",
-            "layout" => "story",
-            "id"     => $itemId
+            'view'   => 'project',
+            'layout' => 'story',
+            'id'     => $itemId
         );
 
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_FUNDING_SUCCESSFULLY_SAVED"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_FUNDING_SUCCESSFULLY_SAVED'), $redirectOptions);
     }
 }

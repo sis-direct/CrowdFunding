@@ -37,7 +37,7 @@ class JFormFieldCfProjects extends JFormFieldList
 
         $query
             ->select('a.id AS value, a.title AS text')
-            ->from('#__crowdf_projects AS a');
+            ->from($db->quoteName('#__crowdf_projects', 'a'));
 
         // Get the options.
         $db->setQuery($query);

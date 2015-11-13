@@ -57,32 +57,26 @@ class Basic
      *
      * @return int
      */
-    public function getTotalProjects($options = array())
+    public function getTotalProjects(array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'));
 
         // Filter by state.
-        if (isset($options["state"])) {
-            $query->where("a.published =" .(int)$options["state"]);
+        if (array_key_exists('state', $options)) {
+            $query->where('a.published =' .(int)$options['state']);
         }
 
         // Filter by approved state.
-        if (isset($options["approved"])) {
-            $query->where("a.approved =" .(int)$options["approved"]);
+        if (array_key_exists('approved', $options)) {
+            $query->where('a.approved =' .(int)$options['approved']);
         }
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -102,26 +96,20 @@ class Basic
      *
      * @return int
      */
-    public function getFeaturedProjects($options = array())
+    public function getFeaturedProjects(array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.featured = 1");
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.featured = 1');
 
         // Prepare filters.
         $this->prepareFilters($query, $options);
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
 
@@ -138,17 +126,11 @@ class Basic
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'));
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -164,17 +146,11 @@ class Basic
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("SUM(a.txn_amount)")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"));
+            ->select('SUM(a.txn_amount)')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'));
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -200,20 +176,20 @@ class Basic
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'));
 
         // Filter by date interval.
-        if (isset($options["interval"])) {
-            $days = (int)$options["interval"];
+        if (array_key_exists('interval', $options)) {
+            $days = (int)$options['interval'];
 
             if ($days > 0) {
-                jimport("joomla.date.date");
+                jimport('joomla.date.date');
                 $date = new \JDate();
                 $today = $date->toSql();
 
-                $date->sub(new \DateInterval("P".$days."D"));
-                $query->where("a.funding_start >= " . $this->db->quote($date->toSql()) . " AND a.funding_start <= ". $this->db->quote($today));
+                $date->sub(new \DateInterval('P'.$days.'D'));
+                $query->where('a.funding_start >= ' . $this->db->quote($date->toSql()) . ' AND a.funding_start <= '. $this->db->quote($today));
             }
         }
 
@@ -221,13 +197,7 @@ class Basic
         $this->prepareFilters($query, $options);
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -247,25 +217,25 @@ class Basic
      *
      * @return int
      */
-    public function getEndingSoonProjects($options = array())
+    public function getEndingSoonProjects(array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'));
 
         // Filter by date interval.
-        if (isset($options["interval"])) {
-            $days = (int)$options["interval"];
+        if (array_key_exists('interval', $options)) {
+            $days = (int)$options['interval'];
 
             if ($days > 0) {
-                jimport("joomla.date.date");
+                jimport('joomla.date.date');
                 $date  = new \JDate();
                 $today = $date->toSql();
 
-                $date->add(new \DateInterval("P".$days."D"));
-                $query->where("a.funding_end >= " . $this->db->quote($today) . " AND a.funding_start <= ". $this->db->quote($date->toSql()));
+                $date->add(new \DateInterval('P'.$days.'D'));
+                $query->where('a.funding_end >= ' . $this->db->quote($today) . ' AND a.funding_start <= '. $this->db->quote($date->toSql()));
             }
         }
 
@@ -273,13 +243,7 @@ class Basic
         $this->prepareFilters($query, $options);
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -299,32 +263,26 @@ class Basic
      *
      * @return int
      */
-    public function getSuccessfullyCompletedProjects($options = array())
+    public function getSuccessfullyCompletedProjects(array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'));
 
         // Prepare filters.
         $this->prepareFilters($query, $options);
 
         // Filter by funding date.
-        jimport("joomla.date.date");
+        jimport('joomla.date.date');
         $date  = new \JDate();
         $today = $date->toSql();
 
-        $query->where("a.funding_end < " . $this->db->quote($today) . " AND a.funded >= a.goal");
+        $query->where('a.funding_end < ' . $this->db->quote($today) . ' AND a.funded >= a.goal');
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -336,14 +294,13 @@ class Basic
     protected function prepareFilters(&$query, $options)
     {
         // Filter by state.
-        if (isset($options["state"])) {
-            $query->where("a.published =" .(int)$options["state"]);
+        if (array_key_exists('state', $options)) {
+            $query->where('a.published =' .(int)$options['state']);
         }
 
         // Filter by approved state.
-        if (isset($options["approved"])) {
-            $query->where("a.approved =" .(int)$options["approved"]);
+        if (array_key_exists('approved', $options)) {
+            $query->where('a.approved =' .(int)$options['approved']);
         }
-
     }
 }

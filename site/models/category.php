@@ -48,7 +48,7 @@ class CrowdfundingModelCategory extends JModelList
      */
     protected function populateState($ordering = 'ordering', $direction = 'ASC')
     {
-        parent::populateState("a.ordering", "ASC");
+        parent::populateState('a.ordering', 'ASC');
 
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -58,65 +58,64 @@ class CrowdfundingModelCategory extends JModelList
         $this->setState('params', $params);
 
         // Filter by country
-        $value = $app->input->get("filter_country", "", "cmd");
+        $value = $app->input->get('filter_country', '', 'cmd');
         $this->setState($this->context . '.filter_country', $value);
 
         // Filter by location
-        $value = $app->input->get("filter_location", 0, "int");
+        $value = $app->input->get('filter_location', 0, 'int');
         $this->setState($this->context . '.filter_location', $value);
 
         // Filter by phrase
-        $value = $app->input->get("filter_phrase");
+        $value = $app->input->get('filter_phrase');
         $this->setState($this->context . '.filter_phrase', $value);
 
         // Filter by filter type
-        $value = $app->input->get("filter_fundingtype", "", "cmd");
+        $value = $app->input->get('filter_fundingtype', '', 'cmd');
         $this->setState($this->context . '.filter_fundingtype', $value);
 
         // Filter by filter type
-        $value = $app->input->get("filter_projecttype", 0, "uint");
+        $value = $app->input->get('filter_projecttype', 0, 'uint');
         $this->setState($this->context . '.filter_projecttype', $value);
 
         // Filter by filter date.
-        $value = $app->input->get("filter_date", 0, "uint");
+        $value = $app->input->get('filter_date', 0, 'uint');
         $this->setState($this->context . '.filter_date', $value);
 
         // Filter by funding state.
-        $value = $app->input->get("filter_funding_state", 0, "uint");
+        $value = $app->input->get('filter_funding_state', 0, 'uint');
         $this->setState($this->context . '.filter_funding_state', $value);
 
         // Filter by featured state.
-        $value = $app->input->get("filter_featured");
+        $value = $app->input->get('filter_featured');
         $this->setState($this->context . '.filter_featured', $value);
 
         // Filter by user ID.
-        $value = $app->input->get("filter_user");
+        $value = $app->input->get('filter_user');
         $this->setState($this->context . '.filter_user', $value);
 
         // Set category id
-        $catId = $app->input->get("id", 0, "uint");
+        $catId = $app->input->get('id', 0, 'uint');
         $this->setState($this->context . '.category_id', $catId);
 
         // It is a discovery page and I can filter it by category.
         // If it is a subcategory page, there is a category ID
         if (!$catId) {
             // Filter by category
-            $value = $app->input->get("filter_category");
+            $value = $app->input->get('filter_category');
             $this->setState($this->context . '.category_id', $value);
         } else {
-            $app->input->set("filter_category", (int)$catId);
+            $app->input->set('filter_category', (int)$catId);
         }
 
         // Set limit
-        $value = $app->input->getInt("limit");
+        $value = $app->input->getInt('limit');
         if (!$value) {
-            $value = $params->get("items_limit", $app->get('list_limit', 20));
+            $value = $params->get('items_limit', $app->get('list_limit', 20));
         }
         $this->setState('list.limit', $value);
 
         $value = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-
     }
 
     /**
@@ -327,28 +326,28 @@ class CrowdfundingModelCategory extends JModelList
      */
     protected function prepareFilterDate(&$query)
     {
-        $db     = JFactory::getDbo();
+        $db     = $this->getDbo();
 
         // Filter by date.
-        $filter = (int)$this->getState($this->context . ".filter_date");
+        $filter = (int)$this->getState($this->context . '.filter_date');
 
         switch($filter) {
             case 1: // Starting soon
-                jimport("joomla.date.date");
+                jimport('joomla.date.date');
                 $date  = new JDate();
                 $today = $date->toSql();
 
-                $date->sub(new DateInterval("P7D"));
-                $query->where("a.funding_start >= " . $db->quote($date->toSql()) . " AND a.funding_start <= ". $db->quote($today));
+                $date->sub(new DateInterval('P7D'));
+                $query->where('a.funding_start >= ' . $db->quote($date->toSql()) . ' AND a.funding_start <= '. $db->quote($today));
                 break;
 
             case 2: // Ending soon
-                jimport("joomla.date.date");
+                jimport('joomla.date.date');
                 $date  = new JDate();
                 $today = $date->toSql();
 
-                $date->add(new DateInterval("P7D"));
-                $query->where("a.funding_end >= " . $db->quote($today) . " AND a.funding_start <= ". $db->quote($date->toSql()));
+                $date->add(new DateInterval('P7D'));
+                $query->where('a.funding_end >= ' . $db->quote($today) . ' AND a.funding_start <= '. $db->quote($date->toSql()));
                 break;
         }
     }
@@ -363,15 +362,15 @@ class CrowdfundingModelCategory extends JModelList
         $db     = JFactory::getDbo();
 
         // Filter by funding state.
-        $filter = (int)$this->getState($this->context . ".filter_funding_state");
+        $filter = (int)$this->getState($this->context . '.filter_funding_state');
 
         switch($filter) {
             case 1: // Successfully funded.
-                jimport("joomla.date.date");
+                jimport('joomla.date.date');
                 $date  = new JDate();
                 $today = $date->toSql();
 
-                $query->where("a.funding_end < " . $db->quote($today) . " AND a.funded >= a.goal");
+                $query->where('a.funding_end < ' . $db->quote($today) . ' AND a.funded >= a.goal');
                 break;
         }
     }

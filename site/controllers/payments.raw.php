@@ -26,10 +26,10 @@ class CrowdfundingControllerPayments extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return   CrowdfundingModelPayments    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Payments', $prefix = '', $config = array('ignore_request' => true))
+    public function getModel($name = 'Payments', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -47,30 +47,30 @@ class CrowdfundingControllerPayments extends JControllerLegacy
         /** @var $app JApplicationSite */
 
         // Get component parameters
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Joomla\Registry\Registry */
 
         $response = new Prism\Response\Json();
 
         // Check for disabled payment functionality
-        if ($params->get("debug_payment_disabled", 0)) {
+        if ($params->get('debug_payment_disabled', 0)) {
 
             // Send response to the browser
             $response
-                ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                ->setText(JText::_("COM_CROWDFUNDING_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE"))
+                ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
+                ->setText(JText::_('COM_CROWDFUNDING_ERROR_PAYMENT_HAS_BEEN_DISABLED_MESSAGE'))
                 ->failure();
 
             echo $response;
-            JFactory::getApplication()->close();
+            $app->close();
         }
 
         $output         = array();
 
         // Prepare payment service name.
         $filter         = new JFilterInput();
-        $paymentService = JString::trim(JString::strtolower($this->input->getCmd("payment_service")));
-        $paymentService = $filter->clean($paymentService, "ALNUM");
+        $paymentService = JString::trim(JString::strtolower($this->input->getCmd('payment_service')));
+        $paymentService = $filter->clean($paymentService, 'ALNUM');
 
         // Trigger the event
         try {
@@ -82,40 +82,36 @@ class CrowdfundingControllerPayments extends JControllerLegacy
             JPluginHelper::importPlugin('crowdfundingpayment');
 
             // Trigger onContentPreparePayment event.
-            $results = $dispatcher->trigger("onPaymentsPreparePayment", array($context, &$params));
+            $results = $dispatcher->trigger('onPaymentsPreparePayment', array($context, &$params));
 
             // Get the result, that comes from the plugin.
-            if (!empty($results)) {
+            if (is_array($results) and count($results) > 0) {
                 foreach ($results as $result) {
-                    if (!is_null($result) and is_array($result)) {
-                        $output = & $result;
+                    if ($result !== null and is_array($result)) {
+                        $output = $result;
                         break;
                     }
                 }
             }
 
         } catch (Exception $e) {
-
             // Store log data in the database
             JLog::add($e->getMessage());
 
             // Send response to the browser
             $response
                 ->failure()
-                ->setTitle(JText::_("COM_CROWDFUNDING_FAIL"))
-                ->setText(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"));
+                ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
+                ->setText(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
 
             echo $response;
             JFactory::getApplication()->close();
-
         }
 
         // Check the response
-        $success = Joomla\Utilities\ArrayHelper::getValue($output, "success");
+        $success = Joomla\Utilities\ArrayHelper::getValue($output, 'success');
         if (!$success) { // If there is an error...
-
-            // Get project id.
-            $projectId = $this->input->getUint("pid");
+            $projectId = $this->input->getUint('pid');
             $paymentProcessContext = Crowdfunding\Constants::PAYMENT_SESSION_CONTEXT . $projectId;
 
             // Initialize the payment process object.
@@ -126,18 +122,14 @@ class CrowdfundingControllerPayments extends JControllerLegacy
             // Send response to the browser
             $response
                 ->failure()
-                ->setTitle(Joomla\Utilities\ArrayHelper::getValue($output, "title"))
-                ->setText(Joomla\Utilities\ArrayHelper::getValue($output, "text"));
-
+                ->setTitle(Joomla\Utilities\ArrayHelper::getValue($output, 'title'))
+                ->setText(Joomla\Utilities\ArrayHelper::getValue($output, 'text'));
         } else { // If all is OK...
-
-            // Send response to the browser
             $response
                 ->success()
-                ->setTitle(Joomla\Utilities\ArrayHelper::getValue($output, "title"))
-                ->setText(Joomla\Utilities\ArrayHelper::getValue($output, "text"))
-                ->setData(Joomla\Utilities\ArrayHelper::getValue($output, "data"));
-
+                ->setTitle(Joomla\Utilities\ArrayHelper::getValue($output, 'title'))
+                ->setText(Joomla\Utilities\ArrayHelper::getValue($output, 'text'))
+                ->setData(Joomla\Utilities\ArrayHelper::getValue($output, 'data'));
         }
 
         echo $response;

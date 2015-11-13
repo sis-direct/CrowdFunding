@@ -25,7 +25,7 @@ class CrowdfundingControllerComment extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    CrowdfundingModelCommentItem    The model.
      * @since    1.5
      */
     public function getModel($name = 'CommentItem', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
@@ -51,11 +51,13 @@ class CrowdfundingControllerComment extends JControllerLegacy
         $model = $this->getModel();
         /** @var $model CrowdfundingModelCommentItem * */
 
+        $item = null;
+
         try {
 
             $item = $model->getItem($itemId);
 
-            if ($item->user_id != $userId) {
+            if (($item !== null) and ((int)$item->user_id !== (int)$userId)) {
                 $response
                     ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
                     ->setText(JText::_('COM_CROWDFUNDING_INVALID_PROJECT'))
@@ -78,10 +80,10 @@ class CrowdfundingControllerComment extends JControllerLegacy
         }
 
         $data = array();
-        if (isset($item) and is_object($item)) {
+        if (is_object($item)) {
             $data = array(
-                "id"      => $item->id,
-                "comment" => $item->comment
+                'id'      => $item->id,
+                'comment' => $item->comment
             );
         }
 
@@ -104,7 +106,7 @@ class CrowdfundingControllerComment extends JControllerLegacy
         // Get the input
         $app    = JFactory::getApplication();
         $itemId = $app->input->post->get('id', 0, 'int');
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
 
         $response = new Prism\Response\Json();
 
@@ -116,7 +118,7 @@ class CrowdfundingControllerComment extends JControllerLegacy
 
             $item = $model->getItem($itemId);
 
-            if ($item->user_id != $userId) {
+            if (($item !== null) and ((int)$item->user_id !== (int)$userId)) {
                 $response
                     ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
                     ->setText(JText::_('COM_CROWDFUNDING_COMMENT_CANNOT_REMOVED'))
@@ -140,8 +142,8 @@ class CrowdfundingControllerComment extends JControllerLegacy
         }
 
         $response
-            ->setTitle(JText::_("COM_CROWDFUNDING_SUCCESS"))
-            ->setText(JText::_("COM_CROWDFUNDING_COMMENT_REMOVED_SUCCESSFULLY"))
+            ->setTitle(JText::_('COM_CROWDFUNDING_SUCCESS'))
+            ->setText(JText::_('COM_CROWDFUNDING_COMMENT_REMOVED_SUCCESSFULLY'))
             ->success();
 
         echo $response;

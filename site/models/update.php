@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelUpdate extends JModelForm
 {
-    protected $item = null;
+    protected $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -38,14 +38,14 @@ class CrowdfundingModelUpdate extends JModelForm
     {
         parent::populateState();
 
-        $app = JFactory::getApplication("Site");
+        $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $value);
 
-        $value = $app->input->getInt("project_id");
+        $value = $app->input->getInt('project_id');
         $this->setState('project_id', $value);
 
         // Load the parameters.
@@ -85,16 +85,14 @@ class CrowdfundingModelUpdate extends JModelForm
     protected function loadFormData()
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         $data = $app->getUserState($this->option . '.edit.update.data', array());
         if (!$data) {
-
             $itemId = (int)$this->getState($this->getName() . '.id');
             $userId = JFactory::getUser()->id;
 
             $data = $this->getItem($itemId, $userId);
-
         }
 
         return $data;
@@ -123,8 +121,8 @@ class CrowdfundingModelUpdate extends JModelForm
         if ($pk > 0 and $userId > 0) {
 
             $keys = array(
-                "id"      => $pk,
-                "user_id" => $userId
+                'id'      => $pk,
+                'user_id' => $userId
             );
 
             // Attempt to load the row.
@@ -132,7 +130,7 @@ class CrowdfundingModelUpdate extends JModelForm
 
             // Check for a table object error.
             if ($return === false) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"));
+                throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
             }
         }
 
@@ -153,34 +151,34 @@ class CrowdfundingModelUpdate extends JModelForm
      */
     public function save($data)
     {
-        $id        = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $title     = Joomla\Utilities\ArrayHelper::getValue($data, "title");
-        $desc      = Joomla\Utilities\ArrayHelper::getValue($data, "description");
-        $projectId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
+        $id        = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
+        $title     = Joomla\Utilities\ArrayHelper::getValue($data, 'title');
+        $desc      = Joomla\Utilities\ArrayHelper::getValue($data, 'description');
+        $projectId = Joomla\Utilities\ArrayHelper::getValue($data, 'project_id', 0, 'int');
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
 
         $keys = array(
-            "id"      => $id,
-            "user_id" => $userId
+            'id'      => $id,
+            'user_id' => $userId
         );
 
         // Load a record from the database
         $row = $this->getTable();
         $row->load($keys);
 
-        $row->set("title", $title);
-        $row->set("description", $desc);
+        $row->set('title', $title);
+        $row->set('description', $desc);
 
         // It it is a new record, set the data that won't be able to be edited.
-        if (!$row->get("user_id")) {
-            $row->set("record_date", null);
-            $row->set("project_id", $projectId);
-            $row->set("user_id", $userId);
+        if (!$row->get('user_id')) {
+            $row->set('record_date', null);
+            $row->set('project_id', $projectId);
+            $row->set('user_id', $userId);
         }
 
         $row->store();
 
-        return $row->get("id");
+        return $row->get('id');
     }
 }
