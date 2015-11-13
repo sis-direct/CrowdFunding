@@ -14,6 +14,9 @@ jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 
+jimport('Prism.init');
+jimport('Crowdfunding.init');
+
 /**
  * Form Field class for the Joomla Framework.
  *

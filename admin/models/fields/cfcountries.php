@@ -14,6 +14,9 @@ jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
 
+jimport('Prism.init');
+jimport('Crowdfunding.init');
+
 /**
  * Form field class that loads countries as options,
  * using code with 4 letters for ID.

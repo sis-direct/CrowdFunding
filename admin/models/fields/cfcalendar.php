@@ -9,6 +9,9 @@
 
 defined('JPATH_PLATFORM') or die;
 
+jimport('Prism.init');
+jimport('Crowdfunding.init');
+
 /**
  * Provides a pop up date picker linked to a button.
  * Optionally may be filtered to use user's or server's time zone.

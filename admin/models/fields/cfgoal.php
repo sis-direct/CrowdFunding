@@ -9,6 +9,9 @@
 
 defined('JPATH_PLATFORM') or die;
 
+jimport('Prism.init');
+jimport('Crowdfunding.init');
+
 class JFormFieldCfGoal extends JFormField
 {
     /**
