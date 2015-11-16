@@ -100,7 +100,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->app    = JFactory::getApplication();
         $this->option = $this->app->input->getCmd('option');
 
-        $this->userId = JFactory::getUser()->get('id');
+        $this->userId = (int)JFactory::getUser()->get('id');
         if (!$this->userId) {
             $this->setLayout('intro');
         }
@@ -238,7 +238,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $itemId     = $this->state->get('project.id');
         $this->item = $model->getItem($itemId, $this->userId);
 
-        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item)) {
+        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item, 'basic')) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_SOMETHING_WRONG'), 'notice');
             $this->app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
@@ -287,7 +287,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->item = $model->getItem($itemId, $this->userId);
 
         // Check if the item exists.
-        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item)) {
+        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item, 'funding')) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_SOMETHING_WRONG'), 'notice');
             $this->app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
@@ -365,7 +365,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->item = $model->getItem($itemId, $this->userId);
 
         // Check if the item exists.
-        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item)) {
+        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item, 'story')) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_SOMETHING_WRONG'), 'notice');
             $this->app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
@@ -408,7 +408,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->item = Joomla\Utilities\ArrayHelper::toObject($project);
 
         // Check if the item exists.
-        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item)) {
+        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item, 'rewards')) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_SOMETHING_WRONG'), 'notice');
             $this->app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
@@ -481,7 +481,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->item = $model->getItem($itemId, $this->userId);
 
         // Check if the item exists.
-        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item)) {
+        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item, 'manager')) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_SOMETHING_WRONG'), 'notice');
             $this->app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
@@ -515,7 +515,7 @@ class CrowdfundingViewProject extends JViewLegacy
         $this->item = $model->getItem($itemId, $this->userId);
 
         // Check if the item exists.
-        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item)) {
+        if (!CrowdfundingHelper::isAuthorized($this->userId, $this->item, 'extras')) {
             $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_SOMETHING_WRONG'), 'notice');
             $this->app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;

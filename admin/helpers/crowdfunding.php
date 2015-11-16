@@ -521,16 +521,18 @@ abstract class CrowdfundingHelper
 
     /**
      * Check for possibility user to accesses a project.
+     * If there are no user ID or item, it will be able to create project.
      *
      * @param int $userId
-     * @param JObject $item
+     * @param stdClass $item
+     * @param string $layout
      *
      * @return bool
      */
-    public static function isAuthorized($userId, $item)
+    public static function isAuthorized($userId, $item, $layout)
     {
-        if (empty($item->id) or empty($item->user_id)) {
-            return false;
+        if ((strcmp('basic', $layout) === 0) and !(int)$item->id) {
+            return true;
         }
 
         return (bool)((int)$item->user_id === (int)$userId);

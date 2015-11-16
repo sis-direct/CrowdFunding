@@ -1,6 +1,9 @@
 Crowdfunding Platform Release Notes
 ==========================
 
+###v2.3.1
+* Fixed a bug that does not allow to create project.
+
 ###v2.3
 * Added functionality for rewards ordering.
 * Fixed the calendar on rewards view (project wizard).
