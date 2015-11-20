@@ -43,13 +43,13 @@ jQuery(document).ready(function () {
 
         },
         async: true,
-        limit: 5,
+        limit: 10,
         display: "text",
         name: "value"
     });
 
     $inputTypeahead.bind('typeahead:select', function(event, suggestion) {
-        jQuery("#jform_location_id").attr("value", suggestion.id);
+        jQuery("#jform_location_id").attr("value", suggestion.value);
     });
 
     // Validate the fields.

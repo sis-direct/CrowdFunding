@@ -133,7 +133,7 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Frontend
             if (($images !== null and is_array($images)) and $itemId > 0) {
 
                 // Get the folder where the images will be stored
-                $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+                $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
                 // Move the pictures from the temporary folder to the images folder.
                 // Store the names of the pictures in project record.

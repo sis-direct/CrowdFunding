@@ -697,7 +697,7 @@ class CrowdfundingViewProject extends JViewLegacy
         // Remove old image if it exists.
         $oldImage = $app->getUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT);
         if (JString::strlen($oldImage) > 0) {
-            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
             $oldImage = JPath::clean($temporaryFolder . DIRECTORY_SEPARATOR . basename($oldImage));
             if (JFile::exists($oldImage)) {
                 JFile::delete($oldImage);
@@ -710,7 +710,7 @@ class CrowdfundingViewProject extends JViewLegacy
         // Remove the temporary images if they exist.
         $temporaryImages = $app->getUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT);
         if (JString::strlen($temporaryImages) > 0) {
-            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
             $model->removeTemporaryImages($temporaryImages, $temporaryFolder);
         }
 

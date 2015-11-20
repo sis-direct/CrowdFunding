@@ -179,6 +179,7 @@ class Project extends Database\Table
     protected function insertObject()
     {
         $created   = (!$this->created) ? 'NULL' : $this->db->quote($this->created);
+        $description   = (!$this->description) ? 'NULL' : $this->db->quote($this->description);
 
         $query = $this->db->getQuery(true);
         $query
@@ -186,7 +187,7 @@ class Project extends Database\Table
             ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
             ->set($this->db->quoteName('alias') . '=' . $this->db->quote($this->alias))
             ->set($this->db->quoteName('short_desc') . '=' . $this->db->quote($this->short_desc))
-            ->set($this->db->quoteName('description') . '=' . $this->db->quote($this->description))
+            ->set($this->db->quoteName('description') . '=' . $description)
             ->set($this->db->quoteName('image') . '=' . $this->db->quote($this->image))
             ->set($this->db->quoteName('image_square') . '=' . $this->db->quote($this->image_square))
             ->set($this->db->quoteName('image_small') . '=' . $this->db->quote($this->image_small))
@@ -217,13 +218,15 @@ class Project extends Database\Table
 
     protected function updateObject()
     {
+        $description   = (!$this->description) ? 'NULL' : $this->db->quote($this->description);
+
         $query = $this->db->getQuery(true);
         $query
             ->update($this->db->quoteName('#__crowdf_projects'))
             ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
             ->set($this->db->quoteName('alias') . '=' . $this->db->quote($this->alias))
             ->set($this->db->quoteName('short_desc') . '=' . $this->db->quote($this->short_desc))
-            ->set($this->db->quoteName('description') . '=' . $this->db->quote($this->description))
+            ->set($this->db->quoteName('description') . '=' . $description)
             ->set($this->db->quoteName('image') . '=' . $this->db->quote($this->image))
             ->set($this->db->quoteName('image_square') . '=' . $this->db->quote($this->image_square))
             ->set($this->db->quoteName('image_small') . '=' . $this->db->quote($this->image_small))

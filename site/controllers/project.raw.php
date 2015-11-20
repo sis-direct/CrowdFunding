@@ -51,13 +51,6 @@ class CrowdfundingControllerProject extends JControllerLegacy
             $locations->loadByString($query);
 
             $locationData  = $locations->toOptions('id', 'name');
-            foreach ($locationData as &$item) {
-                $item['id'] = $item['value'];
-                unset($item['value']);
-            }
-
-            unset($item);
-
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
@@ -167,7 +160,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
         try {
 
             // Get the folder where the images will be stored
-            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
             $image      = $model->uploadImage($file, $temporaryFolder);
             $imageName  = basename($image);
@@ -272,7 +265,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
 
         // Get the filename from the session.
         $fileName = basename($app->getUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT));
-        $temporaryFile = JPath::clean(CrowdfundingHelper::getTemporaryImagesFolder() .'/'. $fileName);
+        $temporaryFile = JPath::clean(CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE) .'/'. $fileName);
 
         if (!$fileName or !JFile::exists($temporaryFile)) {
             $response
@@ -289,7 +282,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
         try {
 
             // Get the folder where the images will be stored
-            $destination = CrowdfundingHelper::getTemporaryImagesFolder();
+            $destination = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
             $params = JComponentHelper::getParams('com_crowdfunding');
 
@@ -383,7 +376,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
         try {
 
             // Get the folder where the images will be stored
-            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
             // Remove old image if it exists.
             $oldImage = $app->getUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT);

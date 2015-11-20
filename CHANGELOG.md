@@ -1,6 +1,10 @@
 Crowdfunding Platform Release Notes
 ==========================
 
+###v2.3.2
+* Fixed a bug with location selection.
+* Fixed a bug with uploading (cropping) image.
+
 ###v2.3.1
 * Fixed a bug that does not allow to create project.
 
