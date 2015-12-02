@@ -38,7 +38,7 @@ class Version
      *
      * @var integer
      */
-    public $devLevel = '3.2';
+    public $devLevel = '3.3';
 
     /**
      * Release Type
@@ -59,7 +59,7 @@ class Version
      *
      * @var string
      */
-    public $releaseDate = '20 November, 2015';
+    public $releaseDate = '02 December, 2015';
 
     /**
      * License

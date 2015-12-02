@@ -71,12 +71,6 @@ abstract class CrowdfundingHelper
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_EMAILS'),
-            'index.php?option=' . self::$extension . '&view=emails',
-            $vName === 'emails'
-        );
-
-        JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_LOCATIONS'),
             'index.php?option=' . self::$extension . '&view=locations',
             $vName === 'locations'
@@ -515,8 +509,11 @@ abstract class CrowdfundingHelper
         // Check for enabled rewards by project type.
         $project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
         $type    = $project->getType();
+        if ($type === null) {
+            return true;
+        }
 
-        return (bool)($type !== null and ($type instanceof Crowdfunding\Type) and $type->isRewardsEnabled());
+        return (bool)(($type instanceof Crowdfunding\Type) and $type->isRewardsEnabled());
     }
 
     /**

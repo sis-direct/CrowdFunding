@@ -39,7 +39,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * </code>
      *
      * @param \JDatabaseDriver $db Database Driver
@@ -57,7 +57,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $numberOfTransactions = $statistics->getTransactionsNumber();
      * </code>
      *
@@ -84,7 +84,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $amount = $statistics->getFullPeriodAmounts();
      * </code>
      *
@@ -160,7 +160,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $data = $statistics->getFundedAmount();
      * </code>
      *
@@ -230,7 +230,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $numberOfComments = $statistics->getCommentsNumber();
      * </code>
      *
@@ -257,7 +257,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $numberOfUpdates = $statistics->getUpdatesNumber();
      * </code>
      *
@@ -284,7 +284,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $payoutInformation = $statistics->getPayoutInformation();
      * </code>
      *
@@ -312,7 +312,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $payoutInformation = $statistics->getPayoutInformation();
      * </code>
      *

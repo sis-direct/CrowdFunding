@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 ?>
 <div class="panel panel-info">
     <div class="panel-heading">
-        <h4><span class="fa fa-bar-chart"></span> <?php echo JText::_('COM_CROWDFUNDING_BASIC_INFORMATION'); ?></h4>
+        <span class="fa fa-bar-chart"></span> <?php echo JText::_('COM_CROWDFUNDING_BASIC_INFORMATION'); ?>
     </div>
     <table class="table table-striped">
         <tbody>

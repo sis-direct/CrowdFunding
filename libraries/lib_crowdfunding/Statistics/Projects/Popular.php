@@ -26,7 +26,7 @@ class Popular extends Base
      * Load data about the most funded projects.
      *
      * <code>
-     * $popular = new CrowdfundingStatisticsProjectsPopular(JFactory::getDbo());
+     * $popular = new Crowdfunding\Statistics\Projects\Popular(JFactory::getDbo());
      * $popular->load();
      *
      * foreach ($popular as $project) {

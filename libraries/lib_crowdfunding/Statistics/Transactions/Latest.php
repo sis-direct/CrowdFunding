@@ -27,7 +27,7 @@ class Latest extends Base
      * <code>
      * $limit = 10;
      *
-     * $latest = new CrowdfundingStatisticsTransactionsLatest(JFactory::getDbo());
+     * $latest = new Crowdfunding\Statistics\Transactions\Latest(JFactory::getDbo());
      * $latest->load($limit);
      *
      * foreach ($latest as $project) {

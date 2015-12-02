@@ -31,7 +31,7 @@ echo $layout->render($this->layoutData);
             <div class="form-group">
             <?php echo $this->form->getLabel('pitch_image'); ?>
             <?php echo $this->form->getInput('pitch_image'); ?>
-            <span class="help-block">(PNG, JPG, or GIF - <?php echo $this->pWidth; ?> x <?php echo $this->pHeight; ?> pixels) </span>
+            <span class="help-block"><?php echo JText::_('COM_CROWDFUNDING_FIELD_IMAGE_HELP_BLOCK', $this->pWidth, $this->pHeight);?></span>
             </div>
 
             <?php if(!empty($this->pitchImage)) {?>

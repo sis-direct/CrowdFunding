@@ -36,7 +36,7 @@ class User
      * <code>
      * $userId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsUser(\JFactory::getDbo(), $userId);
+     * $statistics   = new Crowdfunding\Statistics\User(\JFactory::getDbo(), $userId);
      * </code>
      *
      * @param \JDatabaseDriver $db Database Driver
@@ -60,7 +60,7 @@ class User
      * <code>
      * $usersId = 1;
      *
-     * $statistics     = new CrowdfundingStatisticsUser(\JFactory::getDbo(), $usersId);
+     * $statistics     = new Crowdfunding\Statistics\User(\JFactory::getDbo(), $usersId);
      * $projectsNumber = $statistics->getProjectsNumber();
      * </code>
      *

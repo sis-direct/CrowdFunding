@@ -54,23 +54,21 @@ class CrowdfundingTableProject extends JTable
     {
         parent::load($keys, $reset);
 
-        $this->slug = $this->id .".". $this->alias;
+        $this->slug = $this->id .':'. $this->alias;
 
         // Calculate funded percent
         if (!$this->goal) {
             $this->fundedPercent = 0;
         } else {
-            $percentage = new Prism\Math();
-            $percentage->calculatePercentage($this->funded, $this->goal, 0);
-            $this->fundedPercent = (string)$percentage;
+            $this->fundedPercent = (string)Prism\Utilities\MathHelper::calculatePercentage($this->funded, $this->goal, 0);
         }
 
         // Calculate end date
-        if (!empty($this->funding_days)) {
+        if ($this->funding_days > 0) {
 
             $fundingStartDateValidator = new Prism\Validator\Date($this->funding_start);
             if (!$fundingStartDateValidator->isValid()) {
-                $this->funding_end = "0000-00-00";
+                $this->funding_end = '0000-00-00';
             } else {
                 $fundingStartDate  = new Crowdfunding\Date($this->funding_start);
                 $fundingEndDate    = $fundingStartDate->calculateEndDate($this->funding_days);
@@ -122,16 +120,14 @@ class CrowdfundingTableProject extends JTable
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
             $query
-                ->select($query->concatenate(array("a.id", "a.alias"), ":") . " AS catslug")
-                ->from($db->quoteName("#__categories", "a"))
-                ->where("a.id = " .(int)$this->catid);
+                ->select($query->concatenate(array('a.id', 'a.alias'), ':') . ' AS catslug')
+                ->from($db->quoteName('#__categories', 'a'))
+                ->where('a.id = ' .(int)$this->catid);
 
             $db->setQuery($query, 0, 1);
-            $result = $db->loadResult();
+            $this->catslug = (string)$db->loadResult();
 
-            if (!empty($result)) {
-                $this->catslug = (string)$result;
-            } else {
+            if (!$this->catslug) {
                 $this->catslug = (int)$this->catid;
             }
         }

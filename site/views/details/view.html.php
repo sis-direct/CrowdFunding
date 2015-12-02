@@ -264,9 +264,6 @@ class CrowdfundingViewDetails extends JViewLegacy
 
     private function preparePageHeading()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
         $menus = $this->app->getMenu();

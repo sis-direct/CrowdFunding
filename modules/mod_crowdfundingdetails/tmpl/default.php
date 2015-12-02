@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
                     <?php } ?>
                 </span>
 
-                <p><?php echo htmlspecialchars($project->getShortDesc(), ENT_QUOTES, 'UTF-8'); ?></p>
+                <p><?php echo htmlspecialchars(JHtmlString::truncate($project->getShortDesc(), $params->get('description_length', 255), true, false), ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
             <div class="cf-caption-info absolute-bottom">

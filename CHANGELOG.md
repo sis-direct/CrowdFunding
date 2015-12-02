@@ -1,12 +1,15 @@
 Crowdfunding Platform Release Notes
 ==========================
 
+###v2.3.3
+* [HIGH] The system does not display rewards if there is no created types.
+
 ###v2.3.2
-* Fixed a bug with location selection.
-* Fixed a bug with uploading (cropping) image.
+* [LOW] Fixed a bug with location selection.
+* [HIGH] Wrong location for file storing when cropping an image.
 
 ###v2.3.1
-* Fixed a bug that does not allow to create project.
+* [HIGH] It is not possible to create a project.
 
 ###v2.3
 * Added functionality for rewards ordering.
