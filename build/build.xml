@@ -42,9 +42,7 @@
 			<fileset dir="${cfg.modulesDestDir}" includes="**/*" />
 			<fileset dir="${cfg.pluginsDestDir}" includes="**/*" />
 			<fileset dir="${cfg.siteDestDir}" includes="**/*" />
-			
 			<fileset dir="${cfg.pkgDir}/packages" includes="*"/>
-			
 			<fileset dir="${cfg.pkgDir}" includes="CHANGELOG.md"/>
 			<fileset dir="${cfg.pkgDir}" includes="LICENSE.txt"/>
 			<fileset dir="${cfg.pkgDir}" includes="${cfg.name}.xml"/>
