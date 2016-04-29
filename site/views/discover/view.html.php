@@ -45,6 +45,8 @@ class CrowdfundingViewDiscover extends JViewLegacy
 
     protected $pageclass_sfx;
 
+    protected $helperBus;
+
     public function display($tpl = null)
     {
         $this->option     = JFactory::getApplication()->input->getCmd('option');
@@ -53,12 +55,11 @@ class CrowdfundingViewDiscover extends JViewLegacy
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
-        // Get params
-        $this->params = $this->state->get('params');
-        /** @var  $this->params Joomla\Registry\Registry */
+        $this->params      = $this->state->get('params');
 
-        $this->numberInRow       = (int)$this->params->get('items_row', 3);
-        $this->items             = CrowdfundingHelper::prepareItems($this->items, $this->numberInRow);
+        $this->numberInRow = (int)$this->params->get('items_row', 3);
+
+        $this->prepareItems($this->items);
 
         // Get the folder with images
         $this->imageFolder = $this->params->get('images_directory', 'images/crowdfunding');
@@ -68,20 +69,12 @@ class CrowdfundingViewDiscover extends JViewLegacy
         $this->amount = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
 
-        $this->displayCreator = (bool)$this->params->get('integration_display_creator', true);
+        $this->displayCreator = (bool)$this->params->get('display_creator', true);
 
         // Prepare social integration.
         if ($this->displayCreator !== false) {
-            $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
-                array(
-                    'social_platform' => $this->params->get('integration_social_platform'),
-                    'users_ids' => CrowdfundingHelper::fetchUserIds($this->items)
-                )
-            );
-
-            $socialProfilesBuilder->build();
-
-            $this->socialProfiles = $socialProfilesBuilder->getProfiles();
+            $usersIds              = CrowdfundingHelper::fetchIds($this->items, 'user_id');
+            $this->socialProfiles  = CrowdfundingHelper::prepareIntegrations($this->params->get('integration_social_platform'), $usersIds);
         }
 
         $this->layoutData = array(
@@ -128,7 +121,7 @@ class CrowdfundingViewDiscover extends JViewLegacy
     private function preparePageHeading()
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
@@ -161,5 +154,20 @@ class CrowdfundingViewDiscover extends JViewLegacy
         }
 
         $this->document->setTitle($title);
+    }
+
+    private function prepareItems($items)
+    {
+        $options   = array();
+
+        $helperBus = new Prism\Helper\HelperBus($items);
+        $helperBus->addCommand(new Crowdfunding\Helper\PrepareItemsHelper());
+
+        // Count the number of funders.
+        if (strcmp('items_grid_two', $this->params->get('grid_layout')) === 0) {
+            $helperBus->addCommand(new Crowdfunding\Helper\PrepareItemFundersHelper(JFactory::getDbo()));
+        }
+
+        $helperBus->handle($options);
     }
 }
