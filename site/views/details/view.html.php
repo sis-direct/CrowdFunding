@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -47,49 +47,49 @@ class CrowdfundingViewDetails extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
+    /**
+     * @var JApplicationSite
+     */
+    protected $app;
 
     public function display($tpl = null)
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
+        $this->app = JFactory::getApplication();
 
+        $this->option = JFactory::getApplication()->input->get('option');
+        
         // Get model state.
         $this->state  = $this->get('State');
-        $this->item   = $this->get("Item");
+        $this->item   = $this->get('Item');
 
         // Get params
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
         /** @var  $this->params Joomla\Registry\Registry */
 
         $model  = $this->getModel();
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
 
         if (!$this->item or $model->isRestricted($this->item, $userId)) {
-            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), "notice");
-            $app->redirect(JRoute::_('index.php?option=com_crowdfunding&view=discover', false));
+            $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), 'notice');
+            $this->app->redirect(JRoute::_('index.php?option=com_crowdfunding&view=discover', false));
             return;
         }
 
         // Get the path to the images.
-        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
+        $this->imageFolder = $this->params->get('images_directory', 'images/crowdfunding');
 
-        $this->defaultAvatar = JUri::base() . $this->params->get("integration_avatars_default");
-        $this->avatarsSize   = $this->params->get("integration_avatars_size", "small");
+        $this->defaultAvatar = JUri::base() . $this->params->get('integration_avatars_default');
+        $this->avatarsSize   = $this->params->get('integration_avatars_size', 'small');
 
         // Prepare the link that points to project page.
-        $host             = JUri::getInstance()->toString(array("scheme", "host"));
+        $host             = JUri::getInstance()->toString(array('scheme', 'host'));
         $this->item->link = $host . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug));
 
         // Prepare the link that points to project image.
-        $this->item->link_image = $host . "/" . $this->imageFolder . "/" . $this->item->image;
+        $this->item->link_image = $host . '/' . $this->imageFolder . '/' . $this->item->image;
 
         // Get the current screen.
-        $this->screen = $app->input->getCmd("screen", "home");
+        $this->screen = $this->app->input->getCmd('screen', 'home');
 
         $this->prepareDocument();
 
@@ -97,16 +97,15 @@ class CrowdfundingViewDetails extends JViewLegacy
         JPluginHelper::importPlugin('content');
 
         switch ($this->screen) {
-
-            case "updates":
+            case 'updates':
                 $this->prepareUpdatesScreen();
                 break;
 
-            case "comments":
+            case 'comments':
                 $this->prepareCommentsScreen();
                 break;
 
-            case "funders":
+            case 'funders':
                 $this->prepareFundersScreen();
                 break;
 
@@ -136,12 +135,12 @@ class CrowdfundingViewDetails extends JViewLegacy
 
     protected function prepareUpdatesScreen()
     {
-        $model       = JModelLegacy::getInstance("Updates", "CrowdfundingModel", $config = array('ignore_request' => false));
+        $model       = JModelLegacy::getInstance('Updates', 'CrowdfundingModel', $config = array('ignore_request' => false));
         $this->items = $model->getItems();
         $this->form  = $model->getForm();
 
         $this->userId  = JFactory::getUser()->id;
-        $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
+        $this->isOwner = ($this->userId === $this->item->user_id);
 
         // Get users IDs
         $usersIds = array();
@@ -150,30 +149,30 @@ class CrowdfundingViewDetails extends JViewLegacy
         }
 
         // Prepare social integration.
-        $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get("integration_social_platform"), $usersIds);
+        $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get('integration_social_platform'), $usersIds);
 
         // Scripts
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
         JHtml::_('prism.ui.pnotify');
 
-        JHtml::_("prism.ui.joomlaHelper");
+        JHtml::_('prism.ui.joomlaHelper');
 
         $this->document->addScript('media/' . $this->option . '/js/site/updates.js');
     }
 
     protected function prepareCommentsScreen()
     {
-        $this->commentsEnabled = $this->params->get("comments_enabled", 1);
+        $this->commentsEnabled = $this->params->get('comments_enabled', 1);
 
         // Initialize default comments functionality.
         if ($this->commentsEnabled) {
-            $model       = JModelLegacy::getInstance("Comments", "CrowdfundingModel", $config = array('ignore_request' => false));
+            $model       = JModelLegacy::getInstance('Comments', 'CrowdfundingModel', $config = array('ignore_request' => false));
             $this->items = $model->getItems();
             $this->form  = $model->getForm();
 
-            $this->userId  = JFactory::getUser()->get("id");
-            $this->isOwner = ($this->userId != $this->item->user_id) ? false : true;
+            $this->userId  = JFactory::getUser()->get('id');
+            $this->isOwner = ($this->userId === $this->item->user_id);
 
             // Get users IDs
             $usersIds = array();
@@ -184,14 +183,14 @@ class CrowdfundingViewDetails extends JViewLegacy
             $usersIds = array_unique($usersIds);
 
             // Prepare social integration.
-            $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get("integration_social_platform"), $usersIds);
+            $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get('integration_social_platform'), $usersIds);
 
             // Scripts
             JHtml::_('behavior.keepalive');
             JHtml::_('behavior.formvalidation');
             JHtml::_('prism.ui.pnotify');
 
-            JHtml::_("prism.ui.joomlaHelper");
+            JHtml::_('prism.ui.joomlaHelper');
 
             $this->document->addScript('media/' . $this->option . '/js/site/comments.js');
         }
@@ -205,27 +204,20 @@ class CrowdfundingViewDetails extends JViewLegacy
 
     protected function prepareFundersScreen()
     {
-        $model       = JModelLegacy::getInstance("Funders", "CrowdfundingModel", $config = array('ignore_request' => false));
+        $model       = JModelLegacy::getInstance('Funders', 'CrowdfundingModel', $config = array('ignore_request' => false));
         $this->items = $model->getItems();
 
-        // Get users IDs
-        $usersIds = array();
-        foreach ($this->items as $item) {
-            $usersIds[] = $item->id;
-        }
-
-        $usersIds = array_filter($usersIds);
-
         // Create a currency object if I have to display funders amounts.
-        $this->displayAmounts = $this->params->get("funders_display_amounts", 0);
+        $this->displayAmounts = $this->params->get('funders_display_amounts', 0);
         if ($this->displayAmounts) {
-            $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+            $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
             $this->amount = new Crowdfunding\Amount($this->params);
             $this->amount->setCurrency($currency);
         }
 
         // Prepare social integration.
-        $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get("integration_social_platform"), $usersIds);
+        $usersIds             = CrowdfundingHelper::fetchIds($this->items, 'id');
+        $this->socialProfiles = CrowdfundingHelper::prepareIntegrations($this->params->get('integration_social_platform'), $usersIds);
     }
 
     /**
@@ -233,9 +225,6 @@ class CrowdfundingViewDetails extends JViewLegacy
      */
     protected function prepareDocument()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
 
@@ -249,15 +238,15 @@ class CrowdfundingViewDetails extends JViewLegacy
         $this->document->setDescription($this->item->short_desc);
 
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
 
         if ($this->params->get('robots')) {
-            $this->document->setMetadata('robots', $this->params->get('robots'));
+            $this->document->setMetaData('robots', $this->params->get('robots'));
         }
 
         // Breadcrumb
-        $pathway           = $app->getPathWay();
+        $pathway           = $this->app->getPathway();
         $currentBreadcrumb = JHtmlString::truncate($this->item->title, 32);
         $pathway->addItem($currentBreadcrumb, '');
 
@@ -267,12 +256,9 @@ class CrowdfundingViewDetails extends JViewLegacy
 
     private function preparePageHeading()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
         $menu  = $menus->getActive();
 
         // Prepare page heading
@@ -285,36 +271,32 @@ class CrowdfundingViewDetails extends JViewLegacy
 
     private function preparePageTitle()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Prepare page title
-//        $title = $this->params->get('page_title', $this->item->title);
         $title = $this->item->title;
 
         switch ($this->screen) {
 
-            case "updates":
-                $title .= " | " . JText::_("COM_CROWDFUNDING_UPDATES");
+            case 'updates':
+                $title .= ' | ' . JText::_('COM_CROWDFUNDING_UPDATES');
                 break;
 
-            case "comments":
-                $title .= " | " . JText::_("COM_CROWDFUNDING_COMMENTS");
+            case 'comments':
+                $title .= ' | ' . JText::_('COM_CROWDFUNDING_COMMENTS');
                 break;
 
-            case "funders":
-                $title .= " | " . JText::_("COM_CROWDFUNDING_FUNDERS");
+            case 'funders':
+                $title .= ' | ' . JText::_('COM_CROWDFUNDING_FUNDERS');
                 break;
 
         }
 
         // Add title before or after Site Name
         if (!$title) {
-            $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
-            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
-            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+            $title = $this->app->get('sitename');
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 1) {
+            $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $this->app->get('sitename'));
         }
 
         $this->document->setTitle($title);

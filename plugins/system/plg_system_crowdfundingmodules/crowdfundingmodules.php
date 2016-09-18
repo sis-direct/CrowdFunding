@@ -3,15 +3,12 @@
  * @package      Crowdfunding
  * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
-
-jimport('joomla.application.component.helper');
-jimport('joomla.plugin.plugin');
 
 jimport('Prism.init');
 jimport('Crowdfunding.init');
@@ -24,11 +21,6 @@ jimport('Crowdfunding.init');
  */
 class plgSystemCrowdfundingModules extends JPlugin
 {
-    /**
-     * @var Joomla\Registry\Registry
-     */
-    public $params;
-    
     public function onAfterDispatch()
     {
         $app = JFactory::getApplication();
@@ -42,13 +34,13 @@ class plgSystemCrowdfundingModules extends JPlugin
         /** @var $document JDocumentHtml */
 
         $type = $document->getType();
-        if (strcmp("html", $type) != 0) {
+        if (strcmp('html', $type) !== 0) {
             return;
         }
 
         // It works only for GET and POST requests.
         $method = JString::strtolower($app->input->getMethod());
-        if (!in_array($method, array("get", "post"))) {
+        if (!in_array($method, array('get', 'post'), true)) {
             return;
         }
 
@@ -57,60 +49,55 @@ class plgSystemCrowdfundingModules extends JPlugin
             return;
         }
 
-        $view   = $app->input->getCmd("view");
-        $option = $app->input->getCmd("option");
+        $view   = $app->input->getCmd('view');
+        $option = $app->input->getCmd('option');
 
-        $isCrowdfundingComponent = (strcmp($option, "com_crowdfunding") == 0);
-        $isDetailsPage           = (strcmp($option, "com_crowdfunding") == 0 and strcmp($view, "details") == 0);
+        $isCrowdfundingComponent = (strcmp($option, 'com_crowdfunding') === 0);
+        $isDetailsPage           = (strcmp($option, 'com_crowdfunding') === 0 and strcmp($view, 'details') === 0);
 
         // Allowed views for the module Crowdfunding Details
-        $allowedViewsModuleDetails = array("backing", "embed", "report");
-        $allowedViewsModuleFilters = array("discover", "category");
+        $allowedViewsModuleDetails = array('backing', 'embed', 'report');
+        $allowedViewsModuleFilters = array('discover', 'category');
 
         // Hide some modules if it is not details page.
         if (!$isDetailsPage) {
-            $this->hideModule("mod_crowdfundinginfo");
-            $this->hideModule("mod_crowdfundingprofile");
-            $this->hideModule("mod_crowdfundingreporting");
+            $this->hideModule('mod_crowdfundinginfo');
+            $this->hideModule('mod_crowdfundingprofile');
+            $this->hideModule('mod_crowdfundingreporting');
         }
 
         // Module Crowdfunding Rewards (mod_crowdfundingrewards).
         if (!$isDetailsPage) {
-
-            $this->hideModule("mod_crowdfundingrewards");
-
+            $this->hideModule('mod_crowdfundingrewards');
         } else { // Check project type. If the rewards are disable, hide the module.
 
-            $projectId = $app->input->getInt("id");
-            if (!empty($projectId)) {
-                $project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
-                $type    = $project->getType();
+            $projectId = $app->input->getInt('id');
+            if ($projectId > 0) {
 
-                // Hide the module Crowdfunding Rewards, if rewards are disabled for this type.
-                if (!is_null($type) and !$type->isRewardsEnabled()) {
-                    $this->hideModule("mod_crowdfundingrewards");
+                // Hide the module Crowdfunding Rewards, if rewards are disabled.
+                if (!CrowdfundingHelper::isRewardsEnabled($projectId)) {
+                    $this->hideModule('mod_crowdfundingrewards');
                 }
             }
         }
 
         // Module Crowdfunding Details (mod_crowdfundingdetails) on backing and embed pages.
-        if (!$isCrowdfundingComponent or (strcmp($option, "com_crowdfunding") == 0 and !in_array($view, $allowedViewsModuleDetails))) {
-            $this->hideModule("mod_crowdfundingdetails");
+        if (!$isCrowdfundingComponent or (strcmp($option, 'com_crowdfunding') === 0 and !in_array($view, $allowedViewsModuleDetails, true))) {
+            $this->hideModule('mod_crowdfundingdetails');
         }
 
         // Module Crowdfunding Filters (mod_crowdfundingfilters).
-        if (!$isCrowdfundingComponent or (strcmp($option, "com_crowdfunding") == 0 and !in_array($view, $allowedViewsModuleFilters))) {
-            $this->hideModule("mod_crowdfundingfilters");
+        if (!$isCrowdfundingComponent or (strcmp($option, 'com_crowdfunding') === 0 and !in_array($view, $allowedViewsModuleFilters, true))) {
+            $this->hideModule('mod_crowdfundingfilters');
         }
-
     }
 
     protected function hideModule($moduleName)
     {
         $module           = JModuleHelper::getModule($moduleName);
-        if (!empty($module->id)) {
+        if (is_object($module) and $module->id > 0) {
             $seed             = substr(md5(uniqid(time() * rand(), true)), 0, 10);
-            $module->position = "fp" . JApplicationHelper::getHash($seed);
+            $module->position = 'fp' . JApplicationHelper::getHash($seed);
         }
     }
 }

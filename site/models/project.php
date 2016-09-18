@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -21,7 +21,7 @@ class CrowdfundingModelProject extends JModelForm
      * @param   string $prefix A prefix for the table class name. Optional.
      * @param   array  $config Configuration array for model. Optional.
      *
-     * @return  JTable  A database object
+     * @return  CrowdfundingTableProject  A database object
      * @since   1.6
      */
     public function getTable($type = 'Project', $prefix = 'CrowdfundingTable', $config = array())
@@ -44,7 +44,7 @@ class CrowdfundingModelProject extends JModelForm
         /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $itemId = $app->input->getInt("id");
+        $itemId = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $itemId);
 
         // Load the parameters.
@@ -91,7 +91,7 @@ class CrowdfundingModelProject extends JModelForm
         if (!$data) {
 
             $itemId = (int) $this->getState($this->getName() . '.id');
-            $userId = JFactory::getUser()->get("id");
+            $userId = JFactory::getUser()->get('id');
 
             $data = $this->getItem($itemId, $userId);
 
@@ -119,7 +119,7 @@ class CrowdfundingModelProject extends JModelForm
      * @param   integer $pk     The id of the primary key.
      * @param   integer $userId The id of the user.
      *
-     * @return  CrowdfundingTableProject  Object on success, false on failure.
+     * @return  JObject  Object on success, false on failure.
      *
      * @throws Exception
      *
@@ -127,7 +127,7 @@ class CrowdfundingModelProject extends JModelForm
      */
     public function getItem($pk, $userId)
     {
-        if ($this->item) {
+        if ($this->item !== null) {
             return $this->item;
         }
 
@@ -137,8 +137,8 @@ class CrowdfundingModelProject extends JModelForm
         if ($pk > 0 and $userId > 0) {
 
             $keys = array(
-                "id"      => $pk,
-                "user_id" => $userId
+                'id'      => $pk,
+                'user_id' => $userId
             );
 
             // Attempt to load the row.
@@ -146,9 +146,8 @@ class CrowdfundingModelProject extends JModelForm
 
             // Check for a table object error.
             if ($return === false) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"));
+                throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'));
             }
-
         }
 
         // Convert to the JObject before adding other data.
@@ -178,12 +177,12 @@ class CrowdfundingModelProject extends JModelForm
      */
     public function save($data)
     {
-        $id          = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $title       = Joomla\Utilities\ArrayHelper::getValue($data, "title");
-        $shortDesc   = Joomla\Utilities\ArrayHelper::getValue($data, "short_desc");
-        $catId       = Joomla\Utilities\ArrayHelper::getValue($data, "catid");
-        $locationId  = Joomla\Utilities\ArrayHelper::getValue($data, "location_id");
-        $typeId      = Joomla\Utilities\ArrayHelper::getValue($data, "type_id");
+        $id          = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
+        $title       = Joomla\Utilities\ArrayHelper::getValue($data, 'title');
+        $shortDesc   = Joomla\Utilities\ArrayHelper::getValue($data, 'short_desc');
+        $catId       = Joomla\Utilities\ArrayHelper::getValue($data, 'catid');
+        $locationId  = Joomla\Utilities\ArrayHelper::getValue($data, 'location_id');
+        $typeId      = Joomla\Utilities\ArrayHelper::getValue($data, 'type_id');
 
         // Load a record from the database
         $row = $this->getTable();
@@ -193,17 +192,17 @@ class CrowdfundingModelProject extends JModelForm
 
         // If there is an id, the item is not new
         $isNew = true;
-        if ($row->get("id")) {
+        if ($row->get('id')) {
             $isNew = false;
         }
 
-        $row->set("title", $title);
-        $row->set("short_desc", $shortDesc);
-        $row->set("catid", $catId);
-        $row->set("location_id", $locationId);
-        $row->set("type_id", $typeId);
+        $row->set('title', $title);
+        $row->set('short_desc', $shortDesc);
+        $row->set('catid', $catId);
+        $row->set('location_id', $locationId);
+        $row->set('type_id', $typeId);
 
-        $this->prepareTable($row, $data);
+        $this->prepareTable($row);
 
         $row->store();
 
@@ -213,10 +212,9 @@ class CrowdfundingModelProject extends JModelForm
         }
 
         // Trigger the event onContentAfterSave.
-        $this->triggerEventAfterSave($row, "basic", $isNew);
+        $this->triggerEventAfterSave($row, 'basic', $isNew);
 
-        return $row->get("id");
-
+        return $row->get('id');
     }
 
     /**
@@ -242,62 +240,62 @@ class CrowdfundingModelProject extends JModelForm
         JPluginHelper::importPlugin('content');
 
         // Trigger the onContentAfterSave event.
-        $results = $dispatcher->trigger("onContentAfterSave", array($context, &$project, $isNew));
+        $results = $dispatcher->trigger('onContentAfterSave', array($context, &$project, $isNew));
 
         if (in_array(false, $results, true)) {
-            throw new RuntimeException(JText::_("COM_CROWDFUNDING_ERROR_DURING_PROJECT_CREATING_PROCESS"));
+            throw new RuntimeException(JText::_('COM_CROWDFUNDING_ERROR_DURING_PROJECT_CREATING_PROCESS'));
         }
     }
 
     /**
      * Prepare and sanitise the table prior to saving.
      *
-     * @param   object $table
+     * @param  CrowdfundingTableProject $table
      *
      * @throws Exception
      *
      * @since    1.6
      */
-    protected function prepareTable(&$table, $data)
+    protected function prepareTable($table)
     {
-        $userId = JFactory::getUser()->get("id");
+        $userId = (int)JFactory::getUser()->get('id');
 
-        if (!$table->get("id")) {
+        if (!$table->get('id')) {
 
             // Get maximum order number
             // Set ordering to the last item if not set
-            if (!$table->get("ordering")) {
+            if (!$table->get('ordering')) {
 
                 $db    = $this->getDbo();
                 $query = $db->getQuery(true);
 
                 $query
-                    ->select("MAX(ordering)")
-                    ->from($db->quoteName("#__crowdf_projects"));
+                    ->select('MAX(ordering)')
+                    ->from($db->quoteName('#__crowdf_projects'));
 
                 $db->setQuery($query, 0, 1);
                 $max = $db->loadResult();
 
-                $table->set("ordering", $max + 1);
+                $table->set('ordering', $max + 1);
             }
 
-            // Set published
-            $table->set("published", 0);
+            // Set state to unpublished.
+            $table->set('published', Prism\Constants::UNPUBLISHED);
 
             // Set user ID
-            $table->set("user_id", $userId);
+            $table->set('user_id', $userId);
 
         } else {
-            if ($userId != $table->get("user_id")) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_INVALID_USER"));
+            if ($userId !== (int)$table->get('user_id')) {
+                throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_INVALID_USER'));
             }
         }
 
         // If an alias does not exist, I will generate the new one using the title.
-        if (!$table->get("alias")) {
-            $table->set("alias", $table->get("title"));
+        if (!$table->get('alias')) {
+            $table->set('alias', $table->get('title'));
         }
-        $table->set("alias", JApplicationHelper::stringURLSafe($table->get("alias")));
+        $table->set('alias', JApplicationHelper::stringURLSafe($table->get('alias')));
     }
 
     /**
@@ -324,7 +322,7 @@ class CrowdfundingModelProject extends JModelForm
         /** @var  $params Joomla\Registry\Registry */
 
         // Joomla! media extension parameters
-        $mediaParams = JComponentHelper::getParams("com_media");
+        $mediaParams = JComponentHelper::getParams('com_media');
         /** @var  $mediaParams Joomla\Registry\Registry */
 
         $file = new Prism\File\File();
@@ -332,7 +330,7 @@ class CrowdfundingModelProject extends JModelForm
         // Prepare size validator.
         $KB            = 1024 * 1024;
         $fileSize      = (int)$app->input->server->get('CONTENT_LENGTH');
-        $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
+        $uploadMaxSize = $mediaParams->get('upload_maxsize') * $KB;
 
         // Prepare file size validator
         $fileSizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
@@ -344,17 +342,17 @@ class CrowdfundingModelProject extends JModelForm
         $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
 
         // Get allowed mime types from media manager options
-        $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+        $mimeTypes = explode(',', $mediaParams->get('upload_mime'));
         $imageValidator->setMimeTypes($mimeTypes);
 
         // Get allowed image extensions from media manager options
-        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        $imageExtensions = explode(',', $mediaParams->get('image_extensions'));
         $imageValidator->setImageExtensions($imageExtensions);
 
         // Prepare image size validator.
         $imageSizeValidator = new Prism\File\Validator\Image\Size($uploadedFile);
-        $imageSizeValidator->setMinWidth($params->get("image_width", 200));
-        $imageSizeValidator->setMinHeight($params->get("image_height", 200));
+        $imageSizeValidator->setMinWidth($params->get('image_width', 200));
+        $imageSizeValidator->setMinHeight($params->get('image_height', 200));
 
         $file
             ->addValidator($fileSizeValidator)
@@ -370,10 +368,9 @@ class CrowdfundingModelProject extends JModelForm
         // Generate temporary file name
         $ext = JFile::makeSafe(JFile::getExt($image['name']));
 
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(16);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(16);
 
-        $temporaryFile = $destination . DIRECTORY_SEPARATOR . $generatedName . "." . $ext;
+        $temporaryFile = $destination . DIRECTORY_SEPARATOR . $generatedName . '.' . $ext;
 
         // Prepare uploader object.
         $uploader = new Prism\File\Uploader\Local($uploadedFile);
@@ -413,33 +410,32 @@ class CrowdfundingModelProject extends JModelForm
             throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $file));
         }
 
-        $destinationFolder  = Joomla\Utilities\ArrayHelper::getValue($options, "destination");
+        $destinationFolder  = Joomla\Utilities\ArrayHelper::getValue($options, 'destination');
 
         // Generate temporary file name
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(32);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(32);
 
-        $imageName  = $generatedName . "_image.png";
-        $smallName  = $generatedName . "_small.png";
-        $squareName = $generatedName . "_square.png";
+        $imageName  = $generatedName . '_image.png';
+        $smallName  = $generatedName . '_small.png';
+        $squareName = $generatedName . '_square.png';
 
-        $imageFile  = $destinationFolder . DIRECTORY_SEPARATOR . $imageName;
-        $smallFile  = $destinationFolder . DIRECTORY_SEPARATOR . $smallName;
-        $squareFile = $destinationFolder . DIRECTORY_SEPARATOR . $squareName;
+        $imageFile  = JPath::clean($destinationFolder . DIRECTORY_SEPARATOR . $imageName);
+        $smallFile  = JPath::clean($destinationFolder . DIRECTORY_SEPARATOR . $smallName);
+        $squareFile = JPath::clean($destinationFolder . DIRECTORY_SEPARATOR . $squareName);
 
         // Create main image
-        $width  = Joomla\Utilities\ArrayHelper::getValue($options, "width", 200);
+        $width  = Joomla\Utilities\ArrayHelper::getValue($options, 'width', 200);
         $width  = ($width < 25) ? 50 : $width;
-        $height = Joomla\Utilities\ArrayHelper::getValue($options, "height", 200);
+        $height = Joomla\Utilities\ArrayHelper::getValue($options, 'height', 200);
         $height = ($height < 25) ? 50 : $height;
-        $left   = Joomla\Utilities\ArrayHelper::getValue($options, "x", 0);
-        $top    = Joomla\Utilities\ArrayHelper::getValue($options, "y", 0);
+        $left   = Joomla\Utilities\ArrayHelper::getValue($options, 'x', 0);
+        $top    = Joomla\Utilities\ArrayHelper::getValue($options, 'y', 0);
         $image->crop($width, $height, $left, $top, false);
 
         // Resize to general size.
-        $width  = Joomla\Utilities\ArrayHelper::getValue($options, "resize_width", 200);
+        $width  = Joomla\Utilities\ArrayHelper::getValue($options, 'resize_width', 200);
         $width  = ($width < 25) ? 50 : $width;
-        $height = Joomla\Utilities\ArrayHelper::getValue($options, "resize_height", 200);
+        $height = Joomla\Utilities\ArrayHelper::getValue($options, 'resize_height', 200);
         $height = ($height < 25) ? 50 : $height;
         $image->resize($width, $height, false);
 
@@ -451,21 +447,21 @@ class CrowdfundingModelProject extends JModelForm
         /** @var  $params Joomla\Registry\Registry */
 
         // Create small image
-        $width  = $params->get("image_small_width", 100);
-        $height = $params->get("image_small_height", 100);
+        $width  = $params->get('image_small_width', 100);
+        $height = $params->get('image_small_height', 100);
         $image->resize($width, $height, false);
         $image->toFile($smallFile, IMAGETYPE_PNG);
 
         // Create square image
-        $width  = $params->get("image_square_width", 50);
-        $height = $params->get("image_square_height", 50);
+        $width  = $params->get('image_square_width', 50);
+        $height = $params->get('image_square_height', 50);
         $image->resize($width, $height, false);
         $image->toFile($squareFile, IMAGETYPE_PNG);
 
         $names = array(
-            "image"        => $imageName,
-            "image_small"  => $smallName,
-            "image_square" => $squareName
+            'image'        => $imageName,
+            'image_small'  => $smallName,
+            'image_square' => $squareName
         );
 
         // Remove the temporary file.
@@ -487,8 +483,8 @@ class CrowdfundingModelProject extends JModelForm
     public function removeImage($id, $userId)
     {
         $keys = array(
-            "id" => $id,
-            "user_id" => $userId
+            'id' => $id,
+            'user_id' => $userId
         );
 
         // Load category data
@@ -496,35 +492,35 @@ class CrowdfundingModelProject extends JModelForm
         $row->load($keys);
 
         // Delete old image if I upload the new one
-        if ($row->get("image")) {
+        if ($row->get('image')) {
             jimport('joomla.filesystem.file');
 
             $params       = JComponentHelper::getParams($this->option);
             /** @var  $params Joomla\Registry\Registry */
 
-            $imagesFolder = $params->get("images_directory", "images/crowdfunding");
+            $imagesFolder = $params->get('images_directory', 'images/crowdfunding');
 
             // Remove an image from the filesystem
-            $fileImage  = $imagesFolder . DIRECTORY_SEPARATOR . $row->get("image");
-            $fileSmall  = $imagesFolder . DIRECTORY_SEPARATOR . $row->get("image_small");
-            $fileSquare = $imagesFolder . DIRECTORY_SEPARATOR . $row->get("image_square");
+            $fileImage  = $imagesFolder . DIRECTORY_SEPARATOR . $row->get('image');
+            $fileSmall  = $imagesFolder . DIRECTORY_SEPARATOR . $row->get('image_small');
+            $fileSquare = $imagesFolder . DIRECTORY_SEPARATOR . $row->get('image_square');
 
-            if (is_file($fileImage)) {
+            if (JFile::exists($fileImage)) {
                 JFile::delete($fileImage);
             }
 
-            if (is_file($fileSmall)) {
+            if (JFile::exists($fileSmall)) {
                 JFile::delete($fileSmall);
             }
 
-            if (is_file($fileSquare)) {
+            if (JFile::exists($fileSquare)) {
                 JFile::delete($fileSquare);
             }
         }
 
-        $row->set("image", "");
-        $row->set("image_small", "");
-        $row->set("image_square", "");
+        $row->set('image', '');
+        $row->set('image_small', '');
+        $row->set('image_square', '');
         $row->store();
     }
 
@@ -535,45 +531,50 @@ class CrowdfundingModelProject extends JModelForm
      * @param int $projectId
      * @param array $images The names of the pictures.
      * @param string $source Path to the temporary folder.
+     *                       
+     * @throws InvalidArgumentException
      */
     public function updateImages($projectId, $images, $source)
     {
         $project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
         if (!$project->getId()) {
-            throw new InvalidArgumentException(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"));
+            throw new InvalidArgumentException(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'));
         }
 
         // Prepare the path to the pictures.
-        $fileImage  = $source .DIRECTORY_SEPARATOR. $images["image"];
-        $fileSmall  = $source .DIRECTORY_SEPARATOR. $images["image_small"];
-        $fileSquare = $source .DIRECTORY_SEPARATOR. $images["image_square"];
+        $fileImage  = $source .DIRECTORY_SEPARATOR. $images['image'];
+        $fileSmall  = $source .DIRECTORY_SEPARATOR. $images['image_small'];
+        $fileSquare = $source .DIRECTORY_SEPARATOR. $images['image_square'];
 
         if (is_file($fileImage) and is_file($fileSmall) and is_file($fileSquare)) {
 
             // Get the folder where the pictures are stored.
-            $imagesFolder = CrowdfundingHelper::getImagesFolder();
+            $params = JComponentHelper::getParams('com_crowdfunding');
+            /** @var $params Joomla\Registry\Registry */
+
+            $imagesFolder = JPath::clean(JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('images_directory', 'images/crowdfunding'));
 
             // Remove an image from the filesystem
             $oldFileImage  = $imagesFolder .DIRECTORY_SEPARATOR. $project->getImage();
             $oldFileSmall  = $imagesFolder .DIRECTORY_SEPARATOR. $project->getSmallImage();
             $oldFileSquare = $imagesFolder .DIRECTORY_SEPARATOR. $project->getSquareImage();
 
-            if (is_file($oldFileImage)) {
+            if (JFile::exists($oldFileImage)) {
                 JFile::delete($oldFileImage);
             }
 
-            if (is_file($oldFileSmall)) {
+            if (JFile::exists($oldFileSmall)) {
                 JFile::delete($oldFileSmall);
             }
 
-            if (is_file($oldFileSquare)) {
+            if (JFile::exists($oldFileSquare)) {
                 JFile::delete($oldFileSquare);
             }
 
             // Move the new files to the images folder.
-            $newFileImage  = $imagesFolder .DIRECTORY_SEPARATOR. $images["image"];
-            $newFileSmall  = $imagesFolder .DIRECTORY_SEPARATOR. $images["image_small"];
-            $newFileSquare = $imagesFolder .DIRECTORY_SEPARATOR. $images["image_square"];
+            $newFileImage  = $imagesFolder .DIRECTORY_SEPARATOR. $images['image'];
+            $newFileSmall  = $imagesFolder .DIRECTORY_SEPARATOR. $images['image_small'];
+            $newFileSquare = $imagesFolder .DIRECTORY_SEPARATOR. $images['image_square'];
 
             JFile::move($fileImage, $newFileImage);
             JFile::move($fileSmall, $newFileSmall);
@@ -583,7 +584,6 @@ class CrowdfundingModelProject extends JModelForm
             $project->bind($images);
             $project->store();
         }
-
     }
 
     /**
@@ -593,11 +593,12 @@ class CrowdfundingModelProject extends JModelForm
      * @param array $images The names of the pictures.
      * @param string $sourceFolder Path to the temporary folder.
      */
-    public function removeTemporaryImages($images, $sourceFolder)
+    public function removeTemporaryImages(array $images, $sourceFolder)
     {
-        $temporaryImage       = JPath::clean($sourceFolder . "/" . basename($images["image"]));
-        $temporaryImageSmall  = JPath::clean($sourceFolder . "/" . basename($images["image_small"]));
-        $temporaryImageSquare = JPath::clean($sourceFolder . "/" . basename($images["image_square"]));
+        $temporaryImage       = $sourceFolder . '/' . basename($images['image']);
+        $temporaryImageSmall  = $sourceFolder . '/' . basename($images['image_small']);
+        $temporaryImageSquare = $sourceFolder . '/' . basename($images['image_square']);
+
         if (JFile::exists($temporaryImage)) {
             JFile::delete($temporaryImage);
         }
@@ -609,6 +610,5 @@ class CrowdfundingModelProject extends JModelForm
         if (JFile::exists($temporaryImageSquare)) {
             JFile::delete($temporaryImageSquare);
         }
-
     }
 }

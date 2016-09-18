@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -30,6 +30,7 @@ class CrowdfundingModelTransactions extends JModelList
                 'id', 'a.id',
                 'amount', 'a.txn_amount',
                 'service_provider', 'a.service_provider',
+                'txn_status', 'a.txn_status',
                 'reward_state', 'a.reward_state',
                 'txn_status', 'a.txn_status',
                 'name', 'b.name',
@@ -99,7 +100,7 @@ class CrowdfundingModelTransactions extends JModelList
     protected function getListQuery()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi * */
+        /** @var $db JDatabaseDriver */
 
         // Create a new query object.
         $query = $db->getQuery(true);
@@ -109,7 +110,7 @@ class CrowdfundingModelTransactions extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.txn_amount, a.txn_date, a.txn_currency, a.txn_id, a.txn_status, a.investor_id, a.receiver_id, a.fee, ' .
-                'a.status_reason, a.parent_txn_id, a.project_id, a.reward_id, a.receiver_id, a.service_provider, a.reward_state, ' .
+                'a.status_reason, a.parent_txn_id, a.project_id, a.reward_id, a.receiver_id, a.service_provider, a.service_alias, a.reward_state, ' .
                 'b.name AS beneficiary, ' .
                 'c.title AS project, ' .
                 'd.title AS reward, ' .
@@ -125,32 +126,31 @@ class CrowdfundingModelTransactions extends JModelList
 
         // Filter by payment service.
         $paymentService = $this->getState('filter.payment_service');
-        if (!empty($paymentService)) {
-            $query->where('a.service_provider = ' . $db->quote($paymentService));
+        if (JString::strlen($paymentService) > 0) {
+            $query->where('a.service_alias = ' . $db->quote($paymentService));
         }
 
         // Filter by payment status.
         $paymentStatus = $this->getState('filter.payment_status');
-        if (!empty($paymentStatus)) {
+        if (JString::strlen($paymentStatus) > 0) {
             $query->where('a.txn_status = ' . $db->quote($paymentStatus));
         }
 
         // Filter by reward distributed state.
         $rewardState = $this->getState('filter.reward_state');
         if (is_numeric($rewardState)) {
-            if ($rewardState == 0) {
+            if ((int)$rewardState === 0) {
                 $query->where('a.reward_state = 0');
-            } elseif ($rewardState == 1) {
+            } elseif ((int)$rewardState === 1) {
                 $query->where('a.reward_state = 1');
             }
-        } elseif ($rewardState == "none") {
+        } elseif ($rewardState === 'none') {
             $query->where('a.reward_id = 0');
         }
 
         // Filter by search phrase.
         $search = $this->getState('filter.search');
-
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
 
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
@@ -165,7 +165,7 @@ class CrowdfundingModelTransactions extends JModelList
                 $query->where('a.parent_txn_id = ' . $db->quote($search));
             } else {
                 $escaped = $db->escape($search, true);
-                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('a.txn_id LIKE ' . $quoted);
             }
         }

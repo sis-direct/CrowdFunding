@@ -3,14 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Statistics
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Statistics\Projects;
 
 use Crowdfunding\Constants;
-use Prism;
+use Prism\Database;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -20,23 +20,9 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Statistics
  */
-abstract class Base extends Prism\Database\ArrayObject
+abstract class Base extends Database\Collection
 {
-    protected $allowedDirections = array("ASC", "DESC");
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $statistics   = new Crowdfunding\Statistics\Projects\Latest(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db  Database Driver
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
+    protected $allowedDirections = array('ASC', 'DESC');
 
     protected function getQuery()
     {
@@ -44,13 +30,13 @@ abstract class Base extends Prism\Database\ArrayObject
 
         $query
             ->select(
-                "a.id, a.title, a.short_desc, a.image, a.image_small, a.image_square, a.hits, " .
-                "a.goal, a.funded, a.created, a.funding_start, a.funding_end, a.funding_days, " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
-                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
+                'a.id, a.title, a.short_desc, a.image, a.image_small, a.image_square, a.hits, ' .
+                'a.goal, a.funded, a.created, a.funding_start, a.funding_end, a.funding_days, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->leftJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id");
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->leftJoin($this->db->quoteName('#__categories', 'b') . ' ON a.catid = b.id');
 
         return $query;
     }
@@ -64,22 +50,22 @@ abstract class Base extends Prism\Database\ArrayObject
     protected function prepareFilters(&$query, $options)
     {
         // Filter by state.
-        if (isset($options["state"])) {
-            $published = (int)$options["state"];
+        if (array_key_exists('state', $options)) {
+            $published = (int)$options['state'];
             if (!$published) {
-                $query->where("a.published = 0");
+                $query->where('a.published = 0');
             } else {
-                $query->where("a.published = 1");
+                $query->where('a.published = 1');
             }
         }
 
         // Filter by approval state.
-        if (isset($options["approved"])) {
-            $approved = (int)$options["approved"];
+        if (array_key_exists('approved', $options)) {
+            $approved = (int)$options['approved'];
             if (!$approved) {
-                $query->where("a.approved = 0");
+                $query->where('a.approved = 0');
             } else {
-                $query->where("a.approved = 1");
+                $query->where('a.approved = 1');
             }
         }
     }
@@ -93,30 +79,28 @@ abstract class Base extends Prism\Database\ArrayObject
     protected function prepareOrder(&$query, $options)
     {
         // Filter by state.
-        if (isset($options["order"])) {
+        if (array_key_exists('order', $options)) {
 
             // Prepare direction of ordering.
-            $direction = (!isset($options["order_dir"])) ? "DESC" : $options["order_dir"];
-            if (!in_array($direction, $this->allowedDirections)) {
-                $direction = "DESC";
+            $direction = (!array_key_exists('order_dir', $options)) ? 'DESC' : $options['order_dir'];
+            if (!in_array($direction, $this->allowedDirections, true)) {
+                $direction = 'DESC';
             }
 
-            switch($options["order"]) {
+            switch($options['order']) {
 
                 case Constants::ORDER_BY_LOCATION_NAME: // Order by location name.
-                    $query->order("l.name " .$direction);
+                    $query->order('l.name ' .$direction);
                     break;
 
                 case Constants::ORDER_BY_NUMBER_OF_PROJECTS: // Order by location name.
-                    $query->order("project_number " .$direction);
+                    $query->order('project_number ' .$direction);
                     break;
 
                 default: // Order by project title.
-                    $query->order("a.title " .$direction);
+                    $query->order('a.title ' .$direction);
                     break;
-
             }
-
         }
     }
 }

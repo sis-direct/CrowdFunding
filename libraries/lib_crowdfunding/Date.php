@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Dates
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -43,8 +43,9 @@ class Date extends Prism\Date
     {
         // Calculate days left
         $today = clone $this;
+        $fundingDays = (int)abs($fundingDays);
 
-        if (!empty($fundingDays)) {
+        if ($fundingDays > 0) {
 
             $validatorDate = new Prism\Validator\Date($fundingStart);
 
@@ -55,14 +56,14 @@ class Date extends Prism\Date
             }
 
             $endingDate = new \DateTime($fundingStart);
-            $endingDate->modify("+" . (int)$fundingDays . " days");
+            $endingDate->modify('+' . (int)$fundingDays . ' days');
 
         } else {
             $endingDate = new \DateTime($fundingEnd);
         }
 
         $interval = $today->diff($endingDate);
-        $daysLeft = $interval->format("%r%a");
+        $daysLeft = $interval->format('%r%a');
 
         if ($daysLeft < 0) {
             $daysLeft = 0;

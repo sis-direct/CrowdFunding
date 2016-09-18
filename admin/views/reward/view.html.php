@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -66,7 +66,7 @@ class CrowdfundingViewReward extends JViewLegacy
         if (!empty($this->item->id)) {
             $userId = CrowdfundingHelper::getUserIdByRewardId($this->item->id);
             $uri = JUri::getInstance();
-            $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdfundingHelper::getImagesFolderUri($userId, JPATH_BASE);
+            $this->rewardsImagesUri = $uri->toString(array("scheme", "host")) . "/" . CrowdfundingHelper::getImagesFolderUri($userId);
         }
 
         $app = JFactory::getApplication();
@@ -171,11 +171,11 @@ class CrowdfundingViewReward extends JViewLegacy
         JHtml::_('behavior.keepalive');
         JHtml::_('behavior.formvalidation');
         JHtml::_('behavior.tooltip');
-        JHtml::_('prism.ui.bootstrapFileUploadStyle');
+        JHtml::_('prism.ui.bootstrap2FileInput');
 
         JHtml::_('formbehavior.chosen', 'select');
 
         // Add scripts
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
     }
 }

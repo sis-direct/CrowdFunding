@@ -3,13 +3,20 @@
  * @package      Crowdfunding
  * @subpackage   Projects
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
+use Joomla\Utilities\ArrayHelper;
 use Prism;
+use Prism\Database;
+use Prism\Validator;
+use Prism\Utilities\MathHelper;
+use Crowdfunding\Date;
+use Crowdfunding\Rewards;
+use Crowdfunding\Type;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -19,7 +26,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Projects
  */
-class Project extends Prism\Database\Table
+class Project extends Database\Table
 {
     protected $id;
     protected $title;
@@ -44,33 +51,19 @@ class Project extends Prism\Database\Table
     protected $published;
     protected $approved;
     protected $ordering;
-    protected $catid;
-    protected $type_id;
-    protected $user_id;
+    protected $catid = 0;
+    protected $type_id = 0;
+    protected $user_id = 0;
 
     protected $rewards;
     protected $type;
 
     protected $fundedPercent = 0;
     protected $daysLeft = 0;
-    protected $slug = "";
-    protected $catslug = "";
+    protected $slug = '';
+    protected $catslug = '';
     
-    protected static $instance;
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $project   = new Crowdfunding\Project(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
+    protected static $instances = array();
 
     /**
      * Create an object.
@@ -88,14 +81,14 @@ class Project extends Prism\Database\Table
      */
     public static function getInstance(\JDatabaseDriver $db, $id)
     {
-        if (is_null(self::$instance)) {
+        if (!array_key_exists($id, self::$instances)) {
             $item  = new Project($db);
             $item->load($id);
 
-            self::$instance = $item;
+            self::$instances[$id] = $item;
         }
 
-        return self::$instance;
+        return self::$instances[$id];
     }
 
     /**
@@ -108,37 +101,52 @@ class Project extends Prism\Database\Table
      * $project->load($projectId);
      * </code>
      *
-     * @param int $keys
+     * @param array|int $keys
      * @param array $options
      *
      * @throws \UnexpectedValueException
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         if (!$keys) {
-            throw new \UnexpectedValueException(\JText::_("LIB_CROWDFUNDING_INVALID_PROJECT_ID"));
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_KEYS'));
         }
 
         $query = $this->db->getQuery(true);
         $query
             ->select(
-                "a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, " .
-                "a.location_id, a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, " .
-                "a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, " .
-                "a.ordering, a.catid, a.type_id, a.user_id, " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
-                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
+                'a.id, a.title, a.alias, a.short_desc, a.description, a.image, a.image_square, a.image_small, ' .
+                'a.location_id, a.goal, a.funded, a.funding_type, a.funding_start, a.funding_end, a.funding_days, ' .
+                'a.pitch_video, a.pitch_image, a.hits, a.created, a.featured, a.published, a.approved, ' .
+                'a.ordering, a.catid, a.type_id, a.user_id, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->leftJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id")
-            ->where("a.id = " . (int)$keys);
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->leftJoin($this->db->quoteName('#__categories', 'b') . ' ON a.catid = b.id');
+
+        if (is_array($keys)) {
+            foreach ($keys as $key => $value) {
+                $query->where($this->db->quoteName('a.'.$key) .' = ' . $this->db->quote($value));
+            }
+        } else {
+            $query->where('a.id = ' . (int)$keys);
+        }
+
+        // Filter by state.
+        $filter = ArrayHelper::getValue($options, 'state');
+        if ($filter !== null and is_numeric($filter)) {
+            $query->where('a.published = ' . (int)$filter);
+        }
+
+        // Filter by approved state.
+        $filter = ArrayHelper::getValue($options, 'approved');
+        if ($filter !== null and is_numeric($filter)) {
+            $query->where('a.approved = ' . (int)$filter);
+        }
 
         $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
-
-        if (!$result) {
-            $result = array();
-        }
+        $result = (array)$this->db->loadAssoc();
 
         $this->bind($result);
 
@@ -146,21 +154,19 @@ class Project extends Prism\Database\Table
         if (!$this->goal) {
             $this->fundedPercent = 0;
         } else {
-            $math = new Prism\Math();
-            $math->calculatePercentage($this->funded, $this->goal, 0);
-            $this->fundedPercent = (string)$math;
+            $this->fundedPercent = MathHelper::calculatePercentage($this->funded, $this->goal, 0);
         }
 
         // Calculate end date
-        if (!empty($this->funding_days)) {
+        if ($this->funding_days > 0) {
 
             $fundingStartDateValidator = new Prism\Validator\Date($this->funding_start);
             if (!$fundingStartDateValidator->isValid()) {
-                $this->funding_end = "0000-00-00";
+                $this->funding_end = '0000-00-00';
             } else {
                 $fundingStartDate = new Date($this->funding_start);
                 $fundingEndDate = $fundingStartDate->calculateEndDate($this->funding_days);
-                $this->funding_end = $fundingEndDate->format("Y-m-d");
+                $this->funding_end = $fundingEndDate->format('Y-m-d');
             }
 
         }
@@ -195,36 +201,37 @@ class Project extends Prism\Database\Table
 
     protected function insertObject()
     {
-        $created   = (!$this->created) ? "NULL" : $this->db->quote($this->created);
+        $created   = (!$this->created) ? 'NULL' : $this->db->quote($this->created);
+        $description   = (!$this->description) ? 'NULL' : $this->db->quote($this->description);
 
         $query = $this->db->getQuery(true);
         $query
-            ->insert($this->db->quoteName("#__crowdf_projects"))
-            ->set($this->db->quoteName("title") . "=" . $this->db->quote($this->title))
-            ->set($this->db->quoteName("alias") . "=" . $this->db->quote($this->alias))
-            ->set($this->db->quoteName("short_desc") . "=" . $this->db->quote($this->short_desc))
-            ->set($this->db->quoteName("description") . "=" . $this->db->quote($this->description))
-            ->set($this->db->quoteName("image") . "=" . $this->db->quote($this->image))
-            ->set($this->db->quoteName("image_square") . "=" . $this->db->quote($this->image_square))
-            ->set($this->db->quoteName("image_small") . "=" . $this->db->quote($this->image_small))
-            ->set($this->db->quoteName("location_id") . "=" . $this->db->quote($this->location_id))
-            ->set($this->db->quoteName("goal") . "=" . $this->db->quote($this->goal))
-            ->set($this->db->quoteName("funded") . "=" . $this->db->quote($this->funded))
-            ->set($this->db->quoteName("funding_type") . "=" . $this->db->quote($this->funding_type))
-            ->set($this->db->quoteName("funding_start") . "=" . $this->db->quote($this->funding_start))
-            ->set($this->db->quoteName("funding_end") . "=" . $this->db->quote($this->funding_end))
-            ->set($this->db->quoteName("funding_days") . "=" . $this->db->quote($this->funding_days))
-            ->set($this->db->quoteName("pitch_video") . "=" . $this->db->quote($this->pitch_video))
-            ->set($this->db->quoteName("pitch_image") . "=" . $this->db->quote($this->pitch_image))
-            ->set($this->db->quoteName("hits") . "=" . (int)$this->hits)
-            ->set($this->db->quoteName("created") . "=" . $created)
-            ->set($this->db->quoteName("featured") . "=" . $this->db->quote($this->featured))
-            ->set($this->db->quoteName("published") . "=" . $this->db->quote($this->published))
-            ->set($this->db->quoteName("approved") . "=" . $this->db->quote($this->approved))
-            ->set($this->db->quoteName("ordering") . "=" . $this->db->quote($this->ordering))
-            ->set($this->db->quoteName("catid") . "=" . (int)$this->catid)
-            ->set($this->db->quoteName("type_id") . "=" . (int)$this->type_id)
-            ->set($this->db->quoteName("user_id") . "=" . (int)$this->user_id);
+            ->insert($this->db->quoteName('#__crowdf_projects'))
+            ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
+            ->set($this->db->quoteName('alias') . '=' . $this->db->quote($this->alias))
+            ->set($this->db->quoteName('short_desc') . '=' . $this->db->quote($this->short_desc))
+            ->set($this->db->quoteName('description') . '=' . $description)
+            ->set($this->db->quoteName('image') . '=' . $this->db->quote($this->image))
+            ->set($this->db->quoteName('image_square') . '=' . $this->db->quote($this->image_square))
+            ->set($this->db->quoteName('image_small') . '=' . $this->db->quote($this->image_small))
+            ->set($this->db->quoteName('location_id') . '=' . $this->db->quote($this->location_id))
+            ->set($this->db->quoteName('goal') . '=' . $this->db->quote($this->goal))
+            ->set($this->db->quoteName('funded') . '=' . $this->db->quote($this->funded))
+            ->set($this->db->quoteName('funding_type') . '=' . $this->db->quote($this->funding_type))
+            ->set($this->db->quoteName('funding_start') . '=' . $this->db->quote($this->funding_start))
+            ->set($this->db->quoteName('funding_end') . '=' . $this->db->quote($this->funding_end))
+            ->set($this->db->quoteName('funding_days') . '=' . $this->db->quote($this->funding_days))
+            ->set($this->db->quoteName('pitch_video') . '=' . $this->db->quote($this->pitch_video))
+            ->set($this->db->quoteName('pitch_image') . '=' . $this->db->quote($this->pitch_image))
+            ->set($this->db->quoteName('hits') . '=' . (int)$this->hits)
+            ->set($this->db->quoteName('created') . '=' . $created)
+            ->set($this->db->quoteName('featured') . '=' . $this->db->quote($this->featured))
+            ->set($this->db->quoteName('published') . '=' . $this->db->quote($this->published))
+            ->set($this->db->quoteName('approved') . '=' . $this->db->quote($this->approved))
+            ->set($this->db->quoteName('ordering') . '=' . $this->db->quote($this->ordering))
+            ->set($this->db->quoteName('catid') . '=' . (int)$this->catid)
+            ->set($this->db->quoteName('type_id') . '=' . (int)$this->type_id)
+            ->set($this->db->quoteName('user_id') . '=' . (int)$this->user_id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -234,35 +241,37 @@ class Project extends Prism\Database\Table
 
     protected function updateObject()
     {
+        $description   = (!$this->description) ? 'NULL' : $this->db->quote($this->description);
+
         $query = $this->db->getQuery(true);
         $query
-            ->update($this->db->quoteName("#__crowdf_projects"))
-            ->set($this->db->quoteName("title") . "=" . $this->db->quote($this->title))
-            ->set($this->db->quoteName("alias") . "=" . $this->db->quote($this->alias))
-            ->set($this->db->quoteName("short_desc") . "=" . $this->db->quote($this->short_desc))
-            ->set($this->db->quoteName("description") . "=" . $this->db->quote($this->description))
-            ->set($this->db->quoteName("image") . "=" . $this->db->quote($this->image))
-            ->set($this->db->quoteName("image_square") . "=" . $this->db->quote($this->image_square))
-            ->set($this->db->quoteName("image_small") . "=" . $this->db->quote($this->image_small))
-            ->set($this->db->quoteName("location_id") . "=" . $this->db->quote($this->location_id))
-            ->set($this->db->quoteName("goal") . "=" . $this->db->quote($this->goal))
-            ->set($this->db->quoteName("funded") . "=" . $this->db->quote($this->funded))
-            ->set($this->db->quoteName("funding_type") . "=" . $this->db->quote($this->funding_type))
-            ->set($this->db->quoteName("funding_start") . "=" . $this->db->quote($this->funding_start))
-            ->set($this->db->quoteName("funding_end") . "=" . $this->db->quote($this->funding_end))
-            ->set($this->db->quoteName("funding_days") . "=" . $this->db->quote($this->funding_days))
-            ->set($this->db->quoteName("pitch_video") . "=" . $this->db->quote($this->pitch_video))
-            ->set($this->db->quoteName("pitch_image") . "=" . $this->db->quote($this->pitch_image))
-            ->set($this->db->quoteName("hits") . "=" . (int)$this->hits)
-            ->set($this->db->quoteName("created") . "=" . $this->db->quote($this->created))
-            ->set($this->db->quoteName("featured") . "=" . $this->db->quote($this->featured))
-            ->set($this->db->quoteName("published") . "=" . $this->db->quote($this->published))
-            ->set($this->db->quoteName("approved") . "=" . $this->db->quote($this->approved))
-            ->set($this->db->quoteName("ordering") . "=" . $this->db->quote($this->ordering))
-            ->set($this->db->quoteName("catid") . "=" . (int)$this->catid)
-            ->set($this->db->quoteName("type_id") . "=" . (int)$this->type_id)
-            ->set($this->db->quoteName("user_id") . "=" . (int)$this->user_id)
-            ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+            ->update($this->db->quoteName('#__crowdf_projects'))
+            ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
+            ->set($this->db->quoteName('alias') . '=' . $this->db->quote($this->alias))
+            ->set($this->db->quoteName('short_desc') . '=' . $this->db->quote($this->short_desc))
+            ->set($this->db->quoteName('description') . '=' . $description)
+            ->set($this->db->quoteName('image') . '=' . $this->db->quote($this->image))
+            ->set($this->db->quoteName('image_square') . '=' . $this->db->quote($this->image_square))
+            ->set($this->db->quoteName('image_small') . '=' . $this->db->quote($this->image_small))
+            ->set($this->db->quoteName('location_id') . '=' . $this->db->quote($this->location_id))
+            ->set($this->db->quoteName('goal') . '=' . $this->db->quote($this->goal))
+            ->set($this->db->quoteName('funded') . '=' . $this->db->quote($this->funded))
+            ->set($this->db->quoteName('funding_type') . '=' . $this->db->quote($this->funding_type))
+            ->set($this->db->quoteName('funding_start') . '=' . $this->db->quote($this->funding_start))
+            ->set($this->db->quoteName('funding_end') . '=' . $this->db->quote($this->funding_end))
+            ->set($this->db->quoteName('funding_days') . '=' . $this->db->quote($this->funding_days))
+            ->set($this->db->quoteName('pitch_video') . '=' . $this->db->quote($this->pitch_video))
+            ->set($this->db->quoteName('pitch_image') . '=' . $this->db->quote($this->pitch_image))
+            ->set($this->db->quoteName('hits') . '=' . (int)$this->hits)
+            ->set($this->db->quoteName('created') . '=' . $this->db->quote($this->created))
+            ->set($this->db->quoteName('featured') . '=' . $this->db->quote($this->featured))
+            ->set($this->db->quoteName('published') . '=' . $this->db->quote($this->published))
+            ->set($this->db->quoteName('approved') . '=' . $this->db->quote($this->approved))
+            ->set($this->db->quoteName('ordering') . '=' . $this->db->quote($this->ordering))
+            ->set($this->db->quoteName('catid') . '=' . (int)$this->catid)
+            ->set($this->db->quoteName('type_id') . '=' . (int)$this->type_id)
+            ->set($this->db->quoteName('user_id') . '=' . (int)$this->user_id)
+            ->where($this->db->quoteName('id') . '=' . (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -286,12 +295,10 @@ class Project extends Prism\Database\Table
      */
     public function addFunds($amount)
     {
-        $this->funded = $this->funded + $amount;
+        $this->funded += $amount;
 
         // Calculate new percentage
-        $math = new Prism\Math();
-        $math->calculatePercentage($this->funded, $this->goal, 0);
-        $this->setFundedPercent((string)$math);
+        $this->setFundedPercent((string)MathHelper::calculatePercentage($this->funded, $this->goal, 0));
     }
 
     /**
@@ -312,12 +319,10 @@ class Project extends Prism\Database\Table
      */
     public function removeFunds($amount)
     {
-        $this->funded = $this->funded - $amount;
+        $this->funded -= $amount;
 
         // Calculate new percentage
-        $math = new Prism\Math();
-        $math->calculatePercentage($this->funded, $this->goal, 0);
-        $this->setFundedPercent((string)$math);
+        $this->setFundedPercent((string)MathHelper::calculatePercentage($this->funded, $this->goal, 0));
     }
 
     /**
@@ -337,9 +342,9 @@ class Project extends Prism\Database\Table
     {
         $query = $this->db->getQuery(true);
         $query
-            ->update($this->db->quoteName("#__crowdf_projects"))
-            ->set($this->db->quoteName("funded") . "=" . $this->db->quote($this->funded))
-            ->where($this->db->quoteName("id") . "=" . $this->db->quote($this->id));
+            ->update($this->db->quoteName('#__crowdf_projects'))
+            ->set($this->db->quoteName('funded') . '=' . $this->db->quote($this->funded))
+            ->where($this->db->quoteName('id') . '=' . $this->db->quote($this->id));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -364,10 +369,10 @@ class Project extends Prism\Database\Table
      *
      * @return Rewards
      */
-    public function getRewards($options = array())
+    public function getRewards(array $options = array())
     {
-        if (is_null($this->rewards)) {
-            $options["project_id"] = $this->id;
+        if ($this->rewards === null) {
+            $options['project_id'] = (int)$this->id;
             $this->rewards = Rewards::getInstance($this->db, $options);
         }
 
@@ -421,7 +426,7 @@ class Project extends Prism\Database\Table
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -440,7 +445,7 @@ class Project extends Prism\Database\Table
      */
     public function getCategoryId()
     {
-        return $this->catid;
+        return (int)$this->catid;
     }
 
     /**
@@ -459,7 +464,7 @@ class Project extends Prism\Database\Table
      */
     public function getUserId()
     {
-        return $this->user_id;
+        return (int)$this->user_id;
     }
 
     /**
@@ -670,7 +675,28 @@ class Project extends Prism\Database\Table
      */
     public function isPublished()
     {
-        return (!$this->published) ? false : true;
+        return (bool)((int)$this->published === Prism\Constants::PUBLISHED);
+    }
+
+    /**
+     * Check if the project has been approved.
+     *
+     * <code>
+     * $projectId = 1;
+     *
+     * $project   = new Crowdfunding\Project(\JFactory::getDbo());
+     * $project->load($projectId);
+     *
+     * if (!$project->isApproved()) {
+     * ...
+     * }
+     * </code>
+     *
+     * @return bool
+     */
+    public function isApproved()
+    {
+        return (bool)((int)$this->approved === Prism\Constants::APPROVED);
     }
 
     /**
@@ -689,7 +715,7 @@ class Project extends Prism\Database\Table
      */
     public function getType()
     {
-        if (is_null($this->type) and !empty($this->type_id)) {
+        if ($this->type === null and $this->type_id > 0) {
             $this->type = new Type(\JFactory::getDbo());
             $this->type->load($this->type_id);
 
@@ -776,9 +802,9 @@ class Project extends Prism\Database\Table
      */
     public function isCompleted()
     {
-        $today      = strtotime("today");
+        $today      = strtotime('today');
         $fundingEnd = strtotime($this->funding_end);
 
-        return ($today <= $fundingEnd) ? false : true;
+        return (bool)($today > $fundingEnd);
     }
 }

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -31,18 +31,18 @@ defined('_JEXEC') or die;
 
     <div class="clearfix"></div>
     <button type="submit" class="btn btn-primary">
-        <span class="glyphicon glyphicon-floppy-saved"></span>
-        <?php echo JText::_("JSAVE")?>
+        <span class="fa fa-floppy-o"></span>
+        <?php echo JText::_('JSAVE'); ?>
     </button>
     <button type="submit" class="btn btn-default" id="js-cfupdates-btn-reset">
-        <span class="glyphicon glyphicon-refresh"></span>
-        <?php echo JText::_("COM_CROWDFUNDING_RESET")?>
+        <span class="fa fa-refresh"></span>
+        <?php echo JText::_('COM_CROWDFUNDING_RESET'); ?>
     </button>
 </form>
 <div class="hr mtb-15-0"></div>
 <?php }?>
-<?php if(!empty($this->items)) {
-    $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id); 
+<?php if (count($this->items) > 0) {
+    $socialProfile  = (!$this->socialProfiles) ? null : $this->socialProfiles->getLink($this->item->user_id);
     $socialAvatar   = (!$this->socialProfiles) ? $this->defaultAvatar : $this->socialProfiles->getAvatar($this->item->user_id, $this->avatarsSize);
 ?>
 <?php foreach($this->items as $item ) { ?>
@@ -50,7 +50,7 @@ defined('_JEXEC') or die;
     
         <div class="media">
             <div class="media-left">
-                <a href="<?php echo (!$socialProfile) ? "javascript: void(0);" : $socialProfile;?>">
+                <a href="<?php echo (!$socialProfile) ? 'javascript: void(0);' : $socialProfile;?>">
                     <img class="media-object" src="<?php echo $socialAvatar;?>" />
                 </a>
             </div>
@@ -58,17 +58,17 @@ defined('_JEXEC') or die;
             <div class="media-body">
             	<div class="cf-info-bar"> 
             		<div class="pull-left">
-            		  <?php echo JHtml::_("crowdfunding.postedby", $item->author, $item->record_date, $socialProfile)?>
+            		  <?php echo JHtml::_('crowdfunding.postedby', $item->author, $item->record_date, $socialProfile)?>
             		</div>
                 	<?php if($this->userId == $item->user_id ) {?>
                 	<div class="pull-right">
                 		<a href="javascript: void(0);" class="btn btn-mini btn-default js-cfupdates-btn-edit" data-id="<?php echo $item->id;?>">
-                            <span class="glyphicon glyphicon-edit"></span>
-                            <?php echo JText::_("COM_CROWDFUNDING_EDIT");?>
+                            <span class="fa fa-pencil-square-o"></span>
+                            <?php echo JText::_('COM_CROWDFUNDING_EDIT');?>
                         </a>
                 		<a href="javascript: void(0);" class="btn btn-mini btn-danger js-cfupdates-btn-remove" data-id="<?php echo $item->id;?>">
-                            <span class="glyphicon glyphicon-trash"></span>
-                            <?php echo JText::_("COM_CROWDFUNDING_DELETE");?>
+                            <span class="fa fa-trash"></span>
+                            <?php echo JText::_('COM_CROWDFUNDING_DELETE');?>
                         </a>
                 	</div>
                 	<?php }?>
@@ -82,5 +82,5 @@ defined('_JEXEC') or die;
     </div>
     <?php }?>
     
-<input type="hidden" value="<?php echo JText::_("COM_CROWDFUNDING_QUESTION_REMOVE_RECORD");?>" id="cf-hidden-question" />
+<input type="hidden" value="<?php echo JText::_('COM_CROWDFUNDING_QUESTION_REMOVE_RECORD');?>" id="cf-hidden-question" />
 <?php }?>

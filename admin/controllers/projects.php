@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -79,7 +79,7 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         if ($value == 1) {
@@ -134,7 +134,7 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         if ($value == 1) {
@@ -193,7 +193,7 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
             return;
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         if ($value == 1) {

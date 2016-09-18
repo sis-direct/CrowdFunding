@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -43,24 +43,20 @@ class CrowdfundingViewProjects extends JViewLegacy
 
     protected $sidebar;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
     public function display($tpl = null)
     {
+        $this->option     = JFactory::getApplication()->input->get('option');
+
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
-        $this->params = $this->state->get("params");
+        $this->params     = $this->state->get('params');
 
         // Get currency
-        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->state->params->get("project_currency"));
+        $currency         = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->state->params->get('project_currency'));
 
-        // Create object "Amount".
+        // Create object 'Amount'.
         $this->amount   = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
 
@@ -74,15 +70,16 @@ class CrowdfundingViewProjects extends JViewLegacy
         $projects = new Crowdfunding\Projects(JFactory::getDbo());
         $this->rewards = $projects->getRewardsNumber($projectsIds);
 
-        // Add submenu
-        CrowdfundingHelper::addSubmenu($this->getName());
-
         // Prepare sorting data
         $this->prepareSorting();
 
-        // Prepare actions
-        $this->addToolbar();
-        $this->addSidebar();
+        if ($this->getLayout() !== 'modal') {
+
+            // Prepare actions
+            $this->addToolbar();
+            $this->addSidebar();
+        }
+
         $this->setDocument();
 
         parent::display($tpl);
@@ -96,9 +93,9 @@ class CrowdfundingViewProjects extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
-        if ($this->saveOrder) {
+        if ($this->saveOrder and ($this->getLayout() !== 'modal')) {
             $this->saveOrderingUrl = 'index.php?option=' . $this->option . '&task=' . $this->getName() . '.saveOrderAjax&format=raw';
             JHtml::_('sortablelist.sortable', $this->getName() . 'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
         }
@@ -126,23 +123,25 @@ class CrowdfundingViewProjects extends JViewLegacy
      */
     protected function addSidebar()
     {
+        CrowdfundingHelper::addSubmenu($this->getName());
+
         JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
 
         // Prepare options
         $approvedOptions = array(
-            JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_APPROVED")),
-            JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_DISAPPROVED")),
+            JHtml::_('select.option', 1, JText::_('COM_CROWDFUNDING_APPROVED')),
+            JHtml::_('select.option', 0, JText::_('COM_CROWDFUNDING_DISAPPROVED')),
         );
 
         $featuredOptions = array(
-            JHtml::_("select.option", 1, JText::_("COM_CROWDFUNDING_FEATURED")),
-            JHtml::_("select.option", 0, JText::_("COM_CROWDFUNDING_NOT_FEATURED")),
+            JHtml::_('select.option', 1, JText::_('COM_CROWDFUNDING_FEATURED')),
+            JHtml::_('select.option', 0, JText::_('COM_CROWDFUNDING_NOT_FEATURED')),
         );
 
         JHtmlSidebar::addFilter(
             JText::_('JOPTION_SELECT_PUBLISHED'),
             'filter_state',
-            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true)
+            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions', array('archived' => false)), 'value', 'text', $this->state->get('filter.state'), true)
         );
 
         JHtmlSidebar::addFilter(
@@ -163,7 +162,7 @@ class CrowdfundingViewProjects extends JViewLegacy
             JHtml::_('select.options', JHtml::_('category.options', 'com_crowdfunding'), 'value', 'text', $this->state->get('filter.category_id'))
         );
 
-        $filters      = new Crowdfunding\Filters(JFactory::getDbo());
+        $filters      = Crowdfunding\Filters::getInstance(JFactory::getDbo());
         $typesOptions = $filters->getProjectsTypes();
 
         JHtmlSidebar::addFilter(
@@ -187,22 +186,22 @@ class CrowdfundingViewProjects extends JViewLegacy
         JToolbarHelper::addNew('project.add');
         JToolbarHelper::editList('project.edit');
         JToolbarHelper::divider();
-        JToolbarHelper::publishList("projects.publish");
-        JToolbarHelper::unpublishList("projects.unpublish");
+        JToolbarHelper::publishList('projects.publish');
+        JToolbarHelper::unpublishList('projects.unpublish');
         JToolbarHelper::divider();
-        JToolbarHelper::custom('projects.approve', "ok", "", JText::_("COM_CROWDFUNDING_APPROVE"), false);
-        JToolbarHelper::custom('projects.disapprove', "ban-circle", "", JText::_("COM_CROWDFUNDING_DISAPPROVE"), false);
+        JToolbarHelper::custom('projects.approve', 'ok', '', JText::_('COM_CROWDFUNDING_APPROVE'), false);
+        JToolbarHelper::custom('projects.disapprove', 'ban-circle', '', JText::_('COM_CROWDFUNDING_DISAPPROVE'), false);
 
         JToolbarHelper::divider();
 
-        if ($this->state->get('filter.state') == -2) {
+        if ((int)$this->state->get('filter.state') === -2) {
             JToolbarHelper::deleteList('', 'projects.delete', 'JTOOLBAR_EMPTY_TRASH');
         } else {
             JToolbarHelper::trash('projects.trash');
         }
 
         JToolbarHelper::divider();
-        JToolbarHelper::custom('projects.backToDashboard', "dashboard", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
+        JToolbarHelper::custom('projects.backToDashboard', 'dashboard', '', JText::_('COM_CROWDFUNDING_DASHBOARD'), false);
     }
 
     /**

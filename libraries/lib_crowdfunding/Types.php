@@ -3,13 +3,13 @@
  * @package      Crowdfunding
  * @subpackage   Types
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
-use Prism;
+use Prism\Database;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -19,23 +19,9 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Types
  */
-class Types extends Prism\Database\ArrayObject
+class Types extends Database\Collection
 {
     protected static $instance;
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $types    = new Crowdfunding\Types(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db Database object.
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
 
     /**
      * Initialize and create an object.
@@ -54,33 +40,14 @@ class Types extends Prism\Database\ArrayObject
      *
      * @return self
      */
-    public static function getInstance(\JDatabaseDriver $db, $options = array())
+    public static function getInstance(\JDatabaseDriver $db, array $options = array())
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new Types($db);
             self::$instance->load($options);
         }
 
         return self::$instance;
-    }
-
-    /**
-     * Set a database object.
-     *
-     * <code>
-     * $types    = new Crowdfunding\Types();
-     * $types->setDb(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     *
-     * @return self
-     */
-    public function setDb(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-
-        return $this;
     }
 
     /**
@@ -104,40 +71,96 @@ class Types extends Prism\Database\ArrayObject
      *
      * @param array $options
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.description, a.params")
-            ->from($this->db->quoteName("#__crowdf_types", "a"));
+            ->select('a.id, a.title, a.description, a.params')
+            ->from($this->db->quoteName('#__crowdf_types', 'a'));
 
         // Order by column
-        if (isset($options["order_column"])) {
+        if (array_key_exists('order_column', $options)) {
 
-            $orderString = $this->db->quoteName($options["order_column"]);
+            $orderString = $this->db->quoteName($options['order_column']);
 
             // Order direction
-            if (isset($options["order_direction"])) {
-                $orderString .= (strcmp("DESC", $options["order_direction"])) ? " DESC" : " ASC";
+            if (array_key_exists('order_direction', $options)) {
+                $orderString .= (strcmp('DESC', $options['order_direction'])) ? ' DESC' : ' ASC';
             }
 
             $query->order($orderString);
         }
 
         $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
+        $this->items = (array)$this->db->loadAssocList();
+    }
 
-        if (!empty($results)) {
-
-            foreach ($results as $result) {
-                $type = new Type(\JFactory::getDbo());
-                $type->bind($result);
-                $this->items[] = $type;
-            }
-
-        } else {
-            $this->items = array();
+    /**
+     * Create a type object and return it.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $types   = new Crowdfunding\Type\Types(\JFactory::getDbo());
+     * $types->load($options);
+     *
+     * $typeId = 1;
+     * $type   = $types->getType($typeId);
+     * </code>
+     *
+     * @param int $id Type ID.
+     *
+     * @return null|Type
+     */
+    public function getType($id)
+    {
+        if (!$id) {
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_TYPE_ID'));
         }
+
+        $type = null;
+
+        foreach ($this->items as $item) {
+            if ((int)$id === (int)$item['id']) {
+                $type = new Type($this->db);
+                $type->bind($item);
+                break;
+            }
+        }
+
+        return $type;
+    }
+
+    /**
+     * Return the types as array with objects.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $types   = new Crowdfunding\Type\Types(\JFactory::getDbo());
+     * $types->load($options);
+     *
+     * $types = $types->getTypes();
+     * </code>
+     *
+     * @return array
+     */
+    public function getTypes()
+    {
+        $results = array();
+
+        $i = 0;
+        foreach ($this->items as $item) {
+            $type[$i] = new Type($this->db);
+            $type[$i]->bind($item);
+            $i++;
+        }
+
+        return $results;
     }
 }

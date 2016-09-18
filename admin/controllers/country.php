@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -38,7 +38,7 @@ class CrowdfundingControllerCountry extends Prism\Controller\Form\Backend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
         }
 
         // Validate the form
@@ -58,10 +58,10 @@ class CrowdfundingControllerCountry extends Prism\Controller\Form\Backend
         } catch (Exception $e) {
 
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
 
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_COUNTRY_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_COUNTRY_SAVED'), $redirectOptions);
     }
 }

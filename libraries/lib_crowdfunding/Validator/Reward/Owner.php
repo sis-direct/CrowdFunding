@@ -3,8 +3,8 @@
  * @package      Crowdfunding\Rewards
  * @subpackage   Validators
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Validator\Reward;
@@ -42,8 +42,8 @@ class Owner implements ValidatorInterface
     public function __construct(\JDatabaseDriver $db, $rewardId, $userId)
     {
         $this->db        = $db;
-        $this->rewardId  = $rewardId;
-        $this->userId    = $userId;
+        $this->rewardId  = (int)$rewardId;
+        $this->userId    = (int)$userId;
     }
 
     /**
@@ -63,16 +63,20 @@ class Owner implements ValidatorInterface
      */
     public function isValid()
     {
+        if (!$this->rewardId or !$this->userId) {
+            return false;
+        }
+
         $query = $this->db->getQuery(true);
         $query
-            ->select("b.user_id")
-            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
-            ->innerJoin($this->db->quoteName("#__crowdf_projects", "b") . " ON a.project_id = b.id")
-            ->where("a.id = " . (int)$this->rewardId);
+            ->select('b.user_id')
+            ->from($this->db->quoteName('#__crowdf_rewards', 'a'))
+            ->innerJoin($this->db->quoteName('#__crowdf_projects', 'b') . ' ON a.project_id = b.id')
+            ->where('a.id = ' . (int)$this->rewardId);
 
         $this->db->setQuery($query);
-        $userId = $this->db->loadResult();
+        $userId = (int)$this->db->loadResult();
 
-        return (bool)($this->userId == $userId);
+        return (bool)($this->userId === $userId);
     }
 }

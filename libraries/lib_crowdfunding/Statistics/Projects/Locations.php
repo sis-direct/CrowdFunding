@@ -3,15 +3,17 @@
  * @package      Crowdfunding\Statistics
  * @subpackage   Projects
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Statistics\Projects;
 
+use Joomla\Utilities\ArrayHelper;
+
 defined('JPATH_PLATFORM') or die;
 
-\JLoader::register("Crowdfunding\\Statistics\\Projects\\Base", JPATH_LIBRARIES . "/crowdfunding/statistics/projects/base.php");
+\JLoader::register('Crowdfunding\\Statistics\\Projects\\Base', JPATH_LIBRARIES . '/crowdfunding/statistics/projects/base.php');
 
 /**
  * This class loads statistics about projects in locations.
@@ -46,28 +48,26 @@ class Locations extends Base
      *
      * @param array $options Some options that can be used to filter the result.
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
         $query = $this->getQuery();
 
-        $query->select("a.location_id, COUNT(a.id) as project_number");
-        $query->select("l.name as location_name");
+        $query->select('a.location_id, COUNT(a.id) as project_number');
+        $query->select('l.name as location_name');
 
-        $query->innerJoin($this->db->quoteName("#__crowdf_locations", "l") . " ON a.location_id = l.id");
-        $query->group("a.location_id");
+        $query->innerJoin($this->db->quoteName('#__crowdf_locations', 'l') . ' ON a.location_id = l.id');
+        $query->group('a.location_id');
 
         $this->prepareFilters($query, $options);
         $this->prepareOrder($query, $options);
 
         // Filter by number of projects in the results.
-        if (isset($options["having"])) {
-            if (!empty($options["having"])) {
-                $query->having("project_number >= " . (int)$options["having"]);
-            }
+        if (!empty($options['having'])) {
+            $query->having('project_number >= ' . (int)$options['having']);
         }
 
         // Get the limit of results.
-        $limit = (isset($options["limit"])) ?: 10;
+        $limit   = ArrayHelper::getValue($options, 'limit', 10, 'int');
 
         $this->db->setQuery($query, 0, (int)$limit);
 

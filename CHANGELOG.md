@@ -1,5 +1,53 @@
-Crowdfunding Release Notes
+Crowdfunding Platform Changelog
 ==========================
+
+###v2.4.1
+* Added option to display alternative grid layout on "Discover" page.
+* Fixed an issue in PayPal IPN validation. Paypal just recently only accepts TLS 1.2 connection and now the crowdfunding platform works with TLS 1.2 connection.
+* Fixed an issue with JomSocial integration and its locations.
+
+###v2.4.0
+* Added new section for rewards to component options.
+* Added option aspectRatio to the tool that crops the project images.
+* Added functionality that resets starting date, when a user launches a project. The starting date will be reset if the project has not been approved and there are no registered transactions.
+* Added functionality to create transaction records.
+* Added option to the module Crowdfunding Info. You can use them to change button label, hide funding type and information for fundraising process.
+* Added tips and tricks on dashboard.
+* Improved functionality to change the state of reward, selected during payment process. The reward is assigned to transaction.
+* The text in the payment process was altered to sound more universal.
+* Improved usability and user experience.
+
+###v2.3.3
+* [HIGH] The system does not display rewards if there is no created types.
+
+###v2.3.2
+* [LOW] Fixed a bug with location selection.
+* [HIGH] Wrong location for file storing when cropping an image.
+
+###v2.3.1
+* [HIGH] It is not possible to create a project.
+
+###v2.3
+* Added functionality for rewards ordering.
+* Fixed the calendar on rewards view (project wizard).
+* Fixed selection of locations ( typeaheads ).
+* Added section "Tools".
+
+###v2.2
+* Added information about the license.
+* Replaced where it was used Joomla\String\String with JString.
+* Fixed bug with improper use of Joomla\Utilities\ArrayHelper::toInteger.
+* Fixed the button "clear" on back-end views.
+* Fixed the view that display a widget from embed code.
+* Fixed a bug with routing subcategories.
+* Added option, for managing pagination, to the views that display list of results.
+* Added option to display category description on the view "Category".
+
+###v2.1
+* Added option to disable rewards.
+* Added server for upgrading the crowdfunding platform via Joomla! updater.
+* Added {REWARD_TITLE} and {DELIVERY_DATE} placeholders to the payment plugins.
+* Fixed some issues.
 
 ###v2.0
 * Improved Crowdfunding library.

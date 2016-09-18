@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
  */
 abstract class CrowdfundingHelper
 {
-    protected static $extension = "com_crowdfunding";
+    protected static $extension = 'com_crowdfunding';
 
     protected static $statistics = array();
 
@@ -28,95 +28,94 @@ abstract class CrowdfundingHelper
      */
     public static function addSubmenu($vName = 'dashboard')
     {
-
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_DASHBOARD'),
             'index.php?option=' . self::$extension . '&view=dashboard',
-            $vName == 'dashboard'
+            $vName === 'dashboard'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_PROJECTS'),
             'index.php?option=' . self::$extension . '&view=projects',
-            $vName == 'projects'
+            $vName === 'projects'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_TRANSACTIONS'),
             'index.php?option=' . self::$extension . '&view=transactions',
-            $vName == 'transactions'
+            $vName === 'transactions'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_CATEGORIES'),
             'index.php?option=com_categories&extension=' . self::$extension . '',
-            $vName == 'categories'
+            $vName === 'categories'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_COMMENTS'),
             'index.php?option=' . self::$extension . '&view=comments',
-            $vName == 'comments'
+            $vName === 'comments'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_COUNTRIES'),
             'index.php?option=' . self::$extension . '&view=countries',
-            $vName == 'countries'
+            $vName === 'countries'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_CURRENCIES'),
             'index.php?option=' . self::$extension . '&view=currencies',
-            $vName == 'currencies'
-        );
-
-        JHtmlSidebar::addEntry(
-            JText::_('COM_CROWDFUNDING_EMAILS'),
-            'index.php?option=' . self::$extension . '&view=emails',
-            $vName == 'emails'
+            $vName === 'currencies'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_LOCATIONS'),
             'index.php?option=' . self::$extension . '&view=locations',
-            $vName == 'locations'
+            $vName === 'locations'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_LOGS'),
             'index.php?option=' . self::$extension . '&view=logs',
-            $vName == 'logs'
+            $vName === 'logs'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_REPORTS'),
             'index.php?option=' . self::$extension . '&view=reports',
-            $vName == 'reports'
+            $vName === 'reports'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_TYPES'),
             'index.php?option=' . self::$extension . '&view=types',
-            $vName == 'types'
+            $vName === 'types'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_USERS'),
             'index.php?option=' . self::$extension . '&view=users',
-            $vName == 'users'
+            $vName === 'users'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_UPDATES'),
             'index.php?option=' . self::$extension . '&view=updates',
-            $vName == 'updates'
+            $vName === 'updates'
+        );
+
+        JHtmlSidebar::addEntry(
+            JText::_('COM_CROWDFUNDING_TOOLS'),
+            'index.php?option=' . self::$extension . '&view=tools',
+            $vName === 'tools'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_CROWDFUNDING_PLUGINS'),
-            'index.php?option=com_plugins&view=plugins&filter_search=' . rawurlencode("crowdfunding"),
-            $vName == 'plugins'
+            'index.php?option=com_plugins&view=plugins&filter_search=' . rawurlencode('crowdfunding'),
+            $vName === 'plugins'
         );
 
     }
@@ -127,16 +126,16 @@ abstract class CrowdfundingHelper
         $query = $db->getQuery(true);
 
         $query
-            ->select("title")
-            ->from("#__crowdf_projects")
-            ->where("id = " . (int)$projectId);
+            ->select('a.title')
+            ->from($db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = ' . (int)$projectId);
 
         $db->setQuery($query);
 
         return $db->loadResult();
     }
 
-    public static function getProject($projectId, $fields = array("id"))
+    public static function getProject($projectId, array $fields = array('id'))
     {
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -148,8 +147,8 @@ abstract class CrowdfundingHelper
 
         $query
             ->select($selectFields)
-            ->from("#__crowdf_projects")
-            ->where($db->quoteName("id") . " = " . (int)$projectId);
+            ->from('#__crowdf_projects')
+            ->where($db->quoteName('id') . ' = ' . (int)$projectId);
 
         $db->setQuery($query);
 
@@ -163,83 +162,15 @@ abstract class CrowdfundingHelper
         $query = $db->getQuery(true);
 
         $query
-            ->select("b.user_id")
-            ->from($db->quoteName("#__crowdf_rewards", "a"))
-            ->innerJoin($db->quoteName("#__crowdf_projects", "b") . " ON a.project_id = b.id")
-            ->where("a.id = " . (int)$rewardId);
+            ->select('b.user_id')
+            ->from($db->quoteName('#__crowdf_rewards', 'a'))
+            ->innerJoin($db->quoteName('#__crowdf_projects', 'b') . ' ON a.project_id = b.id')
+            ->where('a.id = ' . (int)$rewardId);
 
         $db->setQuery($query);
         $result = $db->loadResult();
 
         return (int)$result;
-    }
-
-    /**
-     * Calculate percentage.
-     *
-     * @param $funded
-     * @param $goal
-     *
-     * @return float|int
-     * @deprecated since v1.8
-     */
-    public static function calculatePercent($funded, $goal)
-    {
-        if (($funded == 0) or ($goal == 0)) {
-            return 0;
-        }
-
-        $value = ($funded / $goal) * 100;
-
-        return round($value, 2);
-    }
-
-    /**
-     * Calculate end date
-     *
-     * @param string $fundingStart This is starting date
-     * @param int    $fundingDays  This is period in days.
-     *
-     * @return string
-     * @deprecated since v1.8. Use Crowdfunding\Date->calculateEndDate();
-     */
-    public static function calcualteEndDate($fundingStart, $fundingDays)
-    {
-        // Calculate days left
-        $endingDate = new DateTime($fundingStart);
-        $endingDate->modify("+" . (int)$fundingDays . " days");
-
-        return $endingDate->format("Y-m-d");
-    }
-
-    /**
-     * Validate a date
-     *
-     * @param string $string
-     *
-     * @return boolean
-     * @deprecated deprecated since version 1.8
-     */
-    public static function isValidDate($string)
-    {
-        $string = Joomla\String\String::trim($string);
-
-        try {
-            $date = new DateTime($string);
-        } catch (Exception $e) {
-            return false;
-        }
-
-        $month = $date->format('m');
-        $day   = $date->format('d');
-        $year  = $date->format('Y');
-
-        if (checkdate($month, $day, $year)) {
-            return true;
-        } else {
-            return false;
-        }
-
     }
 
     /**
@@ -256,55 +187,55 @@ abstract class CrowdfundingHelper
         /// Updates
         if (!isset(self::$statistics[$projectId])) {
             self::$statistics[$projectId] = array(
-                "updates"  => null,
-                "comments" => null,
-                "funders"  => null
+                'updates'  => null,
+                'comments' => null,
+                'funders'  => null
             );
 
         }
 
         // Count updates
-        if (is_null(self::$statistics[$projectId]["updates"])) {
+        if (self::$statistics[$projectId]['updates'] === null) {
 
             $query = $db->getQuery(true);
             $query
-                ->select("COUNT(*) AS updates")
-                ->from($db->quoteName("#__crowdf_updates"))
-                ->where("project_id = " . (int)$projectId);
+                ->select('COUNT(*) AS updates')
+                ->from($db->quoteName('#__crowdf_updates'))
+                ->where('project_id = ' . (int)$projectId);
 
             $db->setQuery($query);
 
-            self::$statistics[$projectId]["updates"] = $db->loadResult();
+            self::$statistics[$projectId]['updates'] = $db->loadResult();
         }
 
         // Count comments
-        if (is_null(self::$statistics[$projectId]["comments"])) {
+        if (self::$statistics[$projectId]['comments'] === null) {
 
             $query = $db->getQuery(true);
             $query
-                ->select("COUNT(*) AS comments")
-                ->from($db->quoteName("#__crowdf_comments"))
-                ->where("project_id = " . (int)$projectId)
-                ->where("published = 1");
+                ->select('COUNT(*) AS comments')
+                ->from($db->quoteName('#__crowdf_comments'))
+                ->where('project_id = ' . (int)$projectId)
+                ->where('published = 1');
 
             $db->setQuery($query);
 
-            self::$statistics[$projectId]["comments"] = $db->loadResult();
+            self::$statistics[$projectId]['comments'] = $db->loadResult();
         }
 
         // Count funders
-        if (is_null(self::$statistics[$projectId]["funders"])) {
+        if (self::$statistics[$projectId]['funders'] === null) {
 
             $query = $db->getQuery(true);
             $query
-                ->select("COUNT(*) AS funders")
-                ->from($db->quoteName("#__crowdf_transactions", "a"))
-                ->where("a.project_id  = " . (int)$projectId)
-                ->where("(a.txn_status = " . $db->quote("completed") . " OR a.txn_status = ". $db->quote("pending") . ")");
+                ->select('COUNT(*) AS funders')
+                ->from($db->quoteName('#__crowdf_transactions', 'a'))
+                ->where('a.project_id  = ' . (int)$projectId)
+                ->where('(a.txn_status = ' . $db->quote('completed') . ' OR a.txn_status = '. $db->quote('pending') . ')');
 
             $db->setQuery($query);
 
-            self::$statistics[$projectId]["funders"] = $db->loadResult();
+            self::$statistics[$projectId]['funders'] = $db->loadResult();
         }
 
         return self::$statistics[$projectId];
@@ -314,22 +245,19 @@ abstract class CrowdfundingHelper
      * Generate a path to the folder, where the images are stored.
      *
      * @param int    $userId User Id.
-     * @param string $path   A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,... Default is JPATH_ROOT.
+     * @param string $path   A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,...
      *
      * @return string
      */
-    public static function getImagesFolder($userId = 0, $path = JPATH_ROOT)
+    public static function getImagesFolder($userId = 0, $path = '')
     {
-        jimport('joomla.filesystem.path');
-        jimport('joomla.filesystem.folder');
-
         $params = JComponentHelper::getParams(self::$extension);
         /** @var $params Joomla\Registry\Registry */
 
-        $folder = $path . DIRECTORY_SEPARATOR . $params->get("images_directory", "images/crowdfunding");
+        $folder = $path . DIRECTORY_SEPARATOR . $params->get('images_directory', 'images/crowdfunding');
 
-        if (!empty($userId)) {
-            $folder .= DIRECTORY_SEPARATOR . "user" . (int)$userId;
+        if ((int)$userId > 0) {
+            $folder .= DIRECTORY_SEPARATOR . 'user' . (int)$userId;
         }
 
         return JPath::clean($folder);
@@ -338,21 +266,16 @@ abstract class CrowdfundingHelper
     /**
      * Generate a path to the temporary images folder.
      *
-     * @param string $path   A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,... Default is JPATH_ROOT.
+     * @param string $path   A base path to the folder. It can be JPATH_BASE, JPATH_ROOT, JPATH_SITE,...
      *
      * @return string
      */
-    public static function getTemporaryImagesFolder($path = JPATH_ROOT)
+    public static function getTemporaryImagesFolder($path = '')
     {
-        jimport('joomla.filesystem.path');
-        jimport('joomla.filesystem.folder');
-
         $params = JComponentHelper::getParams(self::$extension);
         /** @var $params Joomla\Registry\Registry */
 
-        $folder = $path .DIRECTORY_SEPARATOR. $params->get("images_directory", "images/crowdfunding") .DIRECTORY_SEPARATOR. "temporary";
-
-        return JPath::clean($folder);
+        return JPath::clean($path .DIRECTORY_SEPARATOR. $params->get('images_directory', 'images/crowdfunding') .DIRECTORY_SEPARATOR. 'temporary');
     }
 
     /**
@@ -367,10 +290,10 @@ abstract class CrowdfundingHelper
         $params = JComponentHelper::getParams(self::$extension);
         /** @var $params Joomla\Registry\Registry */
 
-        $uriImages = $params->get("images_directory", "images/crowdfunding");
+        $uriImages = $params->get('images_directory', 'images/crowdfunding');
 
-        if (!empty($userId)) {
-            $uriImages .= "/user" . (int)$userId;
+        if ((int)$userId > 0) {
+            $uriImages .= '/user' . (int)$userId;
         }
 
         return $uriImages;
@@ -386,9 +309,7 @@ abstract class CrowdfundingHelper
         $params = JComponentHelper::getParams(self::$extension);
         /** @var $params Joomla\Registry\Registry */
 
-        $uriImages = $params->get("images_directory", "images/crowdfunding") . "/temporary";
-
-        return $uriImages;
+        return $params->get('images_directory', 'images/crowdfunding') . '/temporary';
     }
 
     /**
@@ -402,7 +323,7 @@ abstract class CrowdfundingHelper
     {
         JFolder::create($folder);
 
-        $folderIndex = JPath::clean($folder . DIRECTORY_SEPARATOR . "index.html");
+        $folderIndex = JPath::clean($folder . DIRECTORY_SEPARATOR . 'index.html');
         $buffer      = "<!DOCTYPE html><title></title>";
 
         jimport('joomla.filesystem.file');
@@ -418,9 +339,9 @@ abstract class CrowdfundingHelper
      */
     public static function generateUrlParams($params)
     {
-        $result = "";
+        $result = '';
         foreach ($params as $key => $param) {
-            $result .= "&" . rawurlencode($key) . "=" . rawurlencode($param);
+            $result .= '&' . rawurlencode($key) . '=' . rawurlencode($param);
         }
 
         return $result;
@@ -432,24 +353,26 @@ abstract class CrowdfundingHelper
      * @param bool $calendar
      *
      * @return string
+     *
+     * @deprecated since v2.5
      */
     public static function getDateFormat($calendar = false)
     {
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Joomla\Registry\Registry */
 
-        $dateFormat = $params->get("project_date_format", "Y-m-d");
+        $dateFormat = $params->get('project_date_format', 'Y-m-d');
 
         if ($calendar) {
             switch($dateFormat) {
-                case "Y-m-d":
-                    $dateFormat = "YYYY-MM-DD";
+                case 'Y-m-d':
+                    $dateFormat = 'YYYY-MM-DD';
                     break;
-                case "d-m-Y":
-                    $dateFormat = "DD-MM-YYYY";
+                case 'd-m-Y':
+                    $dateFormat = 'DD-MM-YYYY';
                     break;
-                case "m-d-Y":
-                    $dateFormat = "MM-DD-YYYY";
+                case 'm-d-Y':
+                    $dateFormat = 'MM-DD-YYYY';
                     break;
             }
         }
@@ -467,11 +390,11 @@ abstract class CrowdfundingHelper
      */
     public static function parseAmount($value)
     {
-        $params = JComponentHelper::getParams("com_crowdfunding");
+        $params = JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Joomla\Registry\Registry */
 
         // Get currency
-        $currency       = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get("project_currency"));
+        $currency       = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $params->get('project_currency'));
 
         // Parse the goal amount.
         $amount = new Crowdfunding\Amount($params, $value);
@@ -494,7 +417,7 @@ abstract class CrowdfundingHelper
 
                     // Generate a link to the picture.
                     if (is_array($item->params)) {
-                        $image = Joomla\Utilities\ArrayHelper::getValue($item->params, "image");
+                        $image = Joomla\Utilities\ArrayHelper::getValue($item->params, 'image');
                         if (!empty($image)) {
                             $item->image_link = JUri::base().$image;
                         }
@@ -521,7 +444,7 @@ abstract class CrowdfundingHelper
 
                     $fundingStartDate = new Crowdfunding\Date($item->funding_start);
                     $endDate = $fundingStartDate->calculateEndDate($item->funding_days);
-                    $item->funding_end = $endDate->format("Y-m-d");
+                    $item->funding_end = $endDate->format('Y-m-d');
 
                 }
 
@@ -541,37 +464,124 @@ abstract class CrowdfundingHelper
         return $result;
     }
 
-    public static function fetchUserIds($items)
+    public static function fetchIds(array $items = array(), $column = 'id')
     {
         $result = array();
 
-        if (!empty($items)) {
+        foreach ($items as $key => $item) {
+            if (is_object($item) and isset($item->$column)) {
+                $result[] = (int)$item->$column;
+            } elseif (is_array($item) and array_key_exists($column, $item)) {
+                $result[] = (int)$item[$column];
+            } else {
+                continue;
+            }
+        }
+
+        $result = array_filter(array_unique($result));
+        sort($result);
+
+        return $result;
+    }
+
+    /**
+     * @param array $items
+     *
+     * @return array
+     *
+     * @deprecated 2.5
+     */
+    public static function fetchUserIds(array $items = array())
+    {
+        $result = array();
+
+        if (count($items) > 0) {
             foreach ($items as $key => $item) {
                 if (is_object($item) and isset($item->user_id)) {
-                    $result[] = $item->user_id;
-                } elseif (is_array($item) and isset($item["user_id"])) {
-                    $result[] = $item["user_id"];
+                    $result[] = (int)$item->user_id;
+                } elseif (is_array($item) and array_key_exists('user_id', $item)) {
+                    $result[] = (int)$item['user_id'];
                 } else {
                     continue;
                 }
             }
         }
 
+        $result = array_unique($result);
+        sort($result);
+
         return $result;
     }
 
-    public static function prepareIntegrations($socialPlatform, array $usersIds)
+    public static function prepareIntegrations($socialPlatform, array $userIds)
     {
-        // Prepare social integration.
-        $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
-            array(
-                "social_platform" => $socialPlatform,
-                "users_ids" => $usersIds
-            )
-        );
+        $options = new \Joomla\Registry\Registry(array(
+            'platform' => $socialPlatform,
+            'user_ids' => $userIds
+        ));
 
-        $socialProfilesBuilder->build();
+        $socialProfilesBuilder = new Prism\Integration\Profiles\Factory($options);
+        return $socialProfilesBuilder->create();
+    }
 
-        return $socialProfilesBuilder->getProfiles();
+    public static function isRewardsEnabled($projectId)
+    {
+        // Check for enabled rewards by component options.
+        $componentParams = JComponentHelper::getParams('com_crowdfunding');
+        if (!$componentParams->get('rewards_enabled', 1)) {
+            return false;
+        }
+
+        // Check for enabled rewards by project type.
+        $project = Crowdfunding\Project::getInstance(JFactory::getDbo(), $projectId);
+        $type    = $project->getType();
+        if ($type === null) {
+            return true;
+        }
+
+        return (bool)(($type instanceof Crowdfunding\Type) and $type->isRewardsEnabled());
+    }
+
+    /**
+     * Check for possibility user to accesses a project.
+     * If there are no user ID or item, it will be able to create project.
+     *
+     * @param int $userId
+     * @param stdClass $item
+     * @param string $layout
+     *
+     * @return bool
+     */
+    public static function isAuthorized($userId, $item, $layout)
+    {
+        if ((strcmp('basic', $layout) === 0) and !(int)$item->id) {
+            return true;
+        }
+
+        return (bool)((int)$item->user_id === (int)$userId);
+    }
+
+    /**
+     * Route URI to front-end.
+     *
+     * @param string  $url
+     *
+     * @return string
+     */
+    public static function siteRoute($url)
+    {
+        $appSite    = JApplicationCms::getInstance('site');
+        $routerSite = $appSite->getRouter('site');
+
+        $routedUri  = $routerSite->build($url);
+        if ($routedUri instanceof JUri) {
+            $routedUri = $routedUri->toString();
+        }
+
+        if (false !== strpos($routedUri, '/administrator')) {
+            $routedUri = str_replace('/administrator', '', $routedUri);
+        }
+
+        return JUri::root().$routedUri;
     }
 }

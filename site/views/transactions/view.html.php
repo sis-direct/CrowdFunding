@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -47,19 +47,15 @@ class CrowdfundingViewTransactions extends JViewLegacy
      */
     protected $app;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->app    = JFactory::getApplication();
-        $this->option = $this->app->input->get("option");
-    }
-
     public function display($tpl = null)
     {
-        $userId = JFactory::getUser()->get("id");
+        $this->app    = JFactory::getApplication();
+        $this->option = $this->app->input->get('option');
+        
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
-            $this->app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), "notice");
-            $this->app->redirect(JRoute::_("index.php?option=com_users&view=login", false));
+            $this->app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), 'notice');
+            $this->app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
             return;
         }
 
@@ -67,14 +63,11 @@ class CrowdfundingViewTransactions extends JViewLegacy
         $this->state      = $this->get('State');
         $this->pagination = $this->get('Pagination');
 
-        // Get params
+        $this->params     = $this->state->get('params');
         /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
-        $this->params = $params;
 
-        if (!empty($this->items)) {
-            // Get currency
-            $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        if (is_array($this->items) and count($this->items) > 0) {
+            $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
             $this->amount = new Crowdfunding\Amount($this->params);
             $this->amount->setCurrency($currency);
         }
@@ -82,9 +75,9 @@ class CrowdfundingViewTransactions extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
-        $this->userId = JFactory::getUser()->get("id");
+        $this->userId = JFactory::getUser()->get('id');
 
         $this->redirectUrl = CrowdfundingHelperRoute::getTransactionsRoute();
 
@@ -114,15 +107,19 @@ class CrowdfundingViewTransactions extends JViewLegacy
 
         // Meta keywords
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
 
         if ($this->params->get('robots')) {
-            $this->document->setMetadata('robots', $this->params->get('robots'));
+            $this->document->setMetaData('robots', $this->params->get('robots'));
         }
 
         // Scripts
         JHtml::_('bootstrap.tooltip');
+        JHtml::_('Prism.ui.pnotify');
+        JHtml::_('Prism.ui.joomlaHelper');
+
+        $this->document->addScript('media/com_crowdfunding/js/site/reward_state.js');
     }
 
     private function preparePageHeading()
@@ -138,7 +135,6 @@ class CrowdfundingViewTransactions extends JViewLegacy
         } else {
             $this->params->def('page_heading', JText::_('COM_CROWDFUNDING_TRANSACTIONS_DEFAULT_PAGE_TITLE'));
         }
-
     }
 
     private function preparePageTitle()
@@ -149,9 +145,9 @@ class CrowdfundingViewTransactions extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $this->app->get('sitename');
-        } elseif ($this->app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
-        } elseif ($this->app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $this->app->get('sitename'));
         }
 

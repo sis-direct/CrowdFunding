@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -40,49 +40,55 @@ class CrowdfundingViewDashboard extends JViewLegacy
 
     protected $sidebar;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
     public function display($tpl = null)
     {
-        $this->state  = $this->get("State");
-        $this->params = $this->state->get("params");
+        $this->option = JFactory::getApplication()->input->get('option');
+        
+        $this->state  = $this->get('State');
+        $this->params = $this->state->get('params');
 
         $this->version = new Crowdfunding\Version();
 
-        // Load ITPrism library version
-        if (!class_exists("Prism\\Version")) {
-            $this->prismVersion = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD");
+        // Load Prism library version
+        if (!class_exists('Prism\\Version')) {
+            $this->prismVersion = JText::_('COM_CROWDFUNDING_PRISM_LIBRARY_DOWNLOAD');
         } else {
             $prismVersion       = new Prism\Version();
             $this->prismVersion = $prismVersion->getShortVersion();
 
-            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, "<")) {
-                $this->prismVersionLowerMessage = JText::_("COM_CROWDFUNDING_PRISM_LIBRARY_LOWER_VERSION");
+            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, '<')) {
+                $this->prismVersionLowerMessage = JText::_('COM_CROWDFUNDING_PRISM_LIBRARY_LOWER_VERSION');
             }
         }
 
         // Get popular projects.
         $this->popular = new Crowdfunding\Statistics\Projects\Popular(JFactory::getDbo());
-        $this->popular->load(5);
+        $this->popular->load(array('limit' => 5));
 
         // Get popular most funded.
         $this->mostFunded = new Crowdfunding\Statistics\Projects\MostFunded(JFactory::getDbo());
-        $this->mostFunded->load(5);
+        $this->mostFunded->load(array('limit' => 5));
 
         // Get latest started.
+        $options = array(
+             'limit' => 10,
+             'order_by' => 'funding_start',
+             'order_direction' => 'DESC'
+        );
         $this->latestStarted = new Crowdfunding\Statistics\Projects\Latest(JFactory::getDbo());
-        $this->latestStarted->load(5);
+        $this->latestStarted->load($options);
 
         // Get latest created.
+        $options = array(
+            'limit' => 10,
+            'order_by' => 'created',
+            'order_direction' => 'DESC'
+        );
         $this->latestCreated = new Crowdfunding\Statistics\Projects\Latest(JFactory::getDbo());
-        $this->latestCreated->loadByCreated(5);
+        $this->latestCreated->load($options);
 
         // Get currency.
-        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $currency = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
 
         $this->amount = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
@@ -112,7 +118,7 @@ class CrowdfundingViewDashboard extends JViewLegacy
      */
     protected function addToolbar()
     {
-        JToolbarHelper::title(JText::_("COM_CROWDFUNDING_DASHBOARD"));
+        JToolbarHelper::title(JText::_('COM_CROWDFUNDING_DASHBOARD'));
 
         JToolbarHelper::preferences('com_crowdfunding');
         JToolbarHelper::divider();

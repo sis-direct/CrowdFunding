@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -25,7 +25,7 @@ class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return   CrowdfundingModelReport    The model.
      * @since    1.5
      */
     public function getModel($name = 'Report', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
@@ -41,13 +41,13 @@ class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('cfreport', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
 
         if (!$itemId) {
             $redirectOptions = array(
-                "force_direction" => CrowdfundingHelperRoute::getReportRoute()
+                'force_direction' => CrowdfundingHelperRoute::getReportRoute()
             );
-            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_INVALID_PROJECT"), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
             return;
         }
 
@@ -55,7 +55,7 @@ class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
         $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         $redirectOptions = array(
-            "force_direction" => CrowdfundingHelperRoute::getReportRoute($item->getId())
+            'force_direction' => CrowdfundingHelperRoute::getReportRoute($item->getId())
         );
 
         $model = $this->getModel();
@@ -65,7 +65,7 @@ class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -83,10 +83,10 @@ class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
 
         try {
 
-            $userId = JFactory::getUser()->get("id");
+            $userId = (int)JFactory::getUser()->get('id');
 
-            if (!empty($userId)) {
-                $validData["user_id"] = $userId;
+            if ($userId > 0) {
+                $validData['user_id'] = $userId;
             }
 
             $model->save($validData);
@@ -100,6 +100,6 @@ class CrowdfundingControllerReport extends Prism\Controller\Form\Frontend
         }
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_REPORT_SENT_SUCCESSFULLY"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_REPORT_SENT_SUCCESSFULLY'), $redirectOptions);
     }
 }

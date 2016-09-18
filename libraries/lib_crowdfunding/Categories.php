@@ -3,14 +3,13 @@
  * @package      Crowdfunding
  * @subpackage   Categories
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
 use Joomla\Utilities\ArrayHelper;
-use Joomla\String\String;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -78,39 +77,34 @@ class Categories extends \JCategories
      *
      * @return array
      */
-    public function getChildNumber($ids, $options = array())
+    public function getChildNumber(array $ids, array $options = array())
     {
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
-        if (!$ids) {
-            return array();
+        $result = array();
+
+        if (count($ids) > 0) {
+            $query = $this->db->getQuery(true);
+
+            $query
+                ->select('a.parent_id, COUNT(*) as number')
+                ->from($this->db->quoteName('#__categories', 'a'))
+                ->group('a.parent_id')
+                ->where('a.parent_id IN (' . implode(',', $ids) . ')');
+
+            // Filter by state.
+            $state = ArrayHelper::getValue($options, 'state');
+            if ($state !== null) {
+                $query->where('a.published = ' . (int)$state);
+            } else {
+                $query->where('a.published IN (0,1)');
+            }
+
+            $this->db->setQuery($query);
+            $result = (array)$this->db->loadAssocList('parent_id');
         }
 
-        $query = $this->db->getQuery(true);
-
-        $query
-            ->select("a.parent_id, COUNT(*) as number")
-            ->from($this->db->quoteName("#__categories", "a"))
-            ->group("a.parent_id")
-            ->where("a.parent_id IN (". implode(",", $ids) .")");
-
-        // Filter by state.
-        $state = ArrayHelper::getValue($options, "state");
-        if (!is_null($state)) {
-            $query->where("a.published = ". (int)$state);
-        } else {
-            $query->where("a.published IN (0,1)");
-        }
-
-        $this->db->setQuery($query);
-
-        $results = $this->db->loadAssocList("parent_id");
-
-        if (!$results) {
-            $results = array();
-        }
-
-        return $results;
+        return $result;
     }
 
     /**
@@ -130,48 +124,49 @@ class Categories extends \JCategories
      *
      * @return array
      */
-    public function getProjectsNumber($ids = array(), $options = array())
+    public function getProjectsNumber(array $ids = array(), array $options = array())
     {
-        ArrayHelper::toInteger($ids);
+        $ids = ArrayHelper::toInteger($ids);
 
         // Get the ids from the current items.
-        if (!$ids and !empty($this->data)) {
+        if (!$ids and count($this->data) > 0) {
             foreach ($this->data as $category) {
-                $ids[] = $category["id"];
+                $ids[] = $category['id'];
             }
         }
 
-        if (!$ids) {
-            return array();
+        $results = array();
+
+        if (count($ids) > 0) {
+
+            $query = $this->db->getQuery(true);
+
+            $query
+                ->select('a.catid, COUNT(*) as number')
+                ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+                ->group('a.catid')
+                ->where('a.catid IN (' . implode(',', $ids) . ')');
+
+            // Filter by state.
+            $state = ArrayHelper::getValue($options, 'state');
+            if ($state !== null) {
+                $query->where('a.published = ' . (int)$state);
+            } else {
+                $query->where('a.published IN (0,1)');
+            }
+
+            // Filter by approve state.
+            $approved = ArrayHelper::getValue($options, 'approved');
+            if ($approved !== null) {
+                $query->where('a.approved = ' . (int)$approved);
+            } else {
+                $query->where('a.approved IN (0,1)');
+            }
+
+            $this->db->setQuery($query);
+
+            $results = (array)$this->db->loadAssocList('catid');
         }
-
-        $query = $this->db->getQuery(true);
-
-        $query
-            ->select("a.catid, COUNT(*) as number")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->group("a.catid")
-            ->where("a.catid IN (". implode(",", $ids) .")");
-
-        // Filter by state.
-        $state = ArrayHelper::getValue($options, "state");
-        if (!is_null($state)) {
-            $query->where("a.published = ". (int)$state);
-        } else {
-            $query->where("a.published IN (0,1)");
-        }
-
-        // Filter by approve state.
-        $approved = ArrayHelper::getValue($options, "approved");
-        if (!is_null($approved)) {
-            $query->where("a.approved = ". (int)$approved);
-        } else {
-            $query->where("a.approved IN (0,1)");
-        }
-
-        $this->db->setQuery($query);
-
-        $results = (array)$this->db->loadAssocList("catid");
 
         return $results;
     }
@@ -198,43 +193,50 @@ class Categories extends \JCategories
      * @param null|int $parentId Parent ID or "root".
      * @param array $options
      */
-    public function load($parentId = null, $options = array())
+    public function load($parentId = null, array $options = array())
     {
-        $offset    = (isset($options["offset"])) ? $options["offset"] : 0;
-        $limit     = (isset($options["limit"])) ? $options["limit"] : 0;
-        $orderBy   = (isset($options["order_by"])) ? $options["order_by"] : "a.title";
-        $orderDir  = (isset($options["order_dir"])) ? $options["order_dir"] : "ASC";
+        $offset    = (array_key_exists('offset', $options)) ? $options['offset'] : 0;
+        $limit     = (array_key_exists('limit', $options)) ? $options['limit'] : 0;
+        $orderBy   = (array_key_exists('order_by', $options)) ? $options['order_by'] : 'a.title';
+        $orderDir  = (array_key_exists('order_dir', $options)) ? $options['order_dir'] : 'ASC';
 
-        $orderDir = String::strtoupper($orderDir);
+        $orderDir  = \JString::strtoupper($orderDir);
 
-        if (!in_array($orderDir, array("ASC", "DESC"))) {
-            $orderDir = "ASC";
+        if (!in_array($orderDir, array('ASC', 'DESC'), true)) {
+            $orderDir = 'ASC';
         }
 
         $query = $this->db->getQuery(true);
         $query
             ->select(
-                "a.id, a.title, a.alias, a.description, a.params, " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug"
+                'a.id, a.title, a.alias, a.description, a.params, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug'
             )
-            ->from($this->db->quoteName("#__categories", "a"))
-            ->where("a.extension = ". $this->db->quote($this->_extension));
+            ->from($this->db->quoteName('#__categories', 'a'))
+            ->where('a.extension = '. $this->db->quote($this->_extension));
 
-        if (!is_null($parentId)) {
-            $query->where("a.parent_id = ". (int)$parentId);
+        if ($parentId !== null) {
+            $query->where('a.parent_id = '. (int)$parentId);
         }
         
-        $query->order($this->db->quoteName($orderBy) . " " . $orderDir);
+        $query->order($this->db->quoteName($orderBy) . ' ' . $orderDir);
 
         $this->db->setQuery($query, (int)$offset, (int)$limit);
 
-        $results = (array)$this->db->loadAssocList("id");
-
-        $this->data = $results;
+        $this->data = (array)$this->db->loadAssocList('id');
     }
 
     /**
      * Return the elements as an array.
+     *
+     * <code>
+     * $ids = array(1, 2, 3, 4);
+     *
+     * $categories   = new Crowdfunding\Categories();
+     * $categories->setDb(\JFactory::getDbo());
+     *
+     * $categories = $categories->toArray();
+     * </code>
      *
      * @return array
      */

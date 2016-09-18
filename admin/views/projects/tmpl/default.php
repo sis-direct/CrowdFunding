@@ -3,15 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=projects'); ?>" method="post"
-      name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_crowdfunding&view=projects'); ?>" method="post" name="adminForm" id="adminForm">
     <?php if (!empty($this->sidebar)): ?>
     <div id="j-sidebar-container" class="span2">
         <?php echo $this->sidebar; ?>
@@ -35,7 +34,7 @@ defined('_JEXEC') or die;
                             title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i>
                     </button>
                     <button class="btn hasTooltip" type="button" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"
-                            onclick="document.id('filter_search').value='';this.form.submit();"><i
+                            onclick="document.getElementById('filter_search').value='';this.form.submit();"><i
                             class="icon-remove"></i></button>
                 </div>
                 <div class="btn-group pull-right hidden-phone">
@@ -50,9 +49,9 @@ defined('_JEXEC') or die;
                             onchange="Joomla.orderTable()">
                         <option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
                         <option
-                            value="asc" <?php if ($this->listDirn == 'asc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
+                            value="asc" <?php if ($this->listDirn === 'asc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
                         <option
-                            value="desc" <?php if ($this->listDirn == 'desc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING'); ?></option>
+                            value="desc" <?php if ($this->listDirn === 'desc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING'); ?></option>
                     </select>
                 </div>
                 <div class="btn-group pull-right hidden-phone">

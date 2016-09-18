@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -39,44 +39,66 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->id;
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
-            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
 
             return;
         }
 
-        $params        = JComponentHelper::getParams("com_crowdfunding");
+        $params        = JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Joomla\Registry\Registry */
 
         // Get the data from the form POST
-        $data         = $this->input->post->get('rewards', array(), 'array');
         $projectId    = $this->input->post->get('id', 0, 'int');
+
+        // Check if rewards are enabled.
+        if (!$params->get('rewards_enabled', 1)) {
+            $redirectOptions = array(
+                'view'   => 'project',
+                'layout' => 'manager',
+                'id'     => $projectId
+            );
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_REWARDS_DISABLED'), $redirectOptions);
+            return;
+        }
+
+        $data_        = $this->input->post->get('rewards', array(), 'array');
         $actionSubmit = $this->input->post->getCmd('btn_submit', 'save');
 
-        $images = $this->input->files->get('images', array(), 'array');
+        // Reorder items.
+        $data = array();
+        foreach ($data_ as $item) {
+            $ordering = (array_key_exists('ordering', $item) ) ? (int)abs($item['ordering']) : 0;
+            if (!$ordering or $ordering > 30) {
+                continue;
+            }
 
-        $userId = JFactory::getUser()->get("id");
+            $data[$ordering] = $item;
+        }
+        unset($data_);
+
+        $images       = $this->input->files->get('images', array(), 'array');
 
         // Get wizard type
-        $wizardType   = $params->get("project_wizard_type", "five_steps");
-        $fiveStepsWizard = (strcmp($wizardType, "five_steps") == 0) ? true : false;
+        $wizardType   = $params->get('project_wizard_type', 'five_steps');
+        $fiveStepsWizard = (strcmp($wizardType, 'five_steps') === 0);
 
         // If it is five steps wizard type, redirect to manager.
         // If it is six steps wizard type, redirect to extras.
         if (!$fiveStepsWizard) {
-            $layout = (strcmp($actionSubmit, "save_continue") == 0) ? "extras" : "rewards";
+            $layout = (strcmp($actionSubmit, 'save_continue') === 0) ? 'extras' : 'rewards';
         } else {
-            $layout = (strcmp($actionSubmit, "save_continue") == 0) ? "manager" : "rewards";
+            $layout = (strcmp($actionSubmit, 'save_continue') === 0) ? 'manager' : 'rewards';
         }
 
         $redirectOptions = array(
-            "view"   => "project",
-            "layout" => $layout,
-            "id"     => $projectId
+            'view'   => 'project',
+            'layout' => $layout,
+            'id'     => $projectId
         );
 
         // Validate project owner.
@@ -91,26 +113,31 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
 
         try {
 
-            $validData  = $model->validate($data);
+            $validData     = $model->validate($data);
 
-            $rewardsIds = $model->save($validData, $projectId);
+            $rewardsIds    = $model->save($validData, $projectId);
 
-            $imagesAllowed = $params->get("rewards_images", 0);
+            $imagesAllowed = $params->get('rewards_images', 0);
 
             // Upload images.
-            if ($imagesAllowed and !empty($images) and !empty($rewardsIds)) {
+            if ($imagesAllowed and count($images) > 0 and count($rewardsIds) > 0) {
 
                 // Get the folder where the images will be stored
-                $imagesFolder = CrowdfundingHelper::getImagesFolder($userId);
+                $imagesFolder = CrowdfundingHelper::getImagesFolder($userId, JPATH_ROOT);
 
-                jimport("joomla.filesystem.folder");
+                jimport('joomla.filesystem.folder');
                 if (!JFolder::exists($imagesFolder)) {
                     CrowdfundingHelper::createFolder($imagesFolder);
                 }
 
-                $images = $model->uploadImages($images, $imagesFolder, $rewardsIds);
+                $options = array(
+                    'temporary_path' => JFactory::getApplication()->get('tmp_path'),
+                    'destination_path' => $imagesFolder,
+                );
 
-                if (!empty($images)) {
+                $images  = $model->uploadImages($images, $rewardsIds, $options, $params);
+
+                if (count($images) > 0) {
                     $model->storeImages($images, $imagesFolder);
                 }
             }
@@ -127,9 +154,8 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         }
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_REWARDS_SUCCESSFULLY_SAVED"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_REWARDS_SUCCESSFULLY_SAVED'), $redirectOptions);
     }
-
 
     /**
      * Method to change state of reward.
@@ -140,20 +166,20 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
     public function changeState()
     {
         // Check for request forgeries.
-        JSession::checkToken("get") or jexit(JText::_('JINVALID_TOKEN'));
+        JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => JRoute::_("index.php?option=com_users&view=login", false)
+                'force_direction' => JRoute::_('index.php?option=com_users&view=login', false)
             );
-            $this->displayNotice(JText::_("COM_CROWDFUNDING_ERROR_NOT_LOG_IN"), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
 
-        $redirect = base64_decode($this->input->get("redirect"));
+        $redirect = base64_decode($this->input->get('redirect'));
         $redirectOptions = array(
-            "force_direction" => JRoute::_($redirect, false)
+            'force_direction' => JRoute::_($redirect, false)
         );
 
         $txnId = $this->input->get->getInt('txn_id');
@@ -162,13 +188,13 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         $state = (!$state) ? 0 : 1;
 
         if (!$txnId) {
-            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION"), $redirectOptions);
+            $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION'), $redirectOptions);
             return;
         }
 
         $keys = array(
-            "id" => $txnId,
-            "receiver_id" => $userId
+            'id' => $txnId,
+            'receiver_id' => $userId
         );
 
         /** @var $transaction Crowdfunding\Transaction */
@@ -176,7 +202,7 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         $transaction->load($keys);
 
         if (!$transaction->getId()) {
-            $this->displayWarning(JText::_("COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION"), $redirectOptions);
+            $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_TRANSACTION'), $redirectOptions);
             return;
         }
 
@@ -190,9 +216,9 @@ class CrowdfundingControllerRewards extends Prism\Controller\Admin
         }
 
         if (!$state) {
-            $msg = JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_NOT_SENT");
+            $msg = JText::_('COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_NOT_SENT');
         } else {
-            $msg = JText::_("COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_SENT");
+            $msg = JText::_('COM_CROWDFUNDING_REWARD_HAS_BEEN_SET_AS_SENT');
         }
 
         $this->displayMessage($msg, $redirectOptions);

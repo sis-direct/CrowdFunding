@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,9 +12,9 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelFunders extends JModelList
 {
-    protected $items = null;
-    protected $numbers = null;
-    protected $params = null;
+    protected $items;
+    protected $numbers;
+    protected $params;
 
     /**
      * Constructor.
@@ -57,10 +57,10 @@ class CrowdfundingModelFunders extends JModelList
         $this->setState('params', $params);
 
         // Get project id
-        $value = $app->input->get("id", 0, "uint");
+        $value = $app->input->get('id', 0, 'uint');
         $this->setState($this->context . '.project_id', $value);
 
-        parent::populateState("a.txn_date", "DESC");
+        parent::populateState('a.txn_date', 'DESC');
     }
 
     /**
@@ -99,7 +99,7 @@ class CrowdfundingModelFunders extends JModelList
         // Load parameters
         $params = $app->getParams();
 
-        $displayAnonymous = $params->get("funders_display_anonymous", 0);
+        $displayAnonymous = $params->get('funders_display_anonymous', 0);
 
         $db = $this->getDbo();
         /** @var $db JDatabaseDriver */
@@ -120,14 +120,14 @@ class CrowdfundingModelFunders extends JModelList
         $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.investor_id = b.id');
 
         // Filter by project id
-        $projectId = $this->getState($this->context . ".project_id");
-        $query->where("a.project_id =" . (int)$projectId);
+        $projectId = $this->getState($this->context . '.project_id');
+        $query->where('a.project_id =' . (int)$projectId);
 
         if (!$displayAnonymous) {
-            $query->where("a.investor_id != 0");
+            $query->where('a.investor_id != 0');
         }
 
-        $query->where("(a.txn_status = " . $db->quote("completed") . " OR a.txn_status = ". $db->quote("pending") . ")");
+        $query->where('(a.txn_status = ' . $db->quote('completed') . ' OR a.txn_status = '. $db->quote('pending') . ')');
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

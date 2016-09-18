@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Statistics
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Statistics;
@@ -39,7 +39,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * </code>
      *
      * @param \JDatabaseDriver $db Database Driver
@@ -57,7 +57,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $numberOfTransactions = $statistics->getTransactionsNumber();
      * </code>
      *
@@ -69,19 +69,13 @@ class Project
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.project_id = " . (int)$this->id);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.project_id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -90,7 +84,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $amount = $statistics->getFullPeriodAmounts();
      * </code>
      *
@@ -100,9 +94,9 @@ class Project
     {
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.funding_start, a.funding_end")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id = " . (int)$this->id);
+            ->select('a.funding_start, a.funding_end')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
@@ -127,10 +121,10 @@ class Project
 
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.txn_date as date, SUM(a.txn_amount) as amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.project_id = " . (int)$this->id)
-            ->group("DATE(a.txn_date)");
+            ->select('a.txn_date as date, SUM(a.txn_amount) as amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.project_id = ' . (int)$this->id)
+            ->group('DATE(a.txn_date)');
 
         $this->db->setQuery($query);
         $results = (array)$this->db->loadAssocList();
@@ -138,8 +132,8 @@ class Project
         // Prepare data
         $data = array();
         foreach ($results as $result) {
-            $date         = new \JDate($result["date"]);
-            $index        = $date->format("d.m");
+            $date         = new \JDate($result['date']);
+            $index        = $date->format('d.m');
             $data[$index] = $result;
         }
 
@@ -147,14 +141,14 @@ class Project
         foreach ($period as $day) {
             $day->setTimezone($timezone);
 
-            $dayMonth = $day->format("d.m");
-            if (isset($data[$dayMonth])) {
-                $amount = $data[$dayMonth]["amount"];
+            $dayMonth = $day->format('d.m');
+            if (array_key_exists($dayMonth, $data)) {
+                $amount = $data[$dayMonth]['amount'];
             } else {
                 $amount = 0;
             }
 
-            $dataset[] = array("date" => $dayMonth, "amount" => $amount);
+            $dataset[] = array('date' => $dayMonth, 'amount' => $amount);
         }
 
         return $dataset;
@@ -166,7 +160,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $data = $statistics->getFundedAmount();
      * </code>
      *
@@ -185,36 +179,36 @@ class Project
 
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.funded, a.goal")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.id = " . (int)$this->id);
+            ->select('a.funded, a.goal')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
-        /** @var $result object */
+        /** @var $result \stdClass */
 
-        if (empty($result->funded) or empty($result->goal)) {
+        if ($result->funded === null or $result->goal === null) {
             return $data;
         }
 
         // Get currency
-        $params = \JComponentHelper::getParams("com_crowdfunding");
+        $params = \JComponentHelper::getParams('com_crowdfunding');
         /** @var  $params Registry */
 
-        $currencyId = $params->get("project_currency");
+        $currencyId = $params->get('project_currency');
         $currency   = Currency::getInstance(\JFactory::getDbo(), $currencyId, $params);
 
         $amount = new Amount();
         $amount->setCurrency($currency);
 
-        $data["goal"] = array(
-            "label"  => \JText::sprintf("COM_CROWDFUNDINGFINANCE_GOAL_S", $amount->setValue($result->goal)->formatCurrency()),
-            "amount" => (float)$result->goal
+        $data['goal'] = array(
+            'label'  => \JText::sprintf('COM_CROWDFUNDINGFINANCE_GOAL_S', $amount->setValue($result->goal)->formatCurrency()),
+            'amount' => (float)$result->goal
         );
 
-        $data["funded"] = array(
-            "label"  => \JText::sprintf("COM_CROWDFUNDINGFINANCE_FUNDED_S", $amount->setValue($result->funded)->formatCurrency()),
-            "amount" => (float)$result->funded
+        $data['funded'] = array(
+            'label'  => \JText::sprintf('COM_CROWDFUNDINGFINANCE_FUNDED_S', $amount->setValue($result->funded)->formatCurrency()),
+            'amount' => (float)$result->funded
         );
 
         $remaining = (float)($result->goal - $result->funded);
@@ -222,9 +216,9 @@ class Project
             $remaining = 0;
         }
 
-        $data["remaining"] = array(
-            "label"  => \JText::sprintf("COM_CROWDFUNDINGFINANCE_REMAINING_S", $amount->setValue($remaining)->formatCurrency()),
-            "amount" => $remaining
+        $data['remaining'] = array(
+            'label'  => \JText::sprintf('COM_CROWDFUNDINGFINANCE_REMAINING_S', $amount->setValue($remaining)->formatCurrency()),
+            'amount' => $remaining
         );
 
         return $data;
@@ -236,7 +230,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $numberOfComments = $statistics->getCommentsNumber();
      * </code>
      *
@@ -248,19 +242,13 @@ class Project
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_comments", "a"))
-            ->where("a.project_id = " . (int)$this->id);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_comments', 'a'))
+            ->where('a.project_id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -269,7 +257,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $numberOfUpdates = $statistics->getUpdatesNumber();
      * </code>
      *
@@ -281,19 +269,13 @@ class Project
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__crowdf_updates", "a"))
-            ->where("a.project_id = " . (int)$this->id);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__crowdf_updates', 'a'))
+            ->where('a.project_id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -302,7 +284,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $payoutInformation = $statistics->getPayoutInformation();
      * </code>
      *
@@ -314,20 +296,14 @@ class Project
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.project_id, a.txn_status, COUNT(id) AS transactions, SUM(txn_amount) AS amount, SUM(fee) AS fee_amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->group("a.txn_status")
-            ->where("a.project_id = " . (int)$this->id);
+            ->select('a.project_id, a.txn_status, COUNT(id) AS transactions, SUM(txn_amount) AS amount, SUM(fee) AS fee_amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->group('a.txn_status')
+            ->where('a.project_id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $result = $this->db->loadAssocList("txn_status");
-
-        if (!$result) {
-            $result = array();
-        }
-
-        return $result;
+        return (array)$this->db->loadAssocList('txn_status');
     }
 
     /**
@@ -336,7 +312,7 @@ class Project
      * <code>
      * $projectId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsProject(\JFactory::getDbo(), $projectId);
+     * $statistics   = new Crowdfunding\Statistics\Project(\JFactory::getDbo(), $projectId);
      * $payoutInformation = $statistics->getPayoutInformation();
      * </code>
      *
@@ -348,19 +324,13 @@ class Project
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.txn_status, SUM(txn_amount) AS amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->group("a.txn_status")
-            ->where("a.project_id = " . (int)$this->id);
+            ->select('a.txn_status, SUM(txn_amount) AS amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->group('a.txn_status')
+            ->where('a.project_id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $result = $this->db->loadAssocList("txn_status");
-
-        if (!$result) {
-            $result = array();
-        }
-
-        return $result;
+        return (array)$this->db->loadAssocList('txn_status');
     }
 }

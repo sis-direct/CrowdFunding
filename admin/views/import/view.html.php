@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -36,9 +36,6 @@ class CrowdfundingViewImport extends JViewLegacy
         $this->option = JFactory::getApplication()->input->get("option");
     }
 
-    /**
-     * Display the view
-     */
     public function display($tpl = null)
     {
         $this->state = $this->get('State');
@@ -109,8 +106,8 @@ class CrowdfundingViewImport extends JViewLegacy
         JHtml::_('behavior.formvalidation');
 
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('prism.ui.bootstrapFileUploadStyle');
+        JHtml::_('Prism.ui.bootstrap2FileInput');
 
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
     }
 }

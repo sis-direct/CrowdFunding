@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -27,8 +27,8 @@ class CrowdfundingViewFeatured extends JViewLegacy
      */
     protected $params;
 
-    protected $items = null;
-    protected $pagination = null;
+    protected $items;
+    protected $pagination;
 
     protected $amount;
     protected $numberInRow;
@@ -41,42 +41,37 @@ class CrowdfundingViewFeatured extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->getCmd("option");
-    }
-
     public function display($tpl = null)
     {
-        // Initialise variables
-        $this->state      = $this->get("State");
+        $this->option     = JFactory::getApplication()->input->getCmd('option');
+        
+        $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
         // Get params
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
         /** @var  $this->params Joomla\Registry\Registry */
 
-        $this->numberInRow = $this->params->get("featured_items_row", 3);
+        $this->numberInRow = (int)$this->params->get('featured_items_row', 3);
         $this->items       = CrowdfundingHelper::prepareItems($this->items, $this->numberInRow);
 
         // Get the folder with images
-        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
+        $this->imageFolder = $this->params->get('images_directory', 'images/crowdfunding');
 
         // Get currency
-        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
         $this->amount = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
 
-        $this->displayCreator = $this->params->get("integration_display_creator", true);
+        $this->displayCreator = (bool)$this->params->get('integration_display_creator', true);
 
         // Prepare integration. Load avatars and profiles.
-        if (!empty($this->displayCreator)) {
+        if ($this->displayCreator) {
             $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
                 array(
-                    "social_platform" => $this->params->get("integration_social_platform"),
-                    "users_ids" => CrowdfundingHelper::fetchUserIds($this->items)
+                    'social_platform' => $this->params->get('integration_social_platform'),
+                    'users_ids' => CrowdfundingHelper::fetchUserIds($this->items)
                 )
             );
 
@@ -86,14 +81,14 @@ class CrowdfundingViewFeatured extends JViewLegacy
         }
 
         $this->layoutData = array(
-            "items" => $this->items,
-            "params" => $this->params,
-            "amount" => $this->amount,
-            "socialProfiles" => $this->socialProfiles,
-            "imageFolder" => $this->imageFolder,
-            "titleLength" => $this->params->get("discover_title_length", 0),
-            "descriptionLength" => $this->params->get("discover_description_length", 0),
-            "span"  => (!empty($this->numberInRow)) ? round(12 / $this->numberInRow) : 4
+            'items' => $this->items,
+            'params' => $this->params,
+            'amount' => $this->amount,
+            'socialProfiles' => $this->socialProfiles,
+            'imageFolder' => $this->imageFolder,
+            'titleLength' => $this->params->get('discover_title_length', 0),
+            'descriptionLength' => $this->params->get('discover_description_length', 0),
+            'span'  => ($this->numberInRow > 0) ? round(12 / $this->numberInRow) : 4
         );
 
         $this->prepareDocument();
@@ -122,7 +117,7 @@ class CrowdfundingViewFeatured extends JViewLegacy
 
         // Meta keywords
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
     }
 
@@ -155,9 +150,9 @@ class CrowdfundingViewFeatured extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
 

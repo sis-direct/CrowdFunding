@@ -3,11 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('JPATH_PLATFORM') or die;
+
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 class JFormFieldCfPercent extends JFormField
 {
@@ -32,44 +35,37 @@ class JFormFieldCfPercent extends JFormField
         // Initialize some field attributes.
         $size      = $this->element['size'] ? ' size="' . (int)$this->element['size'] . '"' : '';
         $maxLength = $this->element['maxlength'] ? ' maxlength="' . (int)$this->element['maxlength'] . '"' : '';
-        $readonly  = ((string)$this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
-        $disabled  = ((string)$this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
-        $class     = (!empty($this->element['class'])) ? ' class="' . (string)$this->element['class'] . '"' : "";
+        $readonly  = ((string)$this->element['readonly'] === 'true') ? ' readonly="readonly"' : '';
+        $disabled  = ((string)$this->element['disabled'] === 'true') ? ' disabled="disabled"' : '';
+        $class     = (!empty($this->element['class'])) ? ' class="' . (string)$this->element['class'] . '"' : '';
 
-        $cssLayout  = $this->element['css_layout'] ? $this->element['css_layout'] : "Bootstrap 2";
+        $cssLayout = (!empty($this->element['css_layout'])) ? (string)$this->element['css_layout'] : 'Bootstrap 2';
 
         // Initialize JavaScript field attributes.
         $onchange = $this->element['onchange'] ? ' onchange="' . (string)$this->element['onchange'] . '"' : '';
 
-        switch ($cssLayout) {
+        $html = array();
+        if ($cssLayout === 'Bootstrap 3') {
 
-            case "Bootstrap 3":
+            $html[] = '<div class="input-group">';
 
-                $html = array();
-                $html[] = '<div class="input-group">';
+            $html [] = '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' .
+                htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 
-                $html []= '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' .
-                    htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
+            // Appended
+            $html[] = '<div class="input-group-addon">%</div>';
+            $html[] = '</div>';
 
-                // Appended
-                $html[] = '<div class="input-group-addon">%</div>';
-                $html[] = '</div>';
+        } else { // Bootstrap 2
+            $html[] = '<div class="input-append">';
+            
+            $html[] = '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' .
+                htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
 
-                break;
+            // Appended
+            $html[] = '<span class="add-on">%</span>';
+            $html[] = '</div>';
 
-            default: // Bootstrap 2
-
-                $html = array();
-                $html[] = '<div class="input-append">';
-
-                $html[] = '<input type="text" name="' . $this->name . '" id="' . $this->id . '"' . ' value="' .
-                    htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . '/>';
-
-                // Appended
-                $html[] = '<span class="add-on">%</span>';
-                $html[] = '</div>';
-
-                break;
         }
 
         return implode("\n", $html);

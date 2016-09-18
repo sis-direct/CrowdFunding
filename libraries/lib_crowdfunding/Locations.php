@@ -3,13 +3,13 @@
  * @package      Crowdfunding
  * @subpackage   Locations
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
-use Prism;
+use Prism\Database;
 use Joomla\Utilities\ArrayHelper;
 
 defined('JPATH_PLATFORM') or die;
@@ -20,22 +20,8 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Locations
  */
-class Locations extends Prism\Database\ArrayObject
+class Locations extends Database\Collection
 {
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $locations   = new Crowdfunding\Locations(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
     /**
      * Load locations data by ID from database.
      *
@@ -56,29 +42,23 @@ class Locations extends Prism\Database\ArrayObject
      *
      * @param array $options
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
         // Load project data
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published")
-            ->from($this->db->quoteName("#__crowdf_locations", "a"));
+            ->select('a.id, a.name, a.latitude, a.longitude, a.country_code, a.state_code, a.timezone, a.published')
+            ->from($this->db->quoteName('#__crowdf_locations', 'a'));
 
-        $ids = (!isset($options["ids"])) ? null : (array)$options["ids"];
-        if (!empty($ids)) {
-            ArrayHelper::toInteger($ids);
-            $query->where("a.id IN ( " . implode(",", $ids) . " )");
+        $ids = (array_key_exists('ids', $options) and is_array($options['ids'])) ? $options['ids'] : array();
+        $ids = ArrayHelper::toInteger($ids);
+        if (count($ids) > 0) {
+            $query->where('a.id IN ( ' . implode(',', $ids) . ' )');
         }
 
         $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**
@@ -141,45 +121,83 @@ class Locations extends Prism\Database\ArrayObject
         $caseWhen .= ' END as name';
 
         $query
-            ->select("a.id, " . $caseWhen)
-            ->from($this->db->quoteName("#__crowdf_locations", "a"))
-            ->where($this->db->quoteName("a.name") . " LIKE " . $search);
+            ->select('a.id, ' . $caseWhen)
+            ->from($this->db->quoteName('#__crowdf_locations', 'a'))
+            ->where($this->db->quoteName('a.name') . ' LIKE ' . $search);
 
         $this->db->setQuery($query, 0, 8);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**
-     * Prepare an array that will be used as options in drop down form element.
+     * Create a location object and return it.
      *
      * <code>
-     * $string = "Plov";
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
      *
-     * $locations   = new Crowdfunding\Locations(\JFactory::getDbo());
-     * $locations->loadByString($string);
+     * $locations   = new Crowdfunding\Location\Locations(\JFactory::getDbo());
+     * $locations->load($options);
      *
-     * $options = $locations->toOptions();
+     * $locationId = 1;
+     * $location   = $locations->getLocation($locationId);
+     * </code>
+     *
+     * @param int|string $id Location ID or location name.
+     *
+     * @return null|Location
+     */
+    public function getLocation($id)
+    {
+        if (!$id) {
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_LOCATION_ID'));
+        }
+
+        $location = null;
+
+        foreach ($this->items as $item) {
+            if (is_numeric($id) and (int)$id === (int)$item['id']) {
+                $location = new Location($this->db);
+                $location->bind($item);
+                break;
+            } elseif (strcmp($id, $item['name']) === 0) {
+                $location = new Location($this->db);
+                $location->bind($item);
+                break;
+            }
+        }
+
+        return $location;
+    }
+
+    /**
+     * Return the locations as array with objects.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $locations   = new Crowdfunding\Location\Locations(\JFactory::getDbo());
+     * $locations->load($options);
+     *
+     * $locations = $locations->getLocations();
      * </code>
      *
      * @return array
      */
-    public function toOptions()
+    public function getLocations()
     {
-        $options = array();
+        $results = array();
 
+        $i = 0;
         foreach ($this->items as $item) {
-            $options[] = array(
-                "id" => $item["id"],
-                "name" => $item["name"]
-            );
+            $location[$i] = new Location($this->db);
+            $location[$i]->bind($item);
+            $i++;
         }
 
-        return $options;
+        return $results;
     }
 }

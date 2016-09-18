@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Statistics
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Statistics;
@@ -36,11 +36,13 @@ class User
      * <code>
      * $userId    = 1;
      *
-     * $statistics   = new CrowdfundingStatisticsUser(\JFactory::getDbo(), $userId);
+     * $statistics   = new Crowdfunding\Statistics\User(\JFactory::getDbo(), $userId);
      * </code>
      *
      * @param \JDatabaseDriver $db Database Driver
      * @param int             $id
+     * 
+     * @throws \InvalidArgumentException
      */
     public function __construct(\JDatabaseDriver $db, $id)
     {
@@ -48,7 +50,7 @@ class User
         $this->id = (int)$id;
 
         if (!$this->id) {
-            throw new \InvalidArgumentException(\JText::_("LIB_CROWDFUNDING_INVALID_USER"));
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_USER'));
         }
     }
 
@@ -58,11 +60,11 @@ class User
      * <code>
      * $usersId = 1;
      *
-     * $statistics     = new CrowdfundingStatisticsUser(\JFactory::getDbo(), $usersId);
+     * $statistics     = new Crowdfunding\Statistics\User(\JFactory::getDbo(), $usersId);
      * $projectsNumber = $statistics->getProjectsNumber();
      * </code>
      *
-     * @return array
+     * @return int
      */
     public function getProjectsNumber()
     {
@@ -70,19 +72,13 @@ class User
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*) as number")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.user_id = " . (int)$this->id);
+            ->select('COUNT(*) as number')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.user_id = ' . (int)$this->id);
 
         $this->db->setQuery($query, 0, 1);
 
-        $results = $this->db->loadResult();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        return $results;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -100,43 +96,31 @@ class User
     public function getAmounts()
     {
         $statistics = array(
-            "invested" => array(),
-            "received" => array()
+            'invested' => array(),
+            'received' => array()
         );
 
         // Count invested amount and transactions.
         $query = $this->db->getQuery(true);
         $query
-            ->select("COUNT(*) AS number, SUM(a.txn_amount) AS amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.investor_id = " . (int)$this->id);
+            ->select('COUNT(*) AS number, SUM(a.txn_amount) AS amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.investor_id = ' . (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $results = $this->db->loadObject();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $statistics["invested"] = $results;
+        $statistics['invested'] = (array)$this->db->loadObject();
 
         // Count received amount and transactions.
         $query = $this->db->getQuery(true);
         $query
-            ->select("COUNT(*) AS number, SUM(a.txn_amount) AS amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.receiver_id = ". (int)$this->id);
+            ->select('COUNT(*) AS number, SUM(a.txn_amount) AS amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.receiver_id = '. (int)$this->id);
 
         $this->db->setQuery($query);
 
-        $results = $this->db->loadObject();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $statistics["received"] = $results;
+        $statistics['received'] = (array)$this->db->loadObject();
 
         return $statistics;
     }
@@ -160,23 +144,17 @@ class User
     {
         $query = $this->db->getQuery(true);
         $query
-            ->select("COUNT(*) AS number")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.investor_id = ". (int)$this->id);
+            ->select('COUNT(*) AS number')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.investor_id = '. (int)$this->id);
 
         if (!empty($projectId)) {
-            $query->where("a.project_id = " . (int)$projectId);
+            $query->where('a.project_id = ' . (int)$projectId);
         }
 
         $this->db->setQuery($query, 0, 1);
 
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -195,21 +173,15 @@ class User
     {
         $query = $this->db->getQuery(true);
         $query
-            ->select("COUNT(*) AS number")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.user_id = ". (int)$this->id)
-            ->where("a.published = 1")
-            ->where("a.approved = 1");
+            ->select('COUNT(*) AS number')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.user_id = '. (int)$this->id)
+            ->where('a.published = 1')
+            ->where('a.approved = 1');
 
         $this->db->setQuery($query, 0, 1);
 
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -252,20 +224,14 @@ class User
 
         $query = $this->db->getQuery(true);
         $query
-            ->select("COUNT(*) AS number")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.user_id = ". (int)$this->id)
-            ->where("a.funding_start >= " . $this->db->quote($startDate->toSql()))
-            ->where("a.funding_start <= " . $this->db->quote($endDate->toSql()));
+            ->select('COUNT(*) AS number')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.user_id = '. (int)$this->id)
+            ->where('a.funding_start >= ' . $this->db->quote($startDate->toSql()))
+            ->where('a.funding_start <= ' . $this->db->quote($endDate->toSql()));
 
         $this->db->setQuery($query, 0, 1);
 
-        $result = $this->db->loadResult();
-
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 }

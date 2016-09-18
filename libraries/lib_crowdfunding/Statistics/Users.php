@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Statistics
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Statistics;
@@ -67,20 +67,14 @@ class Users
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.user_id, COUNT(*) as number")
-            ->from($this->db->quoteName("#__crowdf_projects", "a"))
-            ->where("a.user_id IN (" . implode(",", $this->ids) . ")")
-            ->group("a.user_id");
+            ->select('a.user_id, COUNT(*) as number')
+            ->from($this->db->quoteName('#__crowdf_projects', 'a'))
+            ->where('a.user_id IN (' . implode(',', $this->ids) . ')')
+            ->group('a.user_id');
 
         $this->db->setQuery($query);
 
-        $results = $this->db->loadObjectList("user_id");
-
-        if (!$results) {
-            $results = array();
-        }
-
-        return $results;
+        return (array)$this->db->loadObjectList('user_id');
     }
 
     /**
@@ -106,20 +100,14 @@ class Users
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.investor_id, COUNT(*) as number")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.investor_id IN (" . implode(",", $this->ids) . ")")
-            ->group("a.investor_id");
+            ->select('a.investor_id, COUNT(*) as number')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.investor_id IN (' . implode(',', $this->ids) . ')')
+            ->group('a.investor_id');
 
         $this->db->setQuery($query);
 
-        $results = $this->db->loadObjectList("investor_id");
-
-        if (!$results) {
-            $results = array();
-        }
-
-        return $results;
+        return (array)$this->db->loadObjectList('investor_id');
     }
 
     /**
@@ -142,45 +130,33 @@ class Users
         }
 
         $statistics = array(
-            "invested" => array(),
-            "received" => array()
+            'invested' => array(),
+            'received' => array()
         );
 
         // Count invested amount and transactions.
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.investor_id, COUNT(*) AS number, SUM(a.txn_amount) AS amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.investor_id IN (" . implode(",", $this->ids) . ")")
-            ->group("a.investor_id");
+            ->select('a.investor_id, COUNT(*) AS number, SUM(a.txn_amount) AS amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.investor_id IN (' . implode(',', $this->ids) . ')')
+            ->group('a.investor_id');
 
         $this->db->setQuery($query);
 
-        $results = $this->db->loadObjectList("investor_id");
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $statistics["invested"] = $results;
+        $statistics['invested'] = (array)$this->db->loadObjectList('investor_id');
 
         // Count received amount and transactions.
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.receiver_id, COUNT(*) AS number, SUM(a.txn_amount) AS amount")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.receiver_id IN (" . implode(",", $this->ids) . ")")
-            ->group("a.receiver_id");
+            ->select('a.receiver_id, COUNT(*) AS number, SUM(a.txn_amount) AS amount')
+            ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+            ->where('a.receiver_id IN (' . implode(',', $this->ids) . ')')
+            ->group('a.receiver_id');
 
         $this->db->setQuery($query);
 
-        $results = $this->db->loadObjectList("receiver_id");
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $statistics["received"] = $results;
+        $statistics['received'] = (array)$this->db->loadObjectList('receiver_id');
 
         return $statistics;
     }

@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -36,7 +36,7 @@ class CrowdfundingModelLocation extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param   array   $data     An optional array of data for the form to interogate.
+     * @param   array   $data     An optional array of data for the form to interrogate.
      * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
      *
      * @return  JForm   A JForm object on success, false on failure
@@ -80,29 +80,29 @@ class CrowdfundingModelLocation extends JModelAdmin
      */
     public function save($data)
     {
-        $id          = JArrayHelper::getValue($data, "id");
-        $name        = JArrayHelper::getValue($data, "name");
-        $latitude    = JArrayHelper::getValue($data, "latitude");
-        $longitude   = JArrayHelper::getValue($data, "longitude");
-        $countryCode = JArrayHelper::getValue($data, "country_code");
-        $timezone    = JArrayHelper::getValue($data, "timezone");
-        $stateCode   = JArrayHelper::getValue($data, "state_code");
-        $published   = JArrayHelper::getValue($data, "published");
+        $id          = JArrayHelper::getValue($data, 'id');
+        $name        = JArrayHelper::getValue($data, 'name');
+        $latitude    = JArrayHelper::getValue($data, 'latitude');
+        $longitude   = JArrayHelper::getValue($data, 'longitude');
+        $countryCode = JArrayHelper::getValue($data, 'country_code');
+        $timezone    = JArrayHelper::getValue($data, 'timezone');
+        $stateCode   = JArrayHelper::getValue($data, 'state_code');
+        $published   = JArrayHelper::getValue($data, 'published');
 
         // Load a record from the database
         $row = $this->getTable();
         $row->load($id);
 
-        $row->set("name", $name);
-        $row->set("latitude", $latitude);
-        $row->set("longitude", $longitude);
-        $row->set("country_code", $countryCode);
-        $row->set("timezone", $timezone);
-        $row->set("state_code", $stateCode);
-        $row->set("published", $published);
+        $row->set('name', $name);
+        $row->set('latitude', $latitude);
+        $row->set('longitude', $longitude);
+        $row->set('country_code', $countryCode);
+        $row->set('timezone', $timezone);
+        $row->set('state_code', $stateCode);
+        $row->set('published', $published);
 
         $row->store();
 
-        return $row->get("id");
+        return $row->get('id');
     }
 }

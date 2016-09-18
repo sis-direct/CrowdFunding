@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -15,7 +15,8 @@ defined('_JEXEC') or die;
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-    <?php if (!empty($this->items)) {
+    <?php
+    if (is_array($this->items) and count($this->items) > 0) {
         $layout      = new JLayoutFile('items_grid');
         echo $layout->render($this->layoutData);
     } ?>

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -42,7 +42,7 @@ class CrowdfundingModelUpdates extends JModelList
         /** @var $app JApplicationSite * */
 
         // Get project ID
-        $value = $app->input->get("id", 0, "uint");
+        $value = $app->input->get('id', 0, 'uint');
         $this->setState($this->getName() . '.id', $value);
 
         // Load the component parameters.
@@ -120,8 +120,8 @@ class CrowdfundingModelUpdates extends JModelList
 
     public function getForm()
     {
-        $name   = $this->option . ".update";
-        $source = "update";
+        $name   = $this->option . '.update';
+        $source = 'update';
 
         $options = array(
             'control'   => 'jform',
@@ -129,7 +129,7 @@ class CrowdfundingModelUpdates extends JModelList
         );
 
         $data = array(
-            "project_id" => $this->getState($this->getName() . ".id")
+            'project_id' => $this->getState($this->getName() . '.id')
         );
 
         // Get the form.

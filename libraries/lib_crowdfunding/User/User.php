@@ -3,11 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Users
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\User;
+
+use Joomla\Utilities\ArrayHelper;
+use Prism\Database\TableImmutable;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -17,7 +20,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Users
  */
-class User
+class User extends TableImmutable
 {
     protected $id;
     protected $name;
@@ -37,28 +40,7 @@ class User
      */
     protected $followed;
 
-    /**
-     * Database driver.
-     *
-     * @var \JDatabaseDriver
-     */
-    protected $db;
-
     protected static $instances = array();
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $user    = new Crowdfunding\User(JFactory::getDbo());
-     * </code>
-     * 
-     * @param \JDatabaseDriver  $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
 
     /**
      * Create an object or return existing one.
@@ -76,7 +58,7 @@ class User
      */
     public static function getInstance(\JDatabaseDriver $db, $id)
     {
-        if (!isset(self::$instances[$id])) {
+        if (!array_key_exists($id, self::$instances)) {
             $item = new User($db);
             $item->load($id);
 
@@ -96,45 +78,28 @@ class User
      * $user->load($userId);
      * </code>
      *
-     * @param int $id
+     * @param int|array $keys
+     * @param array $options
      */
-    public function load($id)
+    public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.id, a.name, a.email")
-            ->from($this->db->quoteName("#__users", "a"))
-            ->where("a.id = " . (int)$id);
+            ->select('a.id, a.name, a.email')
+            ->from($this->db->quoteName('#__users', 'a'));
+
+        if (is_array($keys)) {
+            foreach ($keys as $key => $value) {
+                $query->where($this->db->quoteName($key) .' = ' . $this->db->quote($value));
+            }
+        } else {
+            $query->where('a.id = ' . (int)$keys);
+        }
 
         $this->db->setQuery($query);
         $result = (array)$this->db->loadAssoc();
 
         $this->bind($result);
-    }
-
-    /**
-     * Set data about user to object parameters.
-     *
-     * <code>
-     * $data = array(
-     *    "name"  => "John Dow"
-     * );
-     *
-     * $user   = new Crowdfunding\User(\JFactory::getDbo());
-     * $user->bind($data);
-     * </code>
-     *
-     * @param array $data
-     * @param array $ignored
-     *
-     */
-    public function bind($data, $ignored = array())
-    {
-        foreach ($data as $key => $value) {
-            if (!in_array($key, $ignored)) {
-                $this->$key = $value;
-            }
-        }
     }
 
     /**
@@ -155,7 +120,7 @@ class User
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -233,15 +198,16 @@ class User
      */
     public function getFollowed()
     {
-        if (is_null($this->followed)) {
+        if ($this->followed === null) {
             $query = $this->db->getQuery(true);
             $query
-                ->select("a.project_id")
-                ->from($this->db->quoteName("#__crowdf_followers", "a"))
-                ->where("a.user_id = " . (int)$this->id);
+                ->select('a.project_id')
+                ->from($this->db->quoteName('#__crowdf_followers', 'a'))
+                ->where('a.user_id = ' . (int)$this->id);
 
             $this->db->setQuery($query);
             $this->followed = (array)$this->db->loadColumn();
+            $this->followed = ArrayHelper::toInteger($this->followed);
         }
 
         return $this->followed;
@@ -261,31 +227,30 @@ class User
      * </code>
      *
      * @param int $projectId
+     * 
+     * @throws \InvalidArgumentException
      *
      * @return array
      */
     public function follow($projectId)
     {
-        $projectId = (int)$projectId;
-
         if (!$this->id) {
-            throw new \InvalidArgumentException(\JText::_("LIB_CROWDFUNDING_INVALID_USER"));
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_USER'));
         }
 
         if (!$projectId) {
-            throw new \InvalidArgumentException(\JText::_("LIB_CROWDFUNDING_INVALID_PROJECT"));
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_PROJECT'));
         }
 
-        if (is_null($this->followed)) {
-            $this->getFollowed();
-        }
+        $followed = $this->getFollowed();
 
-        if (!in_array($projectId, $this->followed)) {
+        if (is_array($this->followed) and !in_array($projectId, $followed, true)) {
             $query = $this->db->getQuery(true);
             $query
-                ->insert($this->db->quoteName("#__crowdf_followers"))
-                ->set($this->db->quoteName("user_id")    ."=". (int)$this->id)
-                ->set($this->db->quoteName("project_id") ."=". (int)$projectId);
+                ->insert($this->db->quoteName('#__crowdf_followers'))
+                ->set($this->db->quoteName('user_id')    .'='. (int)$this->id)
+                ->set($this->db->quoteName('project_id') .'='. (int)$projectId);
+
 
             $this->db->setQuery($query);
             $this->db->execute();
@@ -307,30 +272,28 @@ class User
      *
      * @param int $projectId
      *
+     * @throws \InvalidArgumentException
+     * 
      * @return array
      */
     public function unfollow($projectId)
     {
-        $projectId = (int)$projectId;
-
         if (!$this->id) {
-            throw new \InvalidArgumentException(\JText::_("LIB_CROWDFUNDING_INVALID_USER"));
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_USER'));
         }
 
         if (!$projectId) {
-            throw new \InvalidArgumentException(\JText::_("LIB_CROWDFUNDING_INVALID_PROJECT"));
+            throw new \InvalidArgumentException(\JText::_('LIB_CROWDFUNDING_INVALID_PROJECT'));
         }
 
-        if (is_null($this->followed)) {
-            $this->getFollowed();
-        }
+        $followed = $this->getFollowed();
 
-        if (in_array($projectId, $this->followed)) {
+        if (is_array($this->followed) and in_array($projectId, $followed, true)) {
             $query = $this->db->getQuery(true);
             $query
-                ->delete($this->db->quoteName("#__crowdf_followers"))
-                ->where($this->db->quoteName("user_id")    ."=". (int)$this->id)
-                ->where($this->db->quoteName("project_id") ."=". (int)$projectId);
+                ->delete($this->db->quoteName('#__crowdf_followers'))
+                ->where($this->db->quoteName('user_id')    .'='. (int)$this->id)
+                ->where($this->db->quoteName('project_id') .'='. (int)$projectId);
 
             $this->db->setQuery($query);
             $this->db->execute();

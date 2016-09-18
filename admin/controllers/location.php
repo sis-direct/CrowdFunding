@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -24,7 +24,7 @@ class CrowdfundingControllerLocation extends Prism\Controller\Form\Backend
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
 
         $redirectOptions = array(
             "task" => $this->getTask(),
@@ -38,7 +38,7 @@ class CrowdfundingControllerLocation extends Prism\Controller\Form\Backend
         /** @var $form JForm * */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -59,10 +59,10 @@ class CrowdfundingControllerLocation extends Prism\Controller\Form\Backend
         } catch (Exception $e) {
 
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
 
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_LOCATION_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_LOCATION_SAVED'), $redirectOptions);
     }
 }

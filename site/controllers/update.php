@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -40,10 +40,10 @@ class CrowdfundingControllerUpdate extends Prism\Controller\Form\Frontend
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = (int)JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
@@ -51,17 +51,17 @@ class CrowdfundingControllerUpdate extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'project_id', 0, 'int');
 
         // Get project
         $item = Crowdfunding\Project::getInstance(JFactory::getDbo(), $itemId);
 
         $redirectOptions = array(
-            "force_direction" => CrowdfundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), "updates")
+            'force_direction' => CrowdfundingHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug(), 'updates')
         );
 
         // Check for valid owner.
-        if ($userId != $item->getUserId()) {
+        if ($userId !== $item->getUserId()) {
             $this->displayWarning(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'), $redirectOptions);
             return;
         }
@@ -73,7 +73,7 @@ class CrowdfundingControllerUpdate extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -99,6 +99,6 @@ class CrowdfundingControllerUpdate extends Prism\Controller\Form\Frontend
         }
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_CROWDFUNDING_UPDATE_SUCCESSFULLY_SAVED"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_UPDATE_SUCCESSFULLY_SAVED'), $redirectOptions);
     }
 }

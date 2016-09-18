@@ -3,13 +3,13 @@
  * @package      Crowdfunding
  * @subpackage   Currencies
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
-use Prism;
+use Prism\Database;
 use Joomla\Utilities\ArrayHelper;
 
 defined('JPATH_PLATFORM') or die;
@@ -20,29 +20,18 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Currencies
  */
-class Currencies extends Prism\Database\ArrayObject
+class Currencies extends Database\Collection
 {
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db       = $db;
-    }
-
     /**
      * Load currencies data by ID from database.
      *
      * <code>
-     * $ids = array(1,2,3,4,5);
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5),  // Use this option to load the currencies by IDs.
+     *     "codes" => array("USD", "GBP") // Use this option to load the currencies by code.
+     * );
      * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->load($ids);
+     * $currencies->load($options);
      *
      * foreach($currencies as $currency) {
      *   echo $currency["title"];
@@ -50,146 +39,116 @@ class Currencies extends Prism\Database\ArrayObject
      * }
      * </code>
      *
-     * @param array $ids
+     * @param array $options
      */
-    public function load($ids = array())
+    public function load(array $options = array())
     {
-        // Load project data
+        // Get IDs.
+        $ids = (array_key_exists('ids', $options) and is_array($options['ids'])) ? $options['ids'] : array();
+        $ids = ArrayHelper::toInteger($ids);
+
+        // Get codes.
+        $codes = (array_key_exists('codes', $options) and is_array($options['codes'])) ? $options['codes'] : array();
+
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
+            ->select('a.id, a.title, a.code, a.symbol, a.position')
+            ->from($this->db->quoteName('#__crowdf_currencies', 'a'));
 
-        if (!empty($ids)) {
-            ArrayHelper::toInteger($ids);
-            $query->where("a.id IN ( " . implode(",", $ids) . " )");
+        // Filter by IDs
+        if (count($ids) > 0) {
+            $query->where('a.id IN ( ' . implode(',', $ids) . ' )');
+        }
+
+        // Filter by currency code.
+        if (count($codes) > 0) {
+            foreach ($codes as $key => $value) {
+                $codes[$key] = $this->db->quote($value);
+            }
+
+            $query->where('a.code IN ( ' . implode(',', $codes) . ' )');
         }
 
         $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
-    }
-
-    /**
-     * Load currencies data by abbreviation from database.
-     *
-     * <code>
-     * $ids = array("GBP", "EUR", "USD");
-     * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->loadByCode($ids);
-     *
-     * foreach($currencies as $currency) {
-     *   echo $currency["title"];
-     *   echo $currency["code"];
-     * }
-     * </code>
-     *
-     * @param array $ids
-     */
-    public function loadByCode($ids = array())
-    {
-        // Load project data
-        $query = $this->db->getQuery(true);
-
-        $query
-            ->select("a.id, a.title, a.code, a.symbol, a.position")
-            ->from($this->db->quoteName("#__crowdf_currencies", "a"));
-
-        if (!empty($ids)) {
-
-            foreach ($ids as $key => $value) {
-                $ids[$key] = $this->db->quote($value);
-            }
-
-            $query->where("a.code IN ( " . implode(",", $ids) . " )");
-        }
-
-        $this->db->setQuery($query);
-        $results = $this->db->loadAssocList();
-
-        if (!$results) {
-            $results = array();
-        }
-
-        $this->items = $results;
-    }
-
-    /**
-     * Create a currency object by abbreviation and return it.
-     *
-     * <code>
-     * $ids = array(1,2,3,4,5);
-     * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->load($ids);
-     *
-     * $currency = $currencies->getCurrencyByCode("EUR");
-     * </code>
-     *
-     * @param string $code
-     *
-     * @throws \UnexpectedValueException
-     *
-     * @return null|Currency
-     */
-    public function getCurrencyByCode($code)
-    {
-        if (!$code) {
-            throw new \UnexpectedValueException(\JText::_("LIB_CROWDFUNDING_INVALID_CURRENCY_ABBREVIATION"));
-        }
-
-        $currency = null;
-
-        foreach ($this->items as $item) {
-            if (strcmp($code, $item["code"]) == 0) {
-                $currency = new Currency();
-                $currency->bind($item);
-                break;
-            }
-        }
-
-        return $currency;
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**
      * Create a currency object and return it.
      *
      * <code>
-     * $ids = array(1,2,3,4,5);
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5),
+     *     "codes" => array("USD", "GBP")
+     * );
+     *
      * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
-     * $currencies->load($ids);
+     * $currencies->load($options);
      *
      * $currencyId = 1;
      * $currency = $currencies->getCurrency($currencyId);
      * </code>
      *
-     * @param int $id
+     * @param int|string $id Currency ID or Currency code.
      *
      * @throws \UnexpectedValueException
      *
-     * @return null|Currency
+     * @return Currency
      */
     public function getCurrency($id)
     {
         if (!$id) {
-            throw new \UnexpectedValueException(\JText::_("LIB_CROWDFUNDING_INVALID_CURRENCY_ID"));
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_CURRENCY_ID'));
         }
 
         $currency = null;
 
         foreach ($this->items as $item) {
-            if ($id == $item["id"]) {
-                $currency = new Currency();
+
+            if (is_numeric($id) and (int)$id === (int)$item['id']) {
+                $currency = new Currency($this->db);
+                $currency->bind($this->items[$id]);
+                break;
+
+            } elseif (strcmp($id, $item['code']) === 0) {
+                $currency = new Currency($this->db);
                 $currency->bind($item);
                 break;
             }
         }
 
         return $currency;
+    }
+
+    /**
+     * Return the currencies as array with objects.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5),
+     *     "codes" => array("USD", "GBP")
+     * );
+     *
+     * $currencies   = new Crowdfunding\Currencies(\JFactory::getDbo());
+     * $currencies->load($options);
+     *
+     * $currencies = $currencies->getCurrencies();
+     * </code>
+     *
+     * @return array
+     */
+    public function getCurrencies()
+    {
+        $results = array();
+
+        $i = 0;
+        foreach ($this->items as $item) {
+            $currency[$i] = new Currency($this->db);
+            $currency[$i]->bind($item);
+            $i++;
+        }
+
+        return $results;
     }
 }

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelDetails extends JModelItem
 {
-
-    protected $item;
+    protected $item = array();
+    
     /**
      * Model context string.
      *
@@ -66,14 +66,14 @@ class CrowdfundingModelDetails extends JModelItem
      *
      * @return    mixed    Object on success, false on failure.
      */
-    public function getItem($id = null)
+    public function getItem($id = 0)
     {
-        if (empty($id)) {
+        if ((int)$id === 0) {
             $id = $this->getState($this->context . '.id');
         }
         $storedId = $this->getStoreId($id);
 
-        if (!isset($this->item[$storedId])) {
+        if (!array_key_exists($storedId, $this->item)) {
             $this->item[$storedId] = null;
 
             $db    = $this->getDbo();
@@ -81,41 +81,39 @@ class CrowdfundingModelDetails extends JModelItem
 
             $query
                 ->select(
-                    "a.id, a.title, a.short_desc, a.description, a.image, a.location_id, " .
-                    "a.funded, a.goal, a.pitch_video, a.pitch_image, " .
-                    "a.funding_start, a.funding_end, a.funding_days, a.funding_type,  " .
-                    "a.catid, a.user_id, a.published, a.approved, a.hits, " .
-                    $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
-                    $query->concatenate(array("b.id", "b.alias"), ":") . ' AS catslug'
+                    'a.id, a.title, a.short_desc, a.description, a.image, a.location_id, ' .
+                    'a.funded, a.goal, a.pitch_video, a.pitch_image, ' .
+                    'a.funding_start, a.funding_end, a.funding_days, a.funding_type,  ' .
+                    'a.catid, a.user_id, a.published, a.approved, a.hits, ' .
+                    $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                    $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
                 )
-                ->from($db->quoteName("#__crowdf_projects", "a"))
-                ->innerJoin($db->quoteName("#__categories", "b") . " ON a.catid = b.id")
-                ->where("a.id = " . (int)$id);
+                ->from($db->quoteName('#__crowdf_projects', 'a'))
+                ->innerJoin($db->quoteName('#__categories', 'b') . ' ON a.catid = b.id')
+                ->where('a.id = ' . (int)$id);
 
             $db->setQuery($query, 0, 1);
             $result = $db->loadObject();
 
             // Attempt to load the row.
-            if (!empty($result)) {
+            if ($result !== null and is_object($result)) {
 
                 // Calculate end date
-                if (!empty($result->funding_days)) {
+                if ((int)$result->funding_days > 0) {
 
                     $fundingStartDateValidator = new Prism\Validator\Date($result->funding_start);
                     if (!$fundingStartDateValidator->isValid()) {
-                        $result->funding_end = "0000-00-00";
+                        $result->funding_end = '0000-00-00';
                     } else {
                         $fundingStartDate = new Crowdfunding\Date($result->funding_start);
                         $fundingEndDate = $fundingStartDate->calculateEndDate($result->funding_days);
-                        $result->funding_end = $fundingEndDate->format("Y-m-d");
+                        $result->funding_end = $fundingEndDate->format('Y-m-d');
                     }
 
                 }
 
                 // Calculate funded percentage.
-                $math = new Prism\Math();
-                $math->calculatePercentage($result->funded, $result->goal, 0);
-                $result->funded_percents = (string)$math;
+                $result->funded_percents = Prism\Utilities\MathHelper::calculatePercentage($result->funded, $result->goal, 0);
 
                 // Calculate days left.
                 $today = new Crowdfunding\Date();
@@ -134,24 +132,24 @@ class CrowdfundingModelDetails extends JModelItem
      * If the project is not published and not approved,
      * only the owner will be able to view the project.
      *
-     * @param object  $item
+     * @param stdClass  $item
      * @param integer $userId
      *
      * @return boolean
      */
     public function isRestricted($item, $userId)
     {
-        if (empty($item->id) or empty($item->user_id)) {
+        if (!is_object($item) or (!$item->id or !$item->user_id)) {
             return true;
         }
+        
         // Check for the owner of the project.
         // If it is not published and not approved, only the owner will be able to view the project.
-        if ((!$item->published or !$item->approved) and ($item->user_id != $userId)) {
+        if ((!$item->published or !$item->approved) and ((int)$item->user_id !== (int)$userId)) {
             return true;
         }
 
         return false;
-
     }
 
     /**
@@ -165,9 +163,9 @@ class CrowdfundingModelDetails extends JModelItem
         $query = $db->getQuery(true);
 
         $query
-            ->update($db->quoteName("#__crowdf_projects"))
-            ->set($db->quoteName("hits") . " = hits + 1")
-            ->where($db->quoteName("id") . "=" . (int)$id);
+            ->update($db->quoteName('#__crowdf_projects'))
+            ->set($db->quoteName('hits') . ' = hits + 1')
+            ->where($db->quoteName('id') . '=' . (int)$id);
 
         $db->setQuery($query);
         $db->execute();

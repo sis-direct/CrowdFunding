@@ -7,9 +7,20 @@ jQuery(document).ready(function() {
         showUpload: false,
         browseClass: "btn btn-success",
         browseLabel: Joomla.JText._('COM_CROWDFUNDING_PICK_IMAGE'),
-        browseIcon: '<span class="glyphicon glyphicon-picture"></span> ',
+        browseIcon: '<span class="fa fa-picture-o"></span> ',
         removeClass: "btn btn-danger",
-        removeLabel: Joomla.JText._('COM_CROWDFUNDING_REMOVE')
+        removeLabel: Joomla.JText._('COM_CROWDFUNDING_REMOVE'),
+        removeIcon: '<span class="fa fa-trash"></span> ',
+        layoutTemplates: {
+            main1:
+            "<div class=\'input-group {class}\'>\n" +
+            "   <div class=\'input-group-btn\'>\n" +
+            "       {browse}\n" +
+            "       {remove}\n" +
+            "   </div>\n" +
+            "   {caption}\n" +
+            "</div>"
+        }
     });
 
 });

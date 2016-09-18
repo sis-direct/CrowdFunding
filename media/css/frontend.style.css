@@ -105,8 +105,8 @@ div.info-mini {
 
 .cfinfo {
 	background-color: #ebebeb;
-   padding:10px;
-   overflow: hidden;
+    padding:10px;
+    overflow: hidden;
 }
 
 .cfinfo-raised {
@@ -274,6 +274,15 @@ div.reward:hover  {
 
 .mt-10 {
 	margin-top: 10px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mtb-5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .mtb-10 {
@@ -509,10 +518,6 @@ div.reward:hover  {
     height: 100%;
 }
 
-.cf-rewards-submit-btn button:last-of-type {
-	margin-left: 20px;
-}
-
 .cf-rewards-backers {
 	font-weight: bolder;
 	background: url(../images/backers.png) no-repeat left;
@@ -609,4 +614,26 @@ div.reward:hover  {
 
 .panel-brown {
     border-color: #deb887;
+}
+
+.panel-reward {
+    border-color: #e4e4e4;
+}
+
+.panel-reward > .panel-heading {
+    background-color: #e9e9e9;
+    border-color: #dcdcdc;
+    color: #000;
+}
+
+.cf-ghost-class {
+	border: thin dashed black;
+}
+
+.cf-chosen-class {
+	border: thin dashed black;
+}
+
+.cf-hover-element:hover {
+	font-weight: bold;
 }

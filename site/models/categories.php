@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -34,14 +34,7 @@ class CrowdfundingModelCategories extends JModelList
 
         parent::__construct($config);
     }
-
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since   1.6
-     */
+    
     protected function populateState($ordering = null, $direction = null)
     {
         // List state information.
@@ -50,10 +43,10 @@ class CrowdfundingModelCategories extends JModelList
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $value = $app->input->getString("filter_search");
+        $value = $app->input->getString('filter_search');
         $this->setState('filter.search', $value);
 
-        $value = $app->input->getString("id");
+        $value = $app->input->getString('id');
         $this->setState('filter.parent_id', $value);
 
         // Load the component parameters.
@@ -61,15 +54,14 @@ class CrowdfundingModelCategories extends JModelList
         $this->setState('params', $params);
 
         // Set limit
-        $value = $app->input->getInt("limit");
+        $value = $app->input->getInt('limit');
         if (!$value) {
-            $value = $params->get("categories_categories_limit", $app->get('list_limit', 20));
+            $value = $params->get('categories_categories_limit', $app->get('list_limit', 20));
         }
         $this->setState('list.limit', $value);
 
         $value = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-
     }
 
     /**
@@ -104,6 +96,7 @@ class CrowdfundingModelCategories extends JModelList
         // Create a new query object.
         $db = $this->getDbo();
         /** @var $db JDatabaseDriver */
+
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
@@ -111,29 +104,29 @@ class CrowdfundingModelCategories extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.title, a.description, a.params, ' .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug"
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug'
             )
         )
             ->from($db->quoteName('#__categories', 'a'))
-            ->where('a.extension = ' . $db->quote("com_crowdfunding"))
+            ->where('a.extension = ' . $db->quote('com_crowdfunding'))
             ->where('a.published = 1')
             ->where('a.level = 1');
 
         // Filter by search phrase or ID.
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
             } else {
                 $escaped = $db->escape($search, true);
-                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('a.title LIKE ' . $quoted);
             }
         }
 
         // Filter by parent ID.
-        $parentId = $this->getState('filter.parent_id');
-        if (!empty($parentId)) {
+        $parentId = (int)$this->getState('filter.parent_id');
+        if ($parentId > 0) {
             $query->where('a.parent_id = ' . (int)$parentId);
         }
 
@@ -146,32 +139,31 @@ class CrowdfundingModelCategories extends JModelList
 
     protected function getOrderString()
     {
-        $params    = $this->getState("params");
+        $params    = $this->getState('params');
 
-        $order     = $params->get("categories_order", "title");
-        $orderDirn = $params->get("categories_dirn", "desc");
+        $order     = $params->get('categories_order', 'title');
+        $orderDirn = $params->get('categories_dirn', 'desc');
 
-        $allowedDirns = array("asc", "desc");
-        if (!in_array($orderDirn, $allowedDirns)) {
-            $orderDirn = "ASC";
+        $allowedDirns = array('asc', 'desc');
+        if (!in_array($orderDirn, $allowedDirns, true)) {
+            $orderDirn = 'ASC';
         } else {
-            $orderDirn = Joomla\String\String::strtoupper($orderDirn);
+            $orderDirn = JString::strtoupper($orderDirn);
         }
 
         switch ($order) {
 
-            case "ordering":
-                $orderCol = "a.rgt";
+            case 'ordering':
+                $orderCol = 'a.rgt';
                 break;
 
-            case "created_time":
-                $orderCol = "a.created_time";
+            case 'created_time':
+                $orderCol = 'a.created_time';
                 break;
 
             default: // Title
-                $orderCol = "a.title";
+                $orderCol = 'a.title';
                 break;
-
         }
 
         $orderString = $orderCol . ' ' . $orderDirn;

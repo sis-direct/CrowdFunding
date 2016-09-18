@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -32,6 +32,7 @@ class CrowdfundingModelRewards extends JModelList
                 'available',
                 'delivery', 'a.delivery',
                 'published', 'a.published',
+                'ordering', 'a.ordering',
             );
         }
 
@@ -99,15 +100,17 @@ class CrowdfundingModelRewards extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.amount, a.number, a.distributed, a.delivery, ' .
-                'a.shipping, a.project_id, (a.number - a.distributed) AS available, a.published '
+                'a.id, a.title, a.amount, a.number, a.distributed, a.delivery, a.shipping, ' .
+                'a.project_id, a.published, a.ordering, ' .
+                'b.title AS project_title'
             )
         );
         $query->from($db->quoteName('#__crowdf_rewards', 'a'));
+        $query->innerJoin($db->quoteName('#__crowdf_projects', 'b') . ' ON a.project_id = b.id');
 
         // Filter by project
-        $projectId = $this->getState('project_id');
-        if (!empty($projectId)) {
+        $projectId = (int)$this->getState('project_id');
+        if ($projectId > 0) {
             $query->where('a.project_id = ' . (int)$projectId);
         }
 
@@ -121,12 +124,14 @@ class CrowdfundingModelRewards extends JModelList
 
         // Filter by search in title
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
+            } elseif (stripos($search, 'pid:') === 0) {
+                $query->where('a.project_id = ' . (int)substr($search, 4));
             } else {
                 $escaped = $db->escape($search, true);
-                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('a.title LIKE ' . $quoted);
             }
         }
@@ -142,6 +147,10 @@ class CrowdfundingModelRewards extends JModelList
     {
         $orderCol  = $this->getState('list.ordering', 'a.amount');
         $orderDirn = $this->getState('list.direction', 'asc');
+
+        if ($orderCol === 'a.ordering') {
+            $orderCol = 'a.project_id ' . $orderDirn . ', a.ordering';
+        }
 
         return $orderCol . ' ' . $orderDirn;
     }

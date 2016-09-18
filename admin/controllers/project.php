@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -59,7 +59,7 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Backend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_Crowdfunding_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
 
         // Validate the form
@@ -108,11 +108,11 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Backend
         } catch (Exception $e) {
 
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
 
         }
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_PROJECT_SAVED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_PROJECT_SAVED'), $redirectOptions);
     }
 
     /**
@@ -133,7 +133,7 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Backend
 
         // Check for registered user
         if (!$itemId) {
-            $this->displayNotice(JText::_('COM_Crowdfunding_ERROR_INVALID_IMAGE'), $redirectOptions);
+            $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_INVALID_IMAGE'), $redirectOptions);
             return;
         }
 
@@ -158,7 +158,7 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Backend
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         $redirectOptions = array(
@@ -167,6 +167,6 @@ class CrowdfundingControllerProject extends Prism\Controller\Form\Backend
             "id"     => $itemId
         );
 
-        $this->displayMessage(JText::_('COM_Crowdfunding_IMAGE_DELETED'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_CROWDFUNDING_IMAGE_DELETED'), $redirectOptions);
     }
 }

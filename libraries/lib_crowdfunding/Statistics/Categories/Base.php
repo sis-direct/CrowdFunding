@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Statistics
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Statistics\Categories;
@@ -46,11 +46,11 @@ abstract class Base
 
         $query
             ->select(
-                "a.id, a.title, a.description, a.params " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug "
+                'a.id, a.title, a.description, a.params ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug '
             )
-            ->from($this->db->quoteName("#__categories", "a"))
-            ->where("a.extension = " . $this->db->quote("com_crowdfunding"));
+            ->from($this->db->quoteName('#__categories', 'a'))
+            ->where('a.extension = ' . $this->db->quote('com_crowdfunding'));
 
         return $query;
     }

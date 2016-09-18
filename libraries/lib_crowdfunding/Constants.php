@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Constants
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -20,9 +20,9 @@ defined('JPATH_PLATFORM') or die;
 class Constants
 {
     // Session contexts
-    const PAYMENT_SESSION_CONTEXT = "payment_session_project";
-    const CROPPED_IMAGES_CONTEXT  = "cropped_images_project";
-    const TEMPORARY_IMAGE_CONTEXT = "temporary_image_project";
+    const PAYMENT_SESSION_CONTEXT = 'payment_session_project';
+    const CROPPED_IMAGES_CONTEXT  = 'cropped_images_project';
+    const TEMPORARY_IMAGE_CONTEXT = 'temporary_image_project';
 
     // Filtering
     const FILTER_STARTED_SOON = 1;

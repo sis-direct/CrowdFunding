@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -29,7 +29,7 @@ class CrowdfundingModelBacking extends JModelLegacy
      * @param   string $prefix A prefix for the table class name. Optional.
      * @param   array  $config Configuration array for model. Optional.
      *
-     * @return  JTable  A database object
+     * @return  CrowdfundingTableProject  A database object
      * @since   1.6
      */
     public function getTable($type = 'Project', $prefix = 'CrowdfundingTable', $config = array())
@@ -55,7 +55,7 @@ class CrowdfundingModelBacking extends JModelLegacy
 
         // Get reward ID
         $projectContext = $this->getProjectContext($itemId);
-        $value          = $app->getUserStateFromRequest($projectContext . ".rid", 'rid');
+        $value          = $app->getUserStateFromRequest($projectContext . '.rid', 'rid');
         $this->setState('reward_id', $value);
 
         // Load the parameters.
@@ -73,7 +73,7 @@ class CrowdfundingModelBacking extends JModelLegacy
      */
     public function getProjectContext($projectId)
     {
-        return $this->context . ".project" . $projectId;
+        return $this->context . '.project' . $projectId;
     }
 
     /**
@@ -81,60 +81,57 @@ class CrowdfundingModelBacking extends JModelLegacy
      *
      * @param    integer $id   The id of the object to get.
      *
-     * @return    mixed    Object on success, false on failure.
+     * @return    stdClass|null    Object on success, null on failure.
      */
-    public function getItem($id = null)
+    public function getItem($id = 0)
     {
-        if (empty($id)) {
+        if ((int)$id === 0) {
             $id = $this->getState('id');
         }
 
-        if (is_null($this->item)) {
+        if ($this->item === null) {
 
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
 
             $query
                 ->select(
-                    "a.id, a.title, a.short_desc, a.image, " .
-                    "a.funded, a.goal, a.pitch_video, a.pitch_image, " .
-                    "a.funding_start, a.funding_end, a.funding_days, " .
-                    "a.funding_type, a.user_id,  a.type_id, " .
-                    "b.name AS user_name, " .
-                    $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
-                    $query->concatenate(array("c.id", "c.alias"), ":") . ' AS catslug'
+                    'a.id, a.title, a.short_desc, a.image, ' .
+                    'a.funded, a.goal, a.pitch_video, a.pitch_image, ' .
+                    'a.funding_start, a.funding_end, a.funding_days, ' .
+                    'a.funding_type, a.user_id,  a.type_id, ' .
+                    'b.name AS user_name, ' .
+                    $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                    $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug'
                 )
-                ->from($db->quoteName("#__crowdf_projects", "a"))
+                ->from($db->quoteName('#__crowdf_projects', 'a'))
                 ->innerJoin($db->quoteName('#__users', 'b') .' ON a.user_id = b.id')
                 ->innerJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id')
-                ->where("a.id = " . (int)$id)
-                ->where("a.published = 1")
-                ->where("a.approved  = 1");
+                ->where('a.id = ' . (int)$id)
+                ->where('a.published = 1')
+                ->where('a.approved  = 1');
 
             $db->setQuery($query, 0, 1);
             $result = $db->loadObject();
 
             // Attempt to load the row.
-            if (!empty($result)) {
+            if (is_object($result)) {
 
                 // Calculate ending date by days left.
-                if (!empty($result->funding_days)) {
+                if ($result->funding_days > 0) {
                     $fundingStartDate = new Crowdfunding\Date($result->funding_start);
                     $fundingEndDate = $fundingStartDate->calculateEndDate($result->funding_days);
-                    $result->funding_end = $fundingEndDate->format("Y-m-d");
+                    $result->funding_end = $fundingEndDate->format('Y-m-d');
                 }
 
                 // Calculate funded percent
-                $percent = new Prism\Math();
-                $percent->calculatePercentage($result->funded, $result->goal, 0);
-                $result->funded_percents = (string)$percent;
+                $result->funded_percents = Prism\Utilities\MathHelper::calculatePercentage($result->funded, $result->goal, 0);
 
                 // Calculate days left.
                 $today = new Crowdfunding\Date();
-                $result->days_left       = $today->calculateDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
+                $result->days_left  = $today->calculateDaysLeft($result->funding_days, $result->funding_start, $result->funding_end);
 
-                $this->item              = $result;
-
+                $this->item = $result;
             }
         }
 

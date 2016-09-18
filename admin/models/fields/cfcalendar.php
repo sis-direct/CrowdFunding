@@ -3,11 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('JPATH_PLATFORM') or die;
+
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 /**
  * Provides a pop up date picker linked to a button.
@@ -113,9 +116,9 @@ class JFormFieldCfCalendar extends JFormField
         $return = parent::setup($element, $value, $group);
 
         if ($return) {
-            $this->maxlength = (int)$this->element['maxlength'] ? (int)$this->element['maxlength'] : 45;
-            $this->format    = (string)$this->element['format'] ? (string)$this->element['format'] : '%Y-%m-%d';
-            $this->filter    = (string)$this->element['filter'] ? (string)$this->element['filter'] : 'USER_UTC';
+            $this->maxlength = (int)$this->element['maxlength'] ?: 45;
+            $this->format    = (string)$this->element['format'] ?: '%Y-%m-%d';
+            $this->filter    = (string)$this->element['filter'] ?: 'USER_UTC';
         }
 
         return $return;
@@ -155,7 +158,7 @@ class JFormFieldCfCalendar extends JFormField
         }
 
         // Handle the special case for "now".
-        if (strtoupper($this->value) == 'NOW') {
+        if (strtoupper($this->value) === 'NOW') {
             $this->value = strftime($format);
         }
 
@@ -167,7 +170,7 @@ class JFormFieldCfCalendar extends JFormField
         switch (strtoupper($this->filter)) {
             case 'SERVER_UTC':
                 // Convert a date to UTC based on the server timezone.
-                if ((int)$this->value && $this->value != JFactory::getDbo()->getNullDate()) {
+                if ((int)$this->value && $this->value !== JFactory::getDbo()->getNullDate()) {
                     // Get a date object based on the correct timezone.
                     $date = JFactory::getDate($this->value, 'UTC');
                     $date->setTimezone(new DateTimeZone($config->get('offset')));
@@ -180,7 +183,7 @@ class JFormFieldCfCalendar extends JFormField
 
             case 'USER_UTC':
                 // Convert a date to UTC based on the user timezone.
-                if ((int)$this->value && $this->value != JFactory::getDbo()->getNullDate()) {
+                if ((int)$this->value && $this->value !== JFactory::getDbo()->getNullDate()) {
                     // Get a date object based on the correct timezone.
                     $date = JFactory::getDate($this->value, 'UTC');
 

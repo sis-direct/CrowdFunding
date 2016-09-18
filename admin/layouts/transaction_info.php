@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
         <?php } else { ?>
             <tr class="cf-response-type">
                 <th colspan="2">
-                    <?php echo JHtml::_("crowdfundingbackend.trackId", $key); ?>
+                    <?php echo JHtml::_('crowdfundingbackend.trackId', $key); ?>
                 </th>
             </tr>
 
@@ -30,12 +30,16 @@ defined('_JEXEC') or die;
             <tr>
                 <th><?php echo $this->escape($k); ?></th>
                 <?php if (!is_array($v)) {?>
-                <td><?php echo (is_bool($v)) ? (!$v) ? "false" : "true" : $this->escape($v); ?></td>
+                <td><?php
+                    if (is_bool($v)) {
+                        echo (!$v) ? 'false' : 'true';
+                    }  else {
+                        echo $this->escape($v);
+                    }
+                    ?></td>
                 <?php } else { ?>
                 <td>
-                    <pre>
-                    <?php echo $this->escape(var_export($v, true)) ?>
-                    </pre>
+                    <pre><?php echo $this->escape(var_export($v, true)) ?></pre>
                 </td>
                 <?php } ?>
             

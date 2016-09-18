@@ -3,14 +3,17 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 ?>
 <tr>
+    <th width="1%" class="nowrap center hidden-phone">
+        <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $this->listDirn, $this->listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+    </th>
     <th width="1%" class="hidden-phone">
         <?php echo JHtml::_('grid.checkall'); ?>
     </th>
@@ -35,7 +38,7 @@ defined('_JEXEC') or die;
     <th width="5%" class="center nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_AVAILABLE', 'available', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center nowrap hidden-phone">
+    <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort', 'COM_CROWDFUNDING_DELIVERY', 'a.delivery', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="3%"

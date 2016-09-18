@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -64,7 +64,7 @@ class CrowdfundingControllerExport extends JControllerLegacy
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         jimport('joomla.filesystem.folder');
@@ -92,18 +92,20 @@ class CrowdfundingControllerExport extends JControllerLegacy
 
         $filesize = filesize($destination);
 
-        JResponse::setHeader('Content-Type', 'application/octet-stream', true);
-        JResponse::setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
-        JResponse::setHeader('Content-Transfer-Encoding', 'binary', true);
-        JResponse::setHeader('Pragma', 'no-cache', true);
-        JResponse::setHeader('Expires', '0', true);
-        JResponse::setHeader('Content-Disposition', 'attachment; filename=' . $archiveFile, true);
-        JResponse::setHeader('Content-Length', $filesize, true);
+        $app = JFactory::getApplication();
+        
+        $app->setHeader('Content-Type', 'application/octet-stream', true);
+        $app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
+        $app->setHeader('Content-Transfer-Encoding', 'binary', true);
+        $app->setHeader('Pragma', 'no-cache', true);
+        $app->setHeader('Expires', '0', true);
+        $app->setHeader('Content-Disposition', 'attachment; filename=' . $archiveFile, true);
+        $app->setHeader('Content-Length', $filesize, true);
 
         $doc = JFactory::getDocument();
         $doc->setMimeEncoding('application/octet-stream');
 
-        JResponse::sendHeaders();
+        $app->sendHeaders();
 
         echo file_get_contents($destination);
         JFactory::getApplication()->close();

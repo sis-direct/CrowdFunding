@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Payments
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
@@ -36,20 +36,6 @@ class Intention extends Prism\Database\Table
     protected $unique_key;
 
     /**
-     * Initialize the object.
-     *
-     * <code>
-     * $intention    = new Crowdfunding\Intention(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver  $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
      * Load intention data from database.
      *
      * <code>
@@ -64,19 +50,19 @@ class Intention extends Prism\Database\Table
      * @param int|array $keys Intention keys.
      * @param array $options
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.user_id, a.project_id, a.reward_id, a.record_date")
-            ->from($this->db->quoteName("#__crowdf_intentions", "a"));
+            ->select('a.id, a.user_id, a.project_id, a.reward_id, a.record_date')
+            ->from($this->db->quoteName('#__crowdf_intentions', 'a'));
 
         if (!is_array($keys)) {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         } else {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) . "=" . $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) . '=' . $this->db->quote($value));
             }
         }
 
@@ -114,11 +100,11 @@ class Intention extends Prism\Database\Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__crowdf_intentions"))
-            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
-            ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
-            ->where($this->db->quoteName("id") ."=". (int)$this->id);
+            ->update($this->db->quoteName('#__crowdf_intentions'))
+            ->set($this->db->quoteName('user_id') . '=' . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName('project_id') . '=' . $this->db->quote($this->project_id))
+            ->set($this->db->quoteName('reward_id') . '=' . $this->db->quote($this->reward_id))
+            ->where($this->db->quoteName('id') .'='. (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -126,16 +112,16 @@ class Intention extends Prism\Database\Table
 
     protected function insertObject()
     {
-        $recordDate   = (!$this->record_date) ? "NULL" : $this->db->quote($this->record_date);
+        $recordDate   = (!$this->record_date) ? 'NULL' : $this->db->quote($this->record_date);
 
         $query = $this->db->getQuery(true);
 
         $query
-            ->insert($this->db->quoteName("#__crowdf_intentions"))
-            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
-            ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
-            ->set($this->db->quoteName("record_date") . "=" . $recordDate);
+            ->insert($this->db->quoteName('#__crowdf_intentions'))
+            ->set($this->db->quoteName('user_id') . '=' . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName('project_id') . '=' . $this->db->quote($this->project_id))
+            ->set($this->db->quoteName('reward_id') . '=' . $this->db->quote($this->reward_id))
+            ->set($this->db->quoteName('record_date') . '=' . $recordDate);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -159,36 +145,13 @@ class Intention extends Prism\Database\Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->delete($this->db->quoteName("#__crowdf_intentions"))
-            ->where($this->db->quoteName("id") ."=". (int)$this->id);
+            ->delete($this->db->quoteName('#__crowdf_intentions'))
+            ->where($this->db->quoteName('id') .'='. (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();
 
         $this->reset();
-    }
-
-    /**
-     * Reset the properties of the current object.
-     *
-     * <code>
-     * $intentionId  = 1;
-     *
-     * $intention    = new Crowdfunding\Intention(\JFactory::getDbo());
-     * $intention->load($intentionId);
-     *
-     * if (!$intention->getId()) {
-     *     $intention->reset();
-     * }
-     * </code>
-     */
-    public function reset()
-    {
-        $properties = $this->getProperties();
-
-        foreach ($properties as $key => $value) {
-            $this->$key = null;
-        }
     }
 
     /**
@@ -204,10 +167,12 @@ class Intention extends Prism\Database\Table
      * ...
      * }
      * </code>
+     *
+     * @return int
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -243,10 +208,12 @@ class Intention extends Prism\Database\Table
      *
      * $userId = $intention->getUserId();
      * </code>
+     *
+     * @return int
      */
     public function getUserId()
     {
-        return $this->user_id;
+        return (int)$this->user_id;
     }
 
     /**
@@ -260,10 +227,12 @@ class Intention extends Prism\Database\Table
      *
      * $projectId = $intention->getProjectIdUserId();
      * </code>
+     *
+     * @return int
      */
     public function getProjectId()
     {
-        return $this->project_id;
+        return (int)$this->project_id;
     }
 
     /**
@@ -277,10 +246,12 @@ class Intention extends Prism\Database\Table
      *
      * $rewardId = $intention->getRewardId();
      * </code>
+     *
+     * @return int
      */
     public function getRewardId()
     {
-        return $this->reward_id;
+        return (int)$this->reward_id;
     }
 
     /**
@@ -294,6 +265,8 @@ class Intention extends Prism\Database\Table
      *
      * $date = $intention->getRecordDate();
      * </code>
+     *
+     * @return string
      */
     public function getRecordDate()
     {

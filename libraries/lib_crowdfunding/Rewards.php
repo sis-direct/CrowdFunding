@@ -3,13 +3,13 @@
  * @package      Crowdfunding
  * @subpackage   Rewards
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
-use Prism;
+use Prism\Database;
 use Joomla\Utilities\ArrayHelper;
 
 defined('JPATH_PLATFORM') or die;
@@ -20,23 +20,9 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Rewards
  */
-class Rewards extends Prism\Database\ArrayObject
+class Rewards extends Database\Collection
 {
     protected static $instances = array();
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $rewards   = new Crowdfunding\Rewards(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
 
     /**
      * Create and initialize an object.
@@ -55,11 +41,11 @@ class Rewards extends Prism\Database\ArrayObject
      *
      * @return null|self
      */
-    public static function getInstance(\JDatabaseDriver $db, $options = array())
+    public static function getInstance(\JDatabaseDriver $db, array $options = array())
     {
-        $projectId = (!isset($options["project_id"])) ? 0 : $options["project_id"];
+        $projectId = (!array_key_exists('project_id', $options)) ? 0 : (int)$options['project_id'];
 
-        if (!isset(self::$instances[$projectId])) {
+        if (!array_key_exists($projectId, self::$instances)) {
             $item = new Rewards($db);
             $item->load($options);
 
@@ -82,64 +68,53 @@ class Rewards extends Prism\Database\ArrayObject
      * $rewards->load($options);
      *
      * foreach($rewards as $reward) {
-     *   echo $reward->title;
-     *   echo $reward->amount;
+     *   echo $reward['title'];
+     *   echo $reward['amount'];
      * }
      * </code>
      *
      * @param array $options
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
-        $projectId = (!isset($options["project_id"])) ? 0 : $options["project_id"];
-
         $query = $this->db->getQuery(true);
 
         $query
             ->select(
-                "a.id, a.title, a.description, a.amount, a.number, a.distributed, " .
-                "a.delivery, a.image, a.image_thumb, a.image_square"
+                'a.id, a.title, a.description, a.amount, a.number, a.distributed, ' .
+                'a.delivery, a.image, a.image_thumb, a.image_square'
             )
-            ->from($this->db->quoteName("#__crowdf_rewards", "a"))
-            ->where("a.project_id = " . (int)$projectId);
+            ->from($this->db->quoteName('#__crowdf_rewards', 'a'));
 
-        // Get state
-        $state = ArrayHelper::getValue($options, "state", 0, "int");
-        if (!empty($state)) {
-            $query->where("a.published = " . (int)$state);
+        // Filter by project ID
+        $projectId = (array_key_exists('project_id', $options)) ? (int)$options['project_id'] : 0;
+        if ($projectId > 0) {
+            $query->where('a.project_id = ' . (int)$projectId);
+        }
+
+        // Filter by rewards IDs
+        $rewardsIds = (array_key_exists('ids', $options)) ? (array)$options['ids'] : array();
+        $rewardsIds = array_unique(ArrayHelper::toInteger($rewardsIds));
+        if (count($rewardsIds) > 0) {
+            $query->where('a.id IN (' . implode(',', $rewardsIds) . ')');
+        }
+
+        // Filter by reward state.
+        $state = ArrayHelper::getValue($options, 'state');
+        if ($state !== null and is_numeric($state)) {
+            $query->where('a.published = ' . (int)$state);
+        }
+
+        // Order by column ordering.
+        $orderBy        = ArrayHelper::getValue($options, 'order_by');
+        $orderDirection = strtoupper(ArrayHelper::getValue($options, 'order_direction'));
+        $orderDirection = (in_array($orderDirection, array('ASC', 'DESC'), true)) ? $orderDirection : 'DESC';
+        if ($orderBy and $orderDirection) {
+            $query->order($this->db->quoteName('a.' . $orderBy) . ' ' . $orderDirection);
         }
 
         $this->db->setQuery($query);
-        $results = (array)$this->db->loadAssocList();
-
-        $this->items = $results;
-    }
-
-    /**
-     * Return an array that contains rewards IDs.
-     *
-     * <code>
-     * $options = array(
-     *     "project_id" => 1
-     * );
-     *
-     * $rewards   = new Crowdfunding\Rewards(\JFactory::getDbo());
-     * $rewards->load($options);
-     *
-     * $rewardsKeys = $rewards->getKeys();
-     * </code>
-     *
-     * @return array
-     */
-    public function getKeys()
-    {
-        $keys = array();
-
-        foreach ($this->items as $item) {
-            $keys[] = $item["id"];
-        }
-
-        return $keys;
+        $this->items = (array)$this->db->loadAssocList();
     }
 
     /**
@@ -161,29 +136,97 @@ class Rewards extends Prism\Database\ArrayObject
     public function countReceivers()
     {
         $keys = $this->getKeys();
-        ArrayHelper::toInteger($keys);
+        $keys = ArrayHelper::toInteger($keys);
 
-        if (!$keys) {
-            return array();
+        $result = array();
+
+        if (count($keys) > 0) {
+            $query = $this->db->getQuery(true);
+
+            $query
+                ->select('a.reward_id, COUNT(a.id) AS funders')
+                ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+                ->group('a.reward_id')
+                ->where('a.reward_id IN ( ' . implode(',', $keys) . ' )');
+
+            $this->db->setQuery($query);
+            $result = (array)$this->db->loadAssocList('reward_id');
+
+            foreach ($this->items as &$item) {
+                $item['funders'] = (!array_key_exists($item['id'], $result)) ? 0 : (int)$result[$item['id']]['funders'];
+            }
+
+            unset($item);
         }
-
-        $query = $this->db->getQuery(true);
-
-        $query
-            ->select("a.reward_id, COUNT(a.id) AS funders")
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->group("a.reward_id")
-            ->where("a.reward_id IN ( " . implode(",", $keys) . " )");
-
-        $this->db->setQuery($query);
-        $result = (array)$this->db->loadAssocList("reward_id");
-
-        foreach ($this->items as &$item) {
-            $item["funders"] = (!isset($result[$item["id"]])) ? 0 : $result[$item["id"]]["funders"];
-        }
-
-        unset($item);
 
         return $result;
+    }
+
+    /**
+     * Create a reward object and return it.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $rewards   = new Crowdfunding\Reward\Rewards(\JFactory::getDbo());
+     * $rewards->load($options);
+     *
+     * $rewardId = 1;
+     * $reward   = $rewards->getReward($rewardId);
+     * </code>
+     *
+     * @param int|string $id Reward ID.
+     *
+     * @return null|Reward
+     */
+    public function getReward($id)
+    {
+        if (!$id) {
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_REWARD_ID'));
+        }
+
+        $reward = null;
+
+        foreach ($this->items as $item) {
+            if ((int)$id === (int)$item['id']) {
+                $reward = new Reward($this->db);
+                $reward->bind($item);
+                break;
+            }
+        }
+
+        return $reward;
+    }
+
+    /**
+     * Return the rewards as array with objects.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $rewards   = new Crowdfunding\Reward\Rewards(\JFactory::getDbo());
+     * $rewards->load($options);
+     *
+     * $rewards = $rewards->getRewards();
+     * </code>
+     *
+     * @return array
+     */
+    public function getRewards()
+    {
+        $results = array();
+
+        $i = 0;
+        foreach ($this->items as $item) {
+            $reward[$i] = new Reward($this->db);
+            $reward[$i]->bind($item);
+            $i++;
+        }
+
+        return $results;
     }
 }

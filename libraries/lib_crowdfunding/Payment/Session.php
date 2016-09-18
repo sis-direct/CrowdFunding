@@ -3,13 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Payments
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Payment;
 
 use Prism;
+use Joomla\Registry\Registry;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -27,10 +28,15 @@ class Session extends Prism\Database\Table
     protected $project_id;
     protected $reward_id;
     protected $record_date;
+    protected $order_id;
     protected $gateway;
-    protected $gateway_data;
     protected $auser_id;
     protected $session_id;
+
+    /**
+     * @var Registry
+     */
+    protected $gateway_data;
 
     protected $intention_id;
 
@@ -45,15 +51,13 @@ class Session extends Prism\Database\Table
     /**
      * Initialize the object.
      *
-     * <code>
-     * $paymentSession   = new Crowdfunding\Payment\Session(\JFactory::getDbo());
-     * </code>
-     *
      * @param \JDatabaseDriver $db
      */
-    public function __construct(\JDatabaseDriver $db)
+    public function __construct(\JDatabaseDriver $db = null)
     {
-        $this->db = $db;
+        parent::__construct($db);
+
+        $this->gateway_data = new Registry;
     }
 
     /**
@@ -74,35 +78,39 @@ class Session extends Prism\Database\Table
      *
      * @throws \UnexpectedValueException
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         if (!$keys) {
-            throw new \UnexpectedValueException(\JText::_("LIB_CROWDFUNDING_INVALID_PAYMENTSESSION_KEYS"));
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_PAYMENTSESSION_KEYS'));
         }
 
         $query = $this->db->getQuery(true);
         $query
             ->select(
-                "a.id, a.user_id, a.project_id, a.reward_id, a.record_date, " .
-                "a.unique_key, a.gateway, a.gateway_data, a.auser_id, a.session_id, a.intention_id"
+                'a.id, a.user_id, a.project_id, a.reward_id, a.record_date, a.order_id, ' .
+                'a.unique_key, a.gateway, a.gateway_data, a.auser_id, a.session_id, a.intention_id'
             )
-            ->from($this->db->quoteName("#__crowdf_payment_sessions", "a"));
+            ->from($this->db->quoteName('#__crowdf_payment_sessions', 'a'));
 
         if (!is_array($keys)) {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         } else {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a." . $key) . "=" . $this->db->quote($value));
+                $query->where($this->db->quoteName('a.' . $key) . '=' . $this->db->quote($value));
             }
         }
 
         $this->db->setQuery($query);
         $result = (array)$this->db->loadAssoc();
 
-        // Decode gateway data.
-        $this->gateway_data = (isset($result["gateway_data"]) and !empty($result["gateway_data"])) ? (array)json_decode($result["gateway_data"], true) : array();
+        // Prepare gateway data.
+        if (!empty($result['gateway_data'])) {
+            $this->gateway_data = new Registry($result['gateway_data']);
+        } else {
+            $this->gateway_data = new Registry();
+        }
 
-        $this->bind($result, array("gateway_data"));
+        $this->bind($result, array('gateway_data'));
     }
 
     /**
@@ -130,24 +138,28 @@ class Session extends Prism\Database\Table
 
     protected function insertObject()
     {
-        $recordDate   = (!$this->record_date) ? "NULL" : $this->db->quote($this->record_date);
+        $recordDate   = (!$this->record_date) ? 'NULL' : $this->db->quote($this->record_date);
 
-        // Encode the gateway data to JSON format.
-        $gatewayData = $this->encodeDataToJson();
+        // Convert the gateway data to JSON format.
+        $gatewayData = 'NULL';
+        if ($this->gateway_data instanceof Registry) {
+            $gatewayData  = $this->gateway_data->toString();
+        }
 
         $query = $this->db->getQuery(true);
         $query
-            ->insert($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
-            ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
-            ->set($this->db->quoteName("record_date") . "=" . $recordDate)
-            ->set($this->db->quoteName("unique_key") . "=" . $this->db->quote($this->unique_key))
-            ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
-            ->set($this->db->quoteName("gateway_data") . "=" . $this->db->quote($gatewayData))
-            ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
-            ->set($this->db->quoteName("session_id") . "=" . $this->db->quote($this->session_id))
-            ->set($this->db->quoteName("intention_id") . "=" . $this->db->quote($this->intention_id));
+            ->insert($this->db->quoteName('#__crowdf_payment_sessions'))
+            ->set($this->db->quoteName('user_id') . '=' . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName('project_id') . '=' . $this->db->quote($this->project_id))
+            ->set($this->db->quoteName('reward_id') . '=' . $this->db->quote($this->reward_id))
+            ->set($this->db->quoteName('record_date') . '=' . $recordDate)
+            ->set($this->db->quoteName('unique_key') . '=' . $this->db->quote($this->unique_key))
+            ->set($this->db->quoteName('order_id') . '=' . $this->db->quote($this->order_id))
+            ->set($this->db->quoteName('gateway') . '=' . $this->db->quote($this->gateway))
+            ->set($this->db->quoteName('gateway_data') . '=' . $this->db->quote($gatewayData))
+            ->set($this->db->quoteName('auser_id') . '=' . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName('session_id') . '=' . $this->db->quote($this->session_id))
+            ->set($this->db->quoteName('intention_id') . '=' . $this->db->quote($this->intention_id));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -157,32 +169,41 @@ class Session extends Prism\Database\Table
 
     protected function updateObject()
     {
-        // Encode the gateway data to JSON format.
-        $gatewayData = $this->encodeDataToJson();
+        // Convert the gateway data to JSON format.
+        $gatewayData = 'NULL';
+        if ($this->gateway_data instanceof Registry) {
+            $gatewayData  = $this->gateway_data->toString();
+        }
 
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("project_id") . "=" . $this->db->quote($this->project_id))
-            ->set($this->db->quoteName("reward_id") . "=" . $this->db->quote($this->reward_id))
-            ->set($this->db->quoteName("record_date") . "=" . $this->db->quote($this->record_date))
-            ->set($this->db->quoteName("unique_key") . "=" . $this->db->quote($this->unique_key))
-            ->set($this->db->quoteName("gateway") . "=" . $this->db->quote($this->gateway))
-            ->set($this->db->quoteName("gateway_data") . "=" . $this->db->quote($gatewayData))
-            ->set($this->db->quoteName("auser_id") . "=" . $this->db->quote($this->auser_id))
-            ->set($this->db->quoteName("session_id") . "=" . $this->db->quote($this->session_id))
-            ->set($this->db->quoteName("intention_id") . "=" . $this->db->quote($this->intention_id))
-            ->where($this->db->quoteName("id") . "=" . $this->db->quote($this->id));
+            ->update($this->db->quoteName('#__crowdf_payment_sessions'))
+            ->set($this->db->quoteName('user_id') . '=' . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName('project_id') . '=' . $this->db->quote($this->project_id))
+            ->set($this->db->quoteName('reward_id') . '=' . $this->db->quote($this->reward_id))
+            ->set($this->db->quoteName('record_date') . '=' . $this->db->quote($this->record_date))
+            ->set($this->db->quoteName('unique_key') . '=' . $this->db->quote($this->unique_key))
+            ->set($this->db->quoteName('order_id') . '=' . $this->db->quote($this->order_id))
+            ->set($this->db->quoteName('gateway') . '=' . $this->db->quote($this->gateway))
+            ->set($this->db->quoteName('gateway_data') . '=' . $this->db->quote($gatewayData))
+            ->set($this->db->quoteName('auser_id') . '=' . $this->db->quote($this->auser_id))
+            ->set($this->db->quoteName('session_id') . '=' . $this->db->quote($this->session_id))
+            ->set($this->db->quoteName('intention_id') . '=' . $this->db->quote($this->intention_id))
+            ->where($this->db->quoteName('id') . '=' . $this->db->quote($this->id));
 
         $this->db->setQuery($query);
         $this->db->execute();
     }
 
+    /**
+     * @return mixed|string
+     *
+     * @deprecated v2.7
+     */
     protected function encodeDataToJson()
     {
-        if (!is_array($this->gateway_data)) {
+        if ($this->gateway_data === null or !is_array($this->gateway_data)) {
             $this->gateway_data = array();
         }
         return json_encode($this->gateway_data);
@@ -206,39 +227,13 @@ class Session extends Prism\Database\Table
     {
         $query = $this->db->getQuery(true);
         $query
-            ->delete($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+            ->delete($this->db->quoteName('#__crowdf_payment_sessions'))
+            ->where($this->db->quoteName('id') . '=' . (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();
 
         $this->reset();
-    }
-
-    /**
-     * Reset object properties.
-     *
-     * <code>
-     * $keys = (
-     *  "user_id"  => 2,
-     *  "intention_id" => 3
-     * );
-     *
-     * $paymentSession   = new Crowdfunding\Payment\Session(\JFactory::getDbo());
-     * $paymentSession->load($keys);
-     *
-     * if (!$paymentSession->getToken()) {
-     *     $paymentSession->reset();
-     * }
-     * </code>
-     */
-    public function reset()
-    {
-        $properties = $this->getProperties();
-
-        foreach ($properties as $key => $value) {
-            $this->$key = null;
-        }
     }
 
     /**
@@ -284,7 +279,7 @@ class Session extends Prism\Database\Table
      */
     public function setUserId($userId)
     {
-        $this->user_id = $userId;
+        $this->user_id = (int)$userId;
 
         return $this;
     }
@@ -321,13 +316,13 @@ class Session extends Prism\Database\Table
      * $paymentSession->setAnonymousUserId($anonymousUserId);
      * </code>
      *
-     * @param int $auserId
+     * @param string $auserId
      *
      * @return self
      */
     public function setAnonymousUserId($auserId)
     {
-        $this->auser_id = $auserId;
+        $this->auser_id = (string)$auserId;
 
         return $this;
     }
@@ -348,7 +343,7 @@ class Session extends Prism\Database\Table
      */
     public function getAnonymousUserId()
     {
-        return $this->auser_id;
+        return (string)$this->auser_id;
     }
 
     /**
@@ -370,7 +365,7 @@ class Session extends Prism\Database\Table
      */
     public function setProjectId($projectId)
     {
-        $this->project_id = $projectId;
+        $this->project_id = (int)$projectId;
 
         return $this;
     }
@@ -413,7 +408,7 @@ class Session extends Prism\Database\Table
      */
     public function setRewardId($rewardId)
     {
-        $this->reward_id = $rewardId;
+        $this->reward_id = (int)$rewardId;
 
         return $this;
     }
@@ -473,7 +468,7 @@ class Session extends Prism\Database\Table
      * $date = $paymentSession->getRecordDate();
      * </code>
      *
-     * @return int
+     * @return string
      */
     public function getRecordDate()
     {
@@ -534,6 +529,8 @@ class Session extends Prism\Database\Table
      *
      * $gatewayData = $paymentSession->getGatewayData();
      * </code>
+     *
+     * @return Registry
      */
     public function getGatewayData()
     {
@@ -561,7 +558,7 @@ class Session extends Prism\Database\Table
      */
     public function setGatewayData(array $data)
     {
-        $this->gateway_data = $data;
+        $this->gateway_data = new Registry($data);
 
         return $this;
     }
@@ -585,7 +582,7 @@ class Session extends Prism\Database\Table
      */
     public function getData($key, $default = null)
     {
-        return (!isset($this->gateway_data[$key])) ? $default : $this->gateway_data[$key];
+        return ($this->gateway_data instanceof Registry) ? $this->gateway_data->get($key) : $default;
     }
 
     /**
@@ -608,7 +605,7 @@ class Session extends Prism\Database\Table
      */
     public function setData($key, $value)
     {
-        $this->gateway_data[$key] = $value;
+        $this->gateway_data->set($key, $value);
 
         return $this;
     }
@@ -625,6 +622,8 @@ class Session extends Prism\Database\Table
      *
      * $uniqueKey = $intention->getUniqueKey();
      * </code>
+     *
+     * @return string
      */
     public function getUniqueKey()
     {
@@ -677,9 +676,119 @@ class Session extends Prism\Database\Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__crowdf_payment_sessions"))
-            ->set($this->db->quoteName("unique_key") . "=" . $this->db->quote($this->unique_key))
-            ->where($this->db->quoteName("id") . "=" . $this->db->quote($this->id));
+            ->update($this->db->quoteName('#__crowdf_payment_sessions'))
+            ->set($this->db->quoteName('unique_key') . '=' . $this->db->quote($this->unique_key))
+            ->where($this->db->quoteName('id') . '=' . $this->db->quote($this->id));
+
+        $this->db->setQuery($query);
+        $this->db->execute();
+
+        return $this;
+    }
+
+    /**
+     * Get order ID.
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     *
+     * $paymentSession    = new Crowdfunding\Payment\Session(\JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $orderId = $intention->getOrderId();
+     * </code>
+     *
+     * @return string
+     */
+    public function getOrderId()
+    {
+        return $this->order_id;
+    }
+
+    /**
+     * Set the order ID.
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     * $orderId           = "ORDER123";
+     *
+     * $paymentSession    = new Crowdfunding\Payment\Session(\JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setOrderId($orderId);
+     * </code>
+     *
+     * @param string $orderId
+     * @return self
+     */
+    public function setOrderId($orderId)
+    {
+        $this->order_id = $orderId;
+
+        return $this;
+    }
+
+    /**
+     * Store the order ID to database.
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     * $orderId           = "ORDER123";
+     *
+     * $paymentSession    = new Crowdfunding\Payment\Session(\JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setOrderId($orderId);
+     * $paymentSession->storeOrderId();
+     * </code>
+     *
+     * @return self
+     */
+    public function storeOrderId()
+    {
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->update($this->db->quoteName('#__crowdf_payment_sessions'))
+            ->set($this->db->quoteName('order_id') . '=' . $this->db->quote($this->order_id))
+            ->where($this->db->quoteName('id') . '=' . $this->db->quote($this->id));
+
+        $this->db->setQuery($query);
+        $this->db->execute();
+
+        return $this;
+    }
+
+    /**
+     * Store data used during process of payment.
+     *
+     * <code>
+     * $paymentSessionId  = 1;
+     * $orderId           = "ORDER2";
+     *
+     * $paymentSession    = new Crowdfunding\Payment\Session(\JFactory::getDbo());
+     * $paymentSession->load($paymentSessionId);
+     *
+     * $paymentSession->setData('order_id', $orderId);
+     * $paymentSession->storeData();
+     * </code>
+     *
+     * @return self
+     */
+    public function storeData()
+    {
+        // Convert the gateway data to JSON format.
+        $gatewayData = 'NULL';
+        if ($this->gateway_data instanceof Registry) {
+            $gatewayData  = $this->gateway_data->toString();
+        }
+
+        $query = $this->db->getQuery(true);
+
+        $query
+            ->update($this->db->quoteName('#__crowdf_payment_sessions'))
+            ->set($this->db->quoteName('gateway_data') . '=' . $this->db->quote($gatewayData))
+            ->where($this->db->quoteName('id') . '=' . $this->db->quote($this->id));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -741,6 +850,8 @@ class Session extends Prism\Database\Table
      *
      * $sessionId = $paymentSession->getSessionId();
      * </code>
+     *
+     * @return string
      */
     public function getSessionId()
     {
@@ -784,10 +895,10 @@ class Session extends Prism\Database\Table
      * }
      * </code>
      *
-     * @return int
+     * @return bool
      */
     public function isAnonymous()
     {
-        return (!$this->auser_id) ? false : true;
+        return (bool)($this->auser_id);
     }
 }

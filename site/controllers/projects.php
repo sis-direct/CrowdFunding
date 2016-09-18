@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -25,25 +25,23 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return   CrowdfundingModelProjectItem    The model.
      * @since    1.5
      */
     public function getModel($name = 'ProjectItem', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
     public function saveState()
     {
-        // Check for request forgeries.
-        JSession::checkToken("get") or jexit(JText::_('JINVALID_TOKEN'));
+        JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_CROWDFUNDING_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
@@ -58,16 +56,16 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
         $state  = $this->input->get->get('state', 0, 'int');
         $state  = (!$state) ? 0 : 1;
 
-        $return     = $this->input->get->get('return', null, 'base64');
+        $return     = $this->input->get->get('return', '', 'base64');
         $returnLink = JRoute::_(CrowdfundingHelperRoute::getProjectsRoute(), false);
 
         // Get return link from parameters.
-        if (!empty($return)) {
+        if (JString::strlen($return) > 0) {
             $returnLink = base64_decode($return);
         }
 
         $redirectOptions = array(
-            "force_direction" => $returnLink
+            'force_direction' => $returnLink
         );
 
         $model = $this->getModel();
@@ -84,13 +82,13 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
         JPluginHelper::importPlugin('content');
 
         // Trigger onContentValidate event.
-        $context = $this->option . ".projects.changestate";
-        $results = $dispatcher->trigger("onContentValidateChangeState", array($context, &$item, &$params, $state));
+        $context = $this->option . '.projects.changestate';
+        $results = $dispatcher->trigger('onContentValidateChangeState', array($context, &$item, &$params, $state));
 
         // If there is an error, redirect to another page.
         foreach ($results as $result) {
-            if ($result["success"] == false) {
-                $this->displayNotice(Joomla\Utilities\ArrayHelper::getValue($result, "message"), $redirectOptions);
+            if ((bool)$result['success'] === false) {
+                $this->displayNotice(Joomla\Utilities\ArrayHelper::getValue($result, 'message'), $redirectOptions);
                 return;
             }
         }
@@ -100,7 +98,7 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
             $model->saveState($itemId, $userId, $state);
 
         } catch (RuntimeException $e) {
-            $this->setMessage($e->getMessage(), "warning");
+            $this->setMessage($e->getMessage(), 'warning');
             $this->setRedirect($returnLink);
             return;
         } catch (Exception $e) {
@@ -110,9 +108,9 @@ class CrowdfundingControllerProjects extends Prism\Controller\Admin
 
         // Redirect to next page
         if (!$state) {
-            $msg = JText::_("COM_CROWDFUNDING_PROJECT_STOPPED_SUCCESSFULLY");
+            $msg = JText::_('COM_CROWDFUNDING_PROJECT_STOPPED_SUCCESSFULLY');
         } else {
-            $msg = JText::_("COM_CROWDFUNDING_PROJECT_LAUNCHED_SUCCESSFULLY_INFO");
+            $msg = JText::_('COM_CROWDFUNDING_PROJECT_LAUNCHED_SUCCESSFULLY_INFO');
         }
 
         $this->displayMessage($msg, $redirectOptions);

@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -92,7 +92,7 @@ class CrowdfundingModelCountries extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.name, a.code, a.code4, a.latitude, a.longitude, a.timezone'
+                'a.id, a.name, a.code, a.locale, a.latitude, a.longitude, a.timezone'
             )
         );
         $query->from($db->quoteName('#__crowdf_countries', 'a'));

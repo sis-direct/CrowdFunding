@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -49,47 +49,41 @@ class CrowdfundingViewTransactions extends JViewLegacy
      *
      * @var array
      */
-    protected $specificPlugins = array("paypalexpress", "paypaladaptive");
-
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
+    protected $specificPlugins = array('paypalexpress', 'paypaladaptive', 'stripeconnect');
 
     public function display($tpl = null)
     {
+        $this->option = JFactory::getApplication()->input->get('option');
+
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
 
         // Get currencies
         $currencies = array();
         foreach ($this->items as $item) {
             $currencies[] = $item->txn_currency;
         }
-        $currencies   = array_unique($currencies);
-
-        if (!empty($currencies)) {
+        $currencies   = array_filter(array_unique($currencies));
+        
+        if (count($currencies) > 0) {
             $options = new Joomla\Registry\Registry;
-            $options->set("locale_intl", $this->params->get("locale_intl"));
-            $options->set("amount_format", $this->params->get("amount_format"));
+            $options->set('locale_intl', $this->params->get('locale_intl'));
+            $options->set('amount_format', $this->params->get('amount_format'));
 
             $this->currencies = new Crowdfunding\Currencies(JFactory::getDbo(), $options);
-            $this->currencies->loadByCode($currencies);
+            $this->currencies->load(array('codes' => $currencies));
         }
 
         $this->amount = new Crowdfunding\Amount($this->params);
 
-        // Get enabled specefic plugins.
+        // Get enabled specific plugins.
         $extensions                   = new Prism\Extensions(JFactory::getDbo(), $this->specificPlugins);
         $this->enabledSpecificPlugins = $extensions->getEnabled();
 
-        // Add submenu
-        CrowdfundingHelper::addSubmenu($this->getName());
-
+        
         // Prepare sorting data
         $this->prepareSorting();
 
@@ -109,7 +103,7 @@ class CrowdfundingViewTransactions extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
         if ($this->saveOrder) {
             $this->saveOrderingUrl = 'index.php?option=' . $this->option . '&task=' . $this->getName() . '.saveOrderAjax&format=raw';
@@ -118,11 +112,12 @@ class CrowdfundingViewTransactions extends JViewLegacy
 
         $this->sortFields = array(
             'b.name'             => JText::_('COM_CROWDFUNDING_BENEFICIARY'),
-            'e.name'             => JText::_('COM_CROWDFUNDING_SENDER'),
+            'e.name'             => JText::_('COM_CROWDFUNDING_BACKER'),
             'c.title'            => JText::_('COM_CROWDFUNDING_PROJECT'),
             'a.txn_amount'       => JText::_('COM_CROWDFUNDING_AMOUNT'),
             'a.txn_date'         => JText::_('COM_CROWDFUNDING_DATE'),
             'a.service_provider' => JText::_('COM_CROWDFUNDING_PAYMENT_GETAWAY'),
+            'a.txn_status'       => JText::_('COM_CROWDFUNDING_PAYMENT_STATUS'),
             'a.id'               => JText::_('JGRID_HEADING_ID')
         );
     }
@@ -132,8 +127,11 @@ class CrowdfundingViewTransactions extends JViewLegacy
      */
     protected function addSidebar()
     {
+        // Add submenu
+        CrowdfundingHelper::addSubmenu($this->getName());
+        
         // Create object Filters and load some filters options.
-        $filters = new Crowdfunding\Filters(JFactory::getDbo());
+        $filters = Crowdfunding\Filters::getInstance(JFactory::getDbo());
 
         // Get payment services.
         $paymentServices = $filters->getPaymentServices();
@@ -171,22 +169,23 @@ class CrowdfundingViewTransactions extends JViewLegacy
     {
         // Set toolbar items for the page
         JToolbarHelper::title(JText::_('COM_CROWDFUNDING_TRANSACTIONS_MANAGER'));
+        JToolbarHelper::addNew('transaction.add');
         JToolbarHelper::editList('transaction.edit');
 
         // Add actions used for specific payment plugins.
-        if (!empty($this->enabledSpecificPlugins)) {
+        if (count($this->enabledSpecificPlugins) > 0) {
             JToolbarHelper::divider();
 
             // Add custom buttons
             $bar = JToolbar::getInstance('toolbar');
-            $bar->appendButton('Confirm', JText::_("COM_CROWDFUNDING_QUESTION_CAPTURE"), 'checkin', JText::_("COM_CROWDFUNDING_CAPTURE"), 'payments.docapture', true);
-            $bar->appendButton('Confirm', JText::_("COM_CROWDFUNDING_QUESTION_VOID"), 'cancel-circle', JText::_("COM_CROWDFUNDING_VOID"), 'payments.dovoid', true);
+            $bar->appendButton('Confirm', JText::_('COM_CROWDFUNDING_QUESTION_CAPTURE'), 'checkin', JText::_('COM_CROWDFUNDING_CAPTURE'), 'payments.doCapture', true);
+            $bar->appendButton('Confirm', JText::_('COM_CROWDFUNDING_QUESTION_VOID'), 'cancel-circle', JText::_('COM_CROWDFUNDING_VOID'), 'payments.doVoid', true);
         }
 
         JToolbarHelper::divider();
-        JToolbarHelper::deleteList(JText::_("COM_CROWDFUNDING_DELETE_ITEMS_QUESTION"), "transactions.delete");
+        JToolbarHelper::deleteList(JText::_('COM_CROWDFUNDING_DELETE_ITEMS_QUESTION'), 'transactions.delete');
         JToolbarHelper::divider();
-        JToolbarHelper::custom('transactions.backToDashboard', "dashboard", "", JText::_("COM_CROWDFUNDING_DASHBOARD"), false);
+        JToolbarHelper::custom('transactions.backToDashboard', 'dashboard', '', JText::_('COM_CROWDFUNDING_DASHBOARD'), false);
     }
 
     /**
@@ -200,10 +199,13 @@ class CrowdfundingViewTransactions extends JViewLegacy
 
         // Scripts
         JHtml::_('behavior.multiselect');
-
         JHtml::_('bootstrap.tooltip');
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('prism.ui.joomlaList');
+        JHtml::_('Prism.ui.joomlaList');
+        JHtml::_('Prism.ui.pnotify');
+        JHtml::_('Prism.ui.joomlaHelper');
+
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
     }
 }

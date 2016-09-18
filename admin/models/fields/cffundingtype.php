@@ -3,11 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('JPATH_PLATFORM') or die;
+
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 JFormHelper::loadFieldClass('radio');
 
@@ -32,8 +35,8 @@ class JFormFieldCfFundingType extends JFormFieldRadio
     protected function getInput()
     {
         // Get component parameters
-        $componentParams    = JComponentHelper::getParams("com_crowdfunding");
-        $allowedFundingType = $componentParams->get("project_funding_type");
+        $componentParams    = JComponentHelper::getParams('com_crowdfunding');
+        $allowedFundingType = $componentParams->get('project_funding_type');
 
         // Initialize variables.
         $html = array();
@@ -41,11 +44,11 @@ class JFormFieldCfFundingType extends JFormFieldRadio
         // Build the radio field output.
         switch ($allowedFundingType) {
 
-            case "FIXED":
+            case 'FIXED':
                 $this->prepareFixed($html);
                 break;
 
-            case "FLEXIBLE":
+            case 'FLEXIBLE':
                 $this->prepareFlexible($html);
                 break;
 
@@ -63,30 +66,30 @@ class JFormFieldCfFundingType extends JFormFieldRadio
     private function prepareFixed(&$html)
     {
         // Initialize some option attributes.
-        $checked = ($this->value == "FIXED") ? ' checked="checked"' : '';
+        $checked = ($this->value === 'FIXED') ? ' checked="checked"' : '';
 
         $html[] = '<div class="radio">';
         $html[] = '<label for="' . $this->id . '_fixed">';
         $html[] = '<input type="radio" id="' . $this->id . '_fixed" name="' . $this->name . '"' . ' value="FIXED"' . $checked . '/>';
-        $html[] = JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FIXED");
+        $html[] = JText::_('COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FIXED');
         $html[] = '</label>';
 
-        $html[] = '<span class="help-block">'.JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FIXED").'</span>';
+        $html[] = '<span class="help-block">'.JText::_('COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FIXED').'</span>';
         $html[] = '</div>';
     }
 
     private function prepareFlexible(&$html)
     {
         // Initialize some option attributes.
-        $checked = ($this->value == "FLEXIBLE") ? ' checked="checked"' : '';
+        $checked = ($this->value === 'FLEXIBLE') ? ' checked="checked"' : '';
 
         $html[] = '<div class="radio">';
         $html[] = '<label for="' . $this->id . '_flexible">';
         $html[] = '<input type="radio" id="' . $this->id . '_flexible" name="' . $this->name . '"' . ' value="FLEXIBLE"' . $checked . '/>';
-        $html[] = JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE");
+        $html[] = JText::_('COM_CROWDFUNDING_FIELD_FUNDING_TYPE_FLEXIBLE');
         $html[] = '</label>';
 
-        $html[] = '<span class="help-block">'.JText::_("COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FLEXIBLE").'</span>';
+        $html[] = '<span class="help-block">'.JText::_('COM_CROWDFUNDING_FIELD_FUNDING_TYPE_HELP_FLEXIBLE').'</span>';
         $html[] = '</div>';
     }
 }

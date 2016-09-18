@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -44,7 +44,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
     public function loadLocation()
     {
         // Get the input
-        $query = $this->input->get->get('query', "", 'string');
+        $query = $this->input->get->getString('query');
 
         $response = new Prism\Response\Json();
 
@@ -53,11 +53,11 @@ class CrowdfundingControllerProject extends JControllerLegacy
             $locations = new Crowdfunding\Locations(JFactory::getDbo());
             $locations->loadByString($query);
             
-            $locationData = $locations->toOptions();
+            $locationData = $locations->toOptions('id', 'name');
 
         } catch (Exception $e) {
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_Crowdfunding_ERROR_SYSTEM'));
+            throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
         }
 
         $response

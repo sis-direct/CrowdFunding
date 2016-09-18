@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -48,7 +48,7 @@ class CrowdfundingModelProjects extends JModelList
         $state = $this->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $state);
 
-        $value = JFactory::getUser()->get("id");
+        $value = JFactory::getUser()->get('id');
         $this->setState('filter.user_id', $value);
 
         // Load the component parameters.
@@ -99,14 +99,14 @@ class CrowdfundingModelProjects extends JModelList
                 'list.select',
                 'a.id, a.title, a.image_square, a.goal, a.funded, ' .
                 'a.funding_end, a.funding_days, a.funding_start, ' .
-                $query->concatenate(array("a.id", "a.alias"), ":") . ' AS slug, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
                 'a.published, a.approved, ' .
                 'b.published AS catstate, ' .
-                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
         );
-        $query->from($db->quoteName('#__crowdf_projects', "a"));
-        $query->leftJoin($db->quoteName('#__categories', "b") . ' ON a.catid = b.id');
+        $query->from($db->quoteName('#__crowdf_projects', 'a'));
+        $query->leftJoin($db->quoteName('#__categories', 'b') . ' ON a.catid = b.id');
 
         // Filter by state
         $state = $this->getState('filter.state');

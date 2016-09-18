@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -15,12 +15,16 @@ defined('_JEXEC') or die;
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
+    <?php if ($this->params->get('display_description', 0)) {
+        echo $this->item->description;
+    } ?>
+
     <?php if (empty($this->items)) { ?>
-        <p class="alert alert-warning"><?php echo JText::_("COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY"); ?></p>
+        <p class="alert alert-warning"><?php echo JText::_('COM_CROWDFUNDING_NO_ITEMS_MATCHING_QUERY'); ?></p>
     <?php } ?>
 
     <?php if (!empty($this->items)) {
-        $layout      = new JLayoutFile('items_grid');
+        $layout      = new JLayoutFile($this->params->get('grid_layout', 'items_grid'));
         echo $layout->render($this->layoutData);
     } ?>
 
@@ -34,8 +38,8 @@ defined('_JEXEC') or die;
 
     <?php
     if (!empty($this->displaySubcategories) and !empty($this->categories)) { ?>
-        <h4><?php echo JText::_("COM_CROWDFUNDING_SUBCATEGORIES"); ?></h4>
-        <?php echo $this->loadTemplate("categories");
+        <h4><?php echo JText::_('COM_CROWDFUNDING_SUBCATEGORIES'); ?></h4>
+        <?php echo $this->loadTemplate('categories');
     } ?>
 </div>
 <div class="clearfix">&nbsp;</div>

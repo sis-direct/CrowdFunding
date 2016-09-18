@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -46,7 +46,7 @@ class CrowdfundingModelReward extends JModelList
         $params = $app->getParams($this->option);
         $this->setState('params', $params);
 
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName().'.id', $value);
 
         // List state information.
@@ -81,7 +81,7 @@ class CrowdfundingModelReward extends JModelList
      */
     protected function getListQuery()
     {
-        $rewardId = $this->getState($this->getName().".id");
+        $rewardId = $this->getState($this->getName().'.id');
 
         // Create a new query object.
         $db = $this->getDbo();
@@ -93,15 +93,15 @@ class CrowdfundingModelReward extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                "a.id AS transaction_id, a.receiver_id, a.reward_state, a.txn_id, a.reward_id, " .
-                "b.title AS reward_name, ".
-                "c.name"
+                'a.id AS transaction_id, a.receiver_id, a.reward_state, a.txn_id, a.reward_id, ' .
+                'b.title AS reward_name, '.
+                'c.name'
             )
         )
-        ->from($db->quoteName("#__crowdf_transactions", "a"))
-        ->leftJoin($db->quoteName("#__crowdf_rewards", "b"). " ON a.reward_id = b.id")
-        ->leftJoin($db->quoteName("#__users", "c") . " ON a.receiver_id = c.id")
-        ->where("a.reward_id = ". (int)$rewardId);
+        ->from($db->quoteName('#__crowdf_transactions', 'a'))
+        ->leftJoin($db->quoteName('#__crowdf_rewards', 'b'). ' ON a.reward_id = b.id')
+        ->leftJoin($db->quoteName('#__users', 'c') . ' ON a.receiver_id = c.id')
+        ->where('a.reward_id = '. (int)$rewardId);
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

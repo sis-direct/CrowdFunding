@@ -3,13 +3,13 @@
  * @package      Crowdfunding
  * @subpackage   Transactions
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
-use Prism;
+use Prism\Database;
 use Joomla\Utilities\ArrayHelper;
 
 defined('JPATH_PLATFORM') or die;
@@ -20,22 +20,8 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Transactions
  */
-class Transactions extends Prism\Database\ArrayObject 
+class Transactions extends Database\Collection
 {
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $transactions    = new Crowdfunding\Transactions(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db Database object.
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db = $db;
-    }
-
     /**
      * Load transactions from database.
      *
@@ -59,49 +45,116 @@ class Transactions extends Prism\Database\ArrayObject
      *
      * @throws \UnexpectedValueException
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
-        $ids = (!isset($options["ids"])) ? null : (array)$options["ids"];
+        $ids = (!array_key_exists('ids', $options)) ? array() : (array)$options['ids'];
+        $ids = ArrayHelper::toInteger($ids);
 
-        if (!is_array($ids) or !$ids) {
-            return;
-        }
+        $results = array();
 
-        ArrayHelper::toInteger($ids);
+        if (count($ids) > 0) {
 
-        // Load project data
-        $query = $this->db->getQuery(true);
+            // Load project data
+            $query = $this->db->getQuery(true);
 
-        $query
-            ->select(
-                "a.id, a.txn_date, a.txn_id, a.txn_amount, a.txn_currency, a.txn_status, " .
-                "a.extra_data, a.status_reason, a.project_id, a.reward_id, a.investor_id, " .
-                "a.receiver_id, a.service_provider, a.reward_state"
-            )
-            ->from($this->db->quoteName("#__crowdf_transactions", "a"))
-            ->where("a.id IN ( " . implode(",", $ids) . " )");
+            $query
+                ->select(
+                    'a.id, a.txn_date, a.txn_id, a.txn_amount, a.txn_currency, a.txn_status, ' .
+                    'a.extra_data, a.status_reason, a.project_id, a.reward_id, a.investor_id, ' .
+                    'a.receiver_id, a.service_provider, a.service_alias, a.reward_state'
+                )
+                ->from($this->db->quoteName('#__crowdf_transactions', 'a'))
+                ->where('a.id IN ( ' . implode(',', $ids) . ' )');
 
-        // Filter by status.
-        $status = ArrayHelper::getValue($options, "txn_status", null, "cmd");
-        if (!empty($status)) {
-            $query->where("a.txn_status = " . $this->db->quote($status));
-        }
-
-        $this->db->setQuery($query);
-        $results = $this->db->loadObjectList();
-
-        // Convert JSON string into an array.
-        if (!empty($results)) {
-            foreach ($results as $key => $result) {
-                if (!empty($result->extra_data)) {
-                    $result->extra_data = json_decode($result->extra_data, true);
-                    $results[$key]      = $result;
-                }
+            // Filter by status.
+            $status = ArrayHelper::getValue($options, 'txn_status', null, 'cmd');
+            if ($status !== null) {
+                $query->where('a.txn_status = ' . $this->db->quote($status));
             }
-        } else {
-            $results = array();
+
+            $this->db->setQuery($query);
+            $results = (array)$this->db->loadAssocList();
+
+            // Convert JSON string into an array.
+            if (count($results) > 0) {
+                foreach ($results as $key => &$result) {
+                    if (!empty($result['extra_data'])) {
+                        $result['extra_data'] = json_decode($result['extra_data'], true);
+                    }
+                }
+
+                unset($result);
+            }
         }
 
         $this->items = $results;
+    }
+
+    /**
+     * Create a transaction object and return it.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $transactions  = new Crowdfunding\Transaction\Transactions(\JFactory::getDbo());
+     * $transactions->load($options);
+     *
+     * $transactionId = 1;
+     * $transaction   = $transactions->getTransaction($transactionId);
+     * </code>
+     *
+     * @param int|string $id Transaction ID.
+     *
+     * @return null|Transaction
+     */
+    public function getTransaction($id)
+    {
+        if (!$id) {
+            throw new \UnexpectedValueException(\JText::_('LIB_CROWDFUNDING_INVALID_TRANSACTION_ID'));
+        }
+
+        $transaction = null;
+
+        foreach ($this->items as $item) {
+            if ((int)$id === (int)$item['id']) {
+                $transaction = new Transaction($this->db);
+                $transaction->bind($item);
+                break;
+            }
+        }
+
+        return $transaction;
+    }
+
+    /**
+     * Return the transactions as array with objects.
+     *
+     * <code>
+     * $options = array(
+     *     "ids" => array(1,2,3,4,5)
+     * );
+     *
+     * $transactions   = new Crowdfunding\Transaction\Transactions(\JFactory::getDbo());
+     * $transactions->load($options);
+     *
+     * $transactions = $transactions->getTransactions();
+     * </code>
+     *
+     * @return array
+     */
+    public function getTransactions()
+    {
+        $results = array();
+
+        $i = 0;
+        foreach ($this->items as $item) {
+            $transaction[$i] = new Transaction($this->db);
+            $transaction[$i]->bind($item);
+            $i++;
+        }
+
+        return $results;
     }
 }

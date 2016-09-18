@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class CrowdfundingController extends JControllerLegacy
 {
-    protected $cacheableViews = array("categories", "category", "discover", "featured");
+    protected $cacheableViews = array('categories', 'category', 'discover', 'featured');
 
     /**
      * Method to display a view.
@@ -31,10 +31,11 @@ class CrowdfundingController extends JControllerLegacy
         $viewName = $this->input->getCmd('view', 'discover');
         $this->input->set('view', $viewName);
 
-        JHtml::stylesheet("com_crowdfunding/frontend.style.css", false, true, false);
+        JHtml::stylesheet('com_crowdfunding/frontend.style.css', false, true, false);
+        JHtml::_('Prism.ui.styles');
 
         // Cache some views.
-        if (in_array($viewName, $this->cacheableViews)) {
+        if (in_array($viewName, $this->cacheableViews, true)) {
             $cachable = true;
         }
 

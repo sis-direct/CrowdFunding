@@ -3,8 +3,8 @@
  * @package      Crowdfunding\Projects
  * @subpackage   Validators
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding\Validator\Project;
@@ -47,9 +47,9 @@ class Period implements ValidatorInterface
     public function __construct($startDate, $endDate, $minDays, $maxDays)
     {
         $this->startDate = $startDate;
-        $this->endDate = $endDate;
-        $this->minDays = $minDays;
-        $this->maxDays = $maxDays;
+        $this->endDate   = $endDate;
+        $this->minDays   = (int)abs($minDays);
+        $this->maxDays   = (int)abs($maxDays);
     }
 
     /**
@@ -74,16 +74,16 @@ class Period implements ValidatorInterface
         // Get interval between starting and ending date.
         $fundingStartDate = new \JDate($this->startDate);
         $fundingEndDate   = new \JDate($this->endDate);
-        $interval     = $fundingStartDate->diff($fundingEndDate);
+        $interval         = $fundingStartDate->diff($fundingEndDate);
 
-        $days = $interval->format("%r%a");
+        $days = (int)$interval->format('%r%a');
 
         // Validate minimum dates
         if ($days < $this->minDays) {
             return false;
         }
 
-        if (!empty($this->maxDays) and $days > $this->maxDays) {
+        if ($this->maxDays > 0 and $days > $this->maxDays) {
             return false;
         }
 

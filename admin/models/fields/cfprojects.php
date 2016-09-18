@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('JPATH_PLATFORM') or die;
@@ -13,6 +13,9 @@ jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
+
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 class JFormFieldCfProjects extends JFormFieldList
 {
@@ -37,7 +40,7 @@ class JFormFieldCfProjects extends JFormFieldList
 
         $query
             ->select('a.id AS value, a.title AS text')
-            ->from('#__crowdf_projects AS a');
+            ->from($db->quoteName('#__crowdf_projects', 'a'));
 
         // Get the options.
         $db->setQuery($query);

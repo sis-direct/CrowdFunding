@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('JPATH_PLATFORM') or die;
@@ -29,7 +29,7 @@ class JFormRuleCfCountry extends JFormRule
     public function test(SimpleXMLElement $element, $value, $group = null, JRegistry $input = null, JForm $form = null)
     {
         // If the field is empty and not required, the field is valid.
-        $required = ((string)$element['required'] == 'true' || (string)$element['required'] == 'required');
+        $required = ((string)$element['required'] === 'true' || (string)$element['required'] === 'required');
 
         if ($required and !$value) {
             return false;
@@ -42,7 +42,7 @@ class JFormRuleCfCountry extends JFormRule
         // Build the query.
         $query
             ->select('COUNT(*)')
-            ->from($db->quoteName("#__crowdf_countries", "a"));
+            ->from($db->quoteName('#__crowdf_countries', 'a'));
 
         if (is_numeric($value)) {
             $query->where('a.id = ' . (int)$value);

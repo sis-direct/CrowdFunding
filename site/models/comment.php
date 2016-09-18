@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class CrowdfundingModelComment extends JModelForm
 {
-    protected $item = null;
+    protected $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -21,7 +21,7 @@ class CrowdfundingModelComment extends JModelForm
      * @param   string $prefix A prefix for the table class name. Optional.
      * @param   array  $config Configuration array for model. Optional.
      *
-     * @return  JTable  A database object
+     * @return  CrowdfundingTableComment  A database object
      * @since   1.6
      */
     public function getTable($type = 'Comment', $prefix = 'CrowdfundingTable', $config = array())
@@ -38,14 +38,14 @@ class CrowdfundingModelComment extends JModelForm
     {
         parent::populateState();
 
-        $app = JFactory::getApplication("Site");
+        $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $value);
 
-        $value = $app->input->getInt("project_id");
+        $value = $app->input->getInt('project_id');
         $this->setState('project_id', $value);
 
         // Load the parameters.
@@ -86,16 +86,14 @@ class CrowdfundingModelComment extends JModelForm
     protected function loadFormData()
     {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         $data = $app->getUserState($this->option . '.edit.comment.data', array());
         if (!$data) {
-
             $itemId = (int)$this->getState($this->getName() . '.id');
             $userId = JFactory::getUser()->id;
 
             $data = $this->getItem($itemId, $userId);
-
         }
 
         return $data;
@@ -124,8 +122,8 @@ class CrowdfundingModelComment extends JModelForm
         if ($pk > 0 and $userId > 0) {
 
             $keys = array(
-                "id"      => $pk,
-                "user_id" => $userId
+                'id'      => $pk,
+                'user_id' => $userId
             );
 
             // Attempt to load the row.
@@ -133,7 +131,7 @@ class CrowdfundingModelComment extends JModelForm
 
             // Check for a table object error.
             if ($return === false) {
-                throw new Exception(JText::_("COM_CROWDFUNDING_ERROR_SYSTEM"));
+                throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
             }
 
         }
@@ -150,43 +148,43 @@ class CrowdfundingModelComment extends JModelForm
      *
      * @param    array    $data    The form data.
      *
-     * @return    mixed        The record id on success, null on failure.
+     * @return   mixed    The record id on success, null on failure.
      * @since    1.6
      */
     public function save($data)
     {
-        $id        = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $comment   = Joomla\Utilities\ArrayHelper::getValue($data, "comment");
-        $projectId = Joomla\Utilities\ArrayHelper::getValue($data, "project_id");
+        $id        = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
+        $comment   = Joomla\Utilities\ArrayHelper::getValue($data, 'comment');
+        $projectId = Joomla\Utilities\ArrayHelper::getValue($data, 'project_id');
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
 
         $keys = array(
-            "id"      => $id,
-            "user_id" => $userId
+            'id'      => $id,
+            'user_id' => $userId
         );
 
         // Load a record from the database
         $row = $this->getTable();
         $row->load($keys);
 
-        $row->set("comment", $comment);
+        $row->set('comment', $comment);
 
-        if (!$row->get("user_id")) {
+        if (!$row->get('user_id')) {
 
             $params    = JComponentHelper::getParams($this->option);
             /** @var  $params Joomla\Registry\Registry */
 
-            $published = (!$params->get("comments_adding_state", 0)) ? 0 : 1;
+            $published = (!$params->get('comments_adding_state', 0)) ? 0 : 1;
 
-            $row->set("record_date", null);
-            $row->set("project_id", $projectId);
-            $row->set("user_id", $userId);
-            $row->set("published", $published);
+            $row->set('record_date', null);
+            $row->set('project_id', $projectId);
+            $row->set('user_id', $userId);
+            $row->set('published', $published);
         }
 
         $row->store();
 
-        return $row->get("id");
+        return $row->get('id');
     }
 }

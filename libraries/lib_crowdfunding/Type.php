@@ -3,14 +3,14 @@
  * @package      Crowdfunding
  * @subpackage   Types
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Crowdfunding;
 
 use Joomla\Utilities\ArrayHelper;
-use Prism;
+use Prism\Database;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -20,28 +20,11 @@ defined('JPATH_PLATFORM') or die;
  * @package      Crowdfunding
  * @subpackage   Types
  */
-class Type extends Prism\Database\TableImmutable
+class Type extends Database\TableImmutable
 {
     protected $id = 0;
     protected $title;
     protected $description;
-    protected $params = array();
-
-    /**
-     * Initialize the object.
-     *
-     * <code>
-     * $type    = new Crowdfunding\Type(\JFactory::getDbo());
-     * </code>
-     *
-     * @param \JDatabaseDriver $db
-     *
-     * @return self
-     */
-    public function __construct(\JDatabaseDriver $db)
-    {
-        $this->db       = $db;
-    }
 
     /**
      * Load a data about a type from database.
@@ -56,14 +39,14 @@ class Type extends Prism\Database\TableImmutable
      * @param int $keys
      * @param array $options
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.title, a.description, a.params")
-            ->from($this->db->quoteName("#__crowdf_types", "a"))
-            ->where("a.id = " . (int)$keys);
+            ->select('a.id, a.title, a.description, a.params')
+            ->from($this->db->quoteName('#__crowdf_types', 'a'))
+            ->where('a.id = ' . (int)$keys);
 
         $this->db->setQuery($query);
         $result = $this->db->loadAssoc();
@@ -73,37 +56,6 @@ class Type extends Prism\Database\TableImmutable
         }
 
         $this->bind($result);
-    }
-
-    /**
-     * Set data to object properties.
-     *
-     * <code>
-     * $data = array(
-     *  "title" => "A ticked for...",
-     *  "amount" => "10.00"
-     * );
-     *
-     * $type    = new Crowdfunding\Type();
-     * $type->bind($data);
-     * </code>
-     *
-     * @param array $data
-     * @param array $ignored
-     */
-    public function bind($data, $ignored = array())
-    {
-        if (isset($data["params"])) {
-            $this->setParams($data["params"]);
-            unset($data["params"]);
-        }
-
-        foreach ($data as $key => $value) {
-            if (!in_array($key, $ignored)) {
-                $this->$key = $value;
-            }
-        }
-
     }
 
     /**
@@ -124,7 +76,7 @@ class Type extends Prism\Database\TableImmutable
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -197,40 +149,6 @@ class Type extends Prism\Database\TableImmutable
     }
 
     /**
-     * Set type title.
-     *
-     * <code>
-     * $params = array(
-     *     "rewards_enabled" = Prism\Constants::ENABLED
-     * );
-     *
-     * $type    = new Crowdfunding\Type(\JFactory::getDbo());
-     * $type->load($typeId);
-     *
-     * $type->setParams($params);
-     * $type->store();
-     * </code>
-     *
-     * @param mixed $params
-     *
-     * @return self
-     */
-    public function setParams($params)
-    {
-        if (is_string($params)) {
-            $this->params = (array)json_decode($params, true);
-        } elseif (is_object($params)) {
-            $this->params = ArrayHelper::fromObject($params);
-        } elseif (is_array($params)) {
-            $this->params = $params;
-        } else {
-            $this->params = array();
-        }
-
-        return $this;
-    }
-
-    /**
      * Return type parameters.
      *
      * <code>
@@ -287,11 +205,6 @@ class Type extends Prism\Database\TableImmutable
      */
     public function isRewardsEnabled()
     {
-        $rewards = false;
-        if (isset($this->params["rewards_enabled"])) {
-            $rewards = (!$this->params["rewards_enabled"]) ? false : true;
-        }
-
-        return $rewards;
+        return (bool)($this->params->get('rewards_enabled', false));
     }
 }

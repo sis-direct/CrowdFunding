@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -34,29 +34,22 @@ abstract class JHtmlCrowdfunding
      *
      * @return string
      */
-    public static function approved($value, $hint = true, $iconOk = "glyphicon glyphicon-ok-sign", $iconRemove = "glyphicon glyphicon-remove-sign")
+    public static function approved($value, $hint = true, $iconOk = 'fa fa-check-circle', $iconRemove = 'fa fa-times-circle')
     {
         if (!$hint) {
             $html = '<span class="{ICON}" aria-hidden="true"></span>';
         } else {
-            JHtml::_("bootstrap.tooltip");
-            $title = (!$value) ? ' title="'.JText::_("COM_CROWDFUNDING_NOTAPPROVED").'"' : ' title="'.JText::_("COM_CROWDFUNDING_APPROVED").'""';
-            $html = '<span class="{ICON} hasTooltip cursor-pointer" aria-hidden="true"'. $title .'></span>';
+            $title = (!$value) ? ' title="'.JText::_('COM_CROWDFUNDING_NOTAPPROVED').'"' : ' title="'.JText::_('COM_CROWDFUNDING_APPROVED').'"';
+            $html  = '<span class="{ICON} hasTooltip cursor-pointer" aria-hidden="true"'. $title .'></span>';
         }
 
-        switch ($value) {
-
-            case 1: // Published
-                $html = str_replace("{ICON}", $iconOk, $html);
-                break;
-
-            default: // Unpublished
-                $html = str_replace("{ICON}", $iconRemove, $html);
-                break;
+        if ((int)$value === Prism\Constants::PUBLISHED) {
+            $html = str_replace('{ICON}', $iconOk, $html);
+        } else {// Unpublished
+            $html = str_replace('{ICON}', $iconRemove, $html);
         }
 
         return $html;
-
     }
 
     /**
@@ -77,20 +70,20 @@ abstract class JHtmlCrowdfunding
 
         $html = '<div class="input-group">';
 
-        if (!empty($symbol)) {
+        if ($symbol) {
             $html .= '<div class="input-group-addon">' . $symbol . '</div>';
         }
 
-        $name = Joomla\Utilities\ArrayHelper::getValue($options, "name");
+        $name = Joomla\Utilities\ArrayHelper::getValue($options, 'name');
 
-        $id = "";
-        if (Joomla\Utilities\ArrayHelper::getValue($options, "id")) {
-            $id = 'id="' . Joomla\Utilities\ArrayHelper::getValue($options, "id") . '"';
+        $id = '';
+        if (Joomla\Utilities\ArrayHelper::getValue($options, 'id')) {
+            $id = 'id="' . Joomla\Utilities\ArrayHelper::getValue($options, 'id') . '"';
         }
 
         $class = 'class="form-control ';
-        if (Joomla\Utilities\ArrayHelper::getValue($options, "class")) {
-            $class .= Joomla\Utilities\ArrayHelper::getValue($options, "class");
+        if (Joomla\Utilities\ArrayHelper::getValue($options, 'class')) {
+            $class .= Joomla\Utilities\ArrayHelper::getValue($options, 'class');
         }
         $class .= '"';
 
@@ -100,7 +93,7 @@ abstract class JHtmlCrowdfunding
 
         $html .= '<input type="text" name="' . $name . '" value="' . $amount->setValue($value)->format(). '" ' . $id . ' ' . $class . ' />';
 
-        if (!empty($currencyCode)) {
+        if ($currencyCode) {
             $html .= '<div class="input-group-addon">' . $currencyCode . '</div>';
         }
 
@@ -115,39 +108,38 @@ abstract class JHtmlCrowdfunding
      * @param int    $percent A percent of fund raising
      * @param int    $daysLeft
      * @param string $fundingType
+     * @param bool   $displayPercent
      *
      * @return string
      */
-    public static function progressBar($percent, $daysLeft, $fundingType)
+    public static function progressBar($percent, $daysLeft, $fundingType, $displayPercent = false)
     {
         $html  = array();
         $class = 'progress-bar-success';
 
         if ($daysLeft > 0) {
-            $html[1] = '<div class="progress-bar ' .$class.'" style="width: ' . $percent . '%"></div>';
-        } else {
-
-            // Check for the type of funding
-            if ($fundingType == "FLEXIBLE") {
-
-                if ($percent > 0) {
-                    $html[1] = '<div class="progress-bar ' .$class.'" style="width: 100%">' . Joomla\String\String::strtoupper(JText::_("COM_CROWDFUNDING_SUCCESSFUL")) . '</div>';
-                } else {
-                    $class   = 'progress-bar-danger';
-                    $html[1] = '<div class="progress-bar ' .$class.'" style="width: 100%">' . Joomla\String\String::strtoupper(JText::_("COM_CROWDFUNDING_COMPLETED")) . '</div>';
-                }
-
-            } else { // Fixed
-
-                if ($percent >= 100) {
-                    $html[1] = '<div class="progress-bar ' .$class.'" style="width: 100%">' . Joomla\String\String::strtoupper(JText::_("COM_CROWDFUNDING_SUCCESSFUL")) . '</div>';
-                } else {
-                    $class   = 'progress-bar-danger';
-                    $html[1] = '<div class="progress-bar ' .$class.'" style="width: 100%">' . Joomla\String\String::strtoupper(JText::_("COM_CROWDFUNDING_COMPLETED")) . '</div>';
-                }
-
+            if (!$displayPercent) {
+                $html[1] = '<div class="progress-bar ' .$class.'" style="width: ' . $percent . '%"></div>';
+            } else {
+                $html[1] = '<div class="progress-bar ' .$class.'" style="width: ' . $percent . '%">'.$percent.'%</div>';
             }
-
+        } else {
+            // Check for the type of funding
+            if ($fundingType === 'FLEXIBLE') {
+                if ($percent > 0) {
+                    $html[1] = '<div class="progress-bar ' .$class.' text-uppercase" style="width: 100%">' . JText::_('COM_CROWDFUNDING_SUCCESSFUL') . '</div>';
+                } else {
+                    $class   = 'progress-bar-danger';
+                    $html[1] = '<div class="progress-bar ' .$class.' text-uppercase" style="width: 100%">' . JText::_('COM_CROWDFUNDING_COMPLETED') . '</div>';
+                }
+            } else { // Fixed
+                if ($percent >= 100) {
+                    $html[1] = '<div class="progress-bar ' .$class.' text-uppercase" style="width: 100%">' . JText::_('COM_CROWDFUNDING_SUCCESSFUL') . '</div>';
+                } else {
+                    $class   = 'progress-bar-danger';
+                    $html[1] = '<div class="progress-bar ' .$class.' text-uppercase" style="width: 100%">' . JText::_('COM_CROWDFUNDING_COMPLETED') . '</div>';
+                }
+            }
         }
 
         $html[0] = '<div class="progress">';
@@ -169,25 +161,21 @@ abstract class JHtmlCrowdfunding
     public static function resultState($percent, $fundingType)
     {
         // Check for the type of funding
-        if ($fundingType == "FLEXIBLE") {
-
+        if ($fundingType === 'FLEXIBLE') {
             if ($percent > 0) {
-                $otuput = JText::_("COM_CROWDFUNDING_SUCCESSFUL");
+                $output = JText::_('COM_CROWDFUNDING_SUCCESSFUL');
             } else {
-                $otuput = JText::_("COM_CROWDFUNDING_COMPLETED");
+                $output = JText::_('COM_CROWDFUNDING_COMPLETED');
             }
-
         } else { // Fixed
-
             if ($percent >= 100) {
-                $otuput = JText::_("COM_CROWDFUNDING_SUCCESSFUL");
+                $output = JText::_('COM_CROWDFUNDING_SUCCESSFUL');
             } else {
-                $otuput = JText::_("COM_CROWDFUNDING_COMPLETED");
+                $output = JText::_('COM_CROWDFUNDING_COMPLETED');
             }
-
         }
 
-        return $otuput;
+        return $output;
     }
 
     /**
@@ -201,27 +189,21 @@ abstract class JHtmlCrowdfunding
      */
     public static function resultStateText($percent, $fundingType)
     {
-
         // Check for the type of funding
-        if ($fundingType == "FLEXIBLE") {
-
+        if ($fundingType === 'FLEXIBLE') {
             if ($percent > 0) {
-                $otuput = JText::_("COM_CROWDFUNDING_FUNDRAISE_FINISHED_SUCCESSFULLY");
+                $output = JText::_('COM_CROWDFUNDING_FUNDRAISE_FINISHED_SUCCESSFULLY');
             } else {
-                $otuput = JText::_("COM_CROWDFUNDING_FUNDRAISE_HAS_EXPIRED");
+                $output = JText::_('COM_CROWDFUNDING_FUNDRAISE_HAS_EXPIRED');
             }
-
         } else { // Fixed
-
             if ($percent >= 100) {
-                $otuput = JText::_("COM_CROWDFUNDING_FUNDRAISE_FINISHED_SUCCESSFULLY");
+                $output = JText::_('COM_CROWDFUNDING_FUNDRAISE_FINISHED_SUCCESSFULLY');
             } else {
-                $otuput = JText::_("COM_CROWDFUNDING_FUNDRAISE_HAS_EXPIRED");
+                $output = JText::_('COM_CROWDFUNDING_FUNDRAISE_HAS_EXPIRED');
             }
-
         }
-
-        return $otuput;
+        return $output;
     }
 
     /**
@@ -235,16 +217,16 @@ abstract class JHtmlCrowdfunding
      *
      * @return string
      */
-    public static function state($value, $url, $tip = false, $iconOk = "glyphicon glyphicon-ok-sign", $iconRemove = "glyphicon glyphicon-remove-sign")
+    public static function state($value, $url, $tip = false, $iconOk = 'fa fa-check-circle', $iconRemove = 'fa fa-times-circle')
     {
-        $title = "";
-        if (!empty($tip)) {
-            JHtml::_("bootstrap.tooltip");
+        $title = '';
+        $value = (int)$value;
 
-            $tipMessage = ($value != 1) ? JText::_("COM_CROWDFUNDING_LAUNCH_CAMPAIGN") : JText::_("COM_CROWDFUNDING_STOP_CAMPAIGN");
+        if ($tip === true) {
+            $tipMessage = (Prism\Constants::PUBLISHED !== $value) ? JText::_('COM_CROWDFUNDING_LAUNCH_CAMPAIGN') : JText::_('COM_CROWDFUNDING_STOP_CAMPAIGN');
 
             $class = ' class="btn btn-default btn-sm hasTooltip"';
-            $title = ' title="' . htmlspecialchars($tipMessage, ENT_QUOTES, "UTF-8") . '"';
+            $title = ' title="' . htmlspecialchars($tipMessage, ENT_QUOTES, 'UTF-8') . '"';
 
         } else {
             $class = ' class="btn btn-default btn-sm"';
@@ -252,15 +234,10 @@ abstract class JHtmlCrowdfunding
 
         $html = '<a href="' . $url . '"' . $class . $title . ' ><span class="{ICON}"></span></a>';
 
-        switch ($value) {
-
-            case 1: // Published
-                $html = str_replace("{ICON}", $iconOk, $html);
-                break;
-
-            default: // Unpublished
-                $html = str_replace("{ICON}", $iconRemove, $html);
-                break;
+        if ($value === Prism\Constants::PUBLISHED) {
+            $html = str_replace('{ICON}', $iconOk, $html);
+        } else { // Unpublished
+            $html = str_replace('{ICON}', $iconRemove, $html);
         }
 
         return $html;
@@ -293,7 +270,6 @@ abstract class JHtmlCrowdfunding
      */
     public static function percents($goal, $funded)
     {
-
         $percents = 0;
         if ($goal > 0) {
             $percents = round(($funded / $goal) * 100, 2);
@@ -328,14 +304,13 @@ abstract class JHtmlCrowdfunding
         return implode("\n", $html);
     }
 
-
     /**
      * Method to sort a column in a grid.
      *
      * @param   string $title         The link title
-     * @param   string $order         The order field for the column
+     * @param   int    $order         The order field for the column
      * @param   string $direction     The current direction
-     * @param   int $selected      The selected ordering
+     * @param   int    $selected      The selected ordering
      * @param   string $task          An optional task override
      * @param   string $new_direction An optional direction for the new column
      * @param   string $tip           An optional text shown as tooltip title instead of $title
@@ -349,26 +324,25 @@ abstract class JHtmlCrowdfunding
     public static function sort($title, $order, $direction = 'asc', $selected = 0, $task = null, $new_direction = 'asc', $tip = '')
     {
         $direction = strtolower($direction);
-        $icon      = array('triangle-top', 'triangle-bottom');
-        $index     = (int)($direction == 'desc');
+        $icon      = array('sort-asc', 'sort-desc');
+        $index     = (int)($direction === 'desc');
 
-        if ($order != $selected) {
+        $order     = (int)$order;
+        $selected  = (int)$selected;
+
+        if ($order !== $selected) {
             $direction = $new_direction;
         } else {
-            $direction = ($direction == 'desc') ? 'asc' : 'desc';
+            $direction = ($direction === 'desc') ? 'asc' : 'desc';
         }
 
         $html = '<a href="#" onclick="Joomla.tableOrdering(\'' . $order . '\',\'' . $direction . '\',\'' . $task . '\');return false;" class="hasTooltip" title="' .
-            JHtml::tooltipText(($tip ? $tip : $title), 'JGLOBAL_CLICK_TO_SORT_THIS_COLUMN') . '">';
+            JHtml::tooltipText(($tip ?: $title), 'JGLOBAL_CLICK_TO_SORT_THIS_COLUMN') . '">';
 
-        if (isset($title['0']) && $title['0'] == '<') {
-            $html .= $title;
-        } else {
-            $html .= JText::_($title);
-        }
+        $html .= JText::_($title);
 
-        if ($order == $selected) {
-            $html .= ' <span class="glyphicon glyphicon-' . $icon[$index] . '"></span>';
+        if ($order === $selected) {
+            $html .= ' <span class="fa fa-' . $icon[$index] . '"></span>';
         }
 
         $html .= '</a>';
@@ -376,91 +350,57 @@ abstract class JHtmlCrowdfunding
         return $html;
     }
 
-    public static function reward($rewardId, $reward, $txnId, $sent = 0, $canEdit = false, $redirect = "")
+    public static function reward($options)
     {
-        $state = (!$sent) ? 1 : 0;
-
         $html = array();
 
-        if (!$rewardId) {
-            $icon  = "media/com_crowdfunding/images/noreward_16.png";
-            $title = 'title="' . JText::_('COM_CROWDFUNDING_REWARD_NOT_SELECTED') . '"';
-        } else {
+        if ($options['reward_id']) {
+            $class  = (array_key_exists('class', $options)) ? $options['class'] : '';
 
-            if (!$sent) {
-
-                $icon = "media/com_crowdfunding/images/reward_16.png";
-
-                // Prepare tooltip text
-                if ($canEdit) {
-                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "<br />");
-                } else {
-                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8") . "<br />" . JText::_('COM_CROWDFUNDING_REWARD_NOT_SENT');
-                }
-                $title = 'title="' . $tooltipText . '"';
-
+            $html[] = '<select name="reward_state" class="js-reward-state '.$class.' inline-element" id="reward_state_"'.$options['reward_id'].' data-id="'.$options['transaction_id'].'">';
+            if (!$options['reward_state']) {
+                $html[] = '<option value="0" selected>' . JText::_('COM_CROWDFUNDING_NOT_SENT') . '</option>';
+                $html[] = '<option value="1">'.JText::_('COM_CROWDFUNDING_SENT').'</option>';
             } else {
-
-                $icon = "media/com_crowdfunding/images/reward_sent_16.png";
-
-                // Prepare tooltip text
-                if ($canEdit) {
-                    $tooltipText = JText::sprintf('COM_CROWDFUNDING_NOT_SENT_REWARD_TOOLTIP', htmlspecialchars($reward, ENT_QUOTES, "UTF-8"), "<br />");
-                } else {
-                    $tooltipText = htmlspecialchars($reward, ENT_QUOTES, "UTF-8") . "<br />" . JText::_('COM_CROWDFUNDING_REWARD_HAS_BEEN_SENT');
-                }
-
-                $title = 'title="' . $tooltipText . '"';
-
+                $html[] = '<option value="0">' . JText::_('COM_CROWDFUNDING_NOT_SENT') . '</option>';
+                $html[] = '<option value="1" selected>'.JText::_('COM_CROWDFUNDING_SENT').'</option>';
             }
 
-        }
-
-        // Prepare link
-        if (!$rewardId or !$canEdit) {
-            $link = "javascript: void(0);";
-        } else {
-            if (!empty($redirect)) {
-                $redirect = "&redirect=".base64_encode($redirect);
-            }
-
-            $link = JRoute::_("index.php?option=com_crowdfunding&task=rewards.changeState&txn_id=" . (int)$txnId . "&state=" . (int)$state . "&" . JSession::getFormToken() . "=1".$redirect);
-        }
-
-        $html[] = '<a href="' . $link . '" class="hasTooltip" ' . $title . '>';
-        $html[] = '<img src="' . $icon . '" width="16" height="16" />';
-        $html[] = '</a>';
-
-        return implode(" ", $html);
-    }
-
-
-    public static function projectTitle($title, $categoryState, $slug, $catSlug)
-    {
-        $html = array();
-
-        if (!$categoryState) {
-            $html[] = htmlspecialchars($title, ENT_QUOTES, "utf-8");
-            $html[] = '<button type="button" class="hasTooltip" title="' . htmlspecialchars(JText::_("COM_CROWDFUNDING_SELECT_OTHER_CATEGORY_TOOLTIP"), ENT_QUOTES, "utf-8") . '">';
-            $html[] = '<span class="glyphicon glyphicon-info-sign"></span>';
-            $html[] = '</button>';
-        } else {
-
-            $html[] = '<a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($slug, $catSlug)) . '">';
-            $html[] = htmlspecialchars($title, ENT_QUOTES, "utf-8");
+            $html[] = '</select>';
+            $html[] = '<a href="javascript: void(0);" class="btn btn-default btn-mini hasTooltip" title="'.htmlentities($options['reward_title'], ENT_QUOTES, 'UTF-8'). '">';
+            $html[] = '<span class="fa fa-question"></span>';
             $html[] = '</a>';
         }
 
         return implode("\n", $html);
     }
 
-    public static function date($date, $format = "d F Y")
+    public static function projectTitle($title, $categoryState, $slug, $catSlug)
+    {
+        $html = array();
+        $categoryState = (int)$categoryState;
+
+        if ($categoryState <= 0) {
+            $html[] = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+            $html[] = '<button type="button" class="hasTooltip" title="' . htmlspecialchars(JText::_('COM_CROWDFUNDING_SELECT_OTHER_CATEGORY_TOOLTIP'), ENT_QUOTES, 'UTF-8') . '">';
+            $html[] = '<span class="fa fa-info-circle"></span>';
+            $html[] = '</button>';
+        } else {
+            $html[] = '<a href="' . JRoute::_(CrowdfundingHelperRoute::getDetailsRoute($slug, $catSlug)) . '">';
+            $html[] = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+            $html[] = '</a>';
+        }
+
+        return implode("\n", $html);
+    }
+
+    public static function date($date, $format = 'd F Y')
     {
         $dateValidator = new Prism\Validator\Date($date);
-        if ($dateValidator->isValid()) {
-            $date = JHtml::_("date", $date, $format);
+        if (!$dateValidator->isValid()) {
+            $date = '---';
         } else {
-            $date = "---";
+            $date = JHtml::_('date', $date, $format);
         }
 
         return $date;
@@ -473,26 +413,26 @@ abstract class JHtmlCrowdfunding
      *
      * @return string
      */
-    public static function duration($endDate, $days, $format = "d F Y")
+    public static function duration($endDate, $days, $format = 'd F Y')
     {
-        $output = "";
+        $output = '';
 
         $endDateValidator = new Prism\Validator\Date($endDate);
 
-        if (!empty($days)) {
-            $output .= JText::sprintf("COM_CROWDFUNDING_DURATION_DAYS", (int)$days);
+        if ((int)$days > 0) {
+            $output .= JText::sprintf('COM_CROWDFUNDING_DURATION_DAYS', (int)$days);
 
             // Display end date
             if ($endDateValidator->isValid()) {
                 $output .= '<div class="info-mini">';
-                $output .= JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", JHTML::_('date', $endDate, $format));
+                $output .= JText::sprintf('COM_CROWDFUNDING_DURATION_END_DATE', JHtml::_('date', $endDate, $format));
                 $output .= '</div>';
             }
 
         } elseif ($endDateValidator->isValid()) {
-            $output .= JText::sprintf("COM_CROWDFUNDING_DURATION_END_DATE", JHTML::_('date', $endDate, $format));
+            $output .= JText::sprintf('COM_CROWDFUNDING_DURATION_END_DATE', JHtml::_('date', $endDate, $format));
         } else {
-            $output .= "---";
+            $output .= '---';
         }
 
         return $output;
@@ -500,24 +440,24 @@ abstract class JHtmlCrowdfunding
 
     public static function postedby($name, $date, $link = null)
     {
-        if (!empty($link)) {
-            $profile = '<a href="' . $link . '">' . htmlspecialchars($name, ENT_QUOTES, "utf-8") . '</a>';
+        if (!$link) {
+            $profile = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
         } else {
-            $profile = $name;
+            $profile = '<a href="' . $link . '">' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</a>';
         }
 
         $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
-        $html = JText::sprintf("COM_CROWDFUNDING_POSTED_BY", $profile, $date);
+        $html = JText::sprintf('COM_CROWDFUNDING_POSTED_BY', $profile, $date);
 
         return $html;
     }
 
     public static function name($name)
     {
-        if (!empty($name)) {
-            $output = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+        if (!$name) {
+            $output = JText::_('COM_CROWDFUNDING_ANONYMOUS');
         } else {
-            $output = JText::_("COM_CROWDFUNDING_ANONYMOUS");
+            $output = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
         }
 
         return $output;
@@ -538,25 +478,23 @@ abstract class JHtmlCrowdfunding
     public static function percent($value)
     {
         if (!$value) {
-            $value = "0.0";
+            $value = '0.0';
         }
 
-        return $value . "%";
+        return $value . '%';
     }
 
-    public static function socialProfileLink($link, $name, $options = array())
+    public static function socialProfileLink($link, $name, array $options = array())
     {
-        if (!empty($link)) {
-
-            $targed = "";
-            if (!empty($options["target"])) {
-                $targed = 'target="' . Joomla\Utilities\ArrayHelper::getValue($options, "target") . '"';
+        if (!$link) {
+            $output = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+        } else {
+            $target = '';
+            if (!empty($options['target'])) {
+                $target = 'target="' . Joomla\Utilities\ArrayHelper::getValue($options, 'target') . '"';
             }
 
-            $output = '<a href="' . $link . '" ' . $targed . '>' . htmlspecialchars($name, ENT_QUOTES, "UTF-8") . '</a>';
-
-        } else {
-            $output = htmlspecialchars($name, ENT_QUOTES, "utf-8");
+            $output = '<a href="' . $link . '" ' . $target . '>' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</a>';
         }
 
         return $output;
@@ -565,7 +503,7 @@ abstract class JHtmlCrowdfunding
     public static function rewardImage($image, $rewardId, $width = 250, $height = 250)
     {
         $html[] = '<img src="' . $image . '" width="' . (int)$width . '" height="' . (int)$height . '" ';
-        if (!empty($rewardId)) {
+        if ((int)$rewardId > 0) {
             $html[] = ' id="js-reward-image-' . (int)$rewardId . '" ';
         }
         $html[] = '/>';
@@ -575,15 +513,15 @@ abstract class JHtmlCrowdfunding
 
     public static function rewardsNumber($number)
     {
-        return (!$number) ? JText::_("COM_CROWDFUNDING_UNLIMITED") : (int)$number;
+        return (!$number) ? JText::_('COM_CROWDFUNDING_UNLIMITED') : (int)$number;
     }
 
     public static function rewardsAvailable($number, $distributed)
     {
-        if (!empty($number)) {
+        if ((int)$number > 0) {
             $result = abs($number - $distributed);
         } else {
-            $result = JText::_("COM_CROWDFUNDING_UNLIMITED");
+            $result = JText::_('COM_CROWDFUNDING_UNLIMITED');
         }
 
         return $result;
@@ -592,7 +530,7 @@ abstract class JHtmlCrowdfunding
     /**
      * Prepare some specific CSS styles of the projects.
      *
-     * @param object $item
+     * @param stdClass $item
      * @param Joomla\Registry\Registry $params
      *
      * @return string
@@ -602,8 +540,8 @@ abstract class JHtmlCrowdfunding
         $classes = array();
 
         // Prepare class Featured
-        if (!empty($item->featured)) {
-            $classes[] = $params->get("style_featured");
+        if (Prism\Constants::FEATURED === (int)$item->featured) {
+            $classes[] = $params->get('style_featured');
         }
 
         // Check dates
@@ -614,25 +552,25 @@ abstract class JHtmlCrowdfunding
         // Prepare completed campaign classes.
         if ($today > $fundingEnd) {
             if ($item->goal <= $item->funded) {
-                $classes[] = $params->get("style_completed_successfully");
+                $classes[] = $params->get('style_completed_successfully');
             } else {
-                $classes[] = $params->get("style_completed_unsuccessfully");
+                $classes[] = $params->get('style_completed_unsuccessfully');
             }
         }
 
         // Prepare class for a new campaign.
         if (($today < $fundingEnd) and $fundingStart->isCurrentWeekDay()) {
-            $classes[] = $params->get("style_new");
+            $classes[] = $params->get('style_new');
         }
 
         // Prepare class for a ending soon campaign.
         if (($today < $fundingEnd) and $fundingEnd->isCurrentWeekDay()) {
-            $classes[] = $params->get("style_ending_soon");
+            $classes[] = $params->get('style_ending_soon');
         }
 
         $classes = array_filter($classes);
 
-        return implode(" ", $classes);
+        return implode(' ', $classes);
     }
 
     /**
@@ -647,7 +585,7 @@ abstract class JHtmlCrowdfunding
 
         $document = JFactory::getDocument();
 
-        $document->addStylesheet(JUri::root() . 'media/com_crowdfunding/css/jquery.fancybox.css');
+        $document->addStyleSheet(JUri::root() . 'media/com_crowdfunding/css/jquery.fancybox.css');
         $document->addScript(JUri::root() . 'media/com_crowdfunding/js/jquery.fancybox.min.js');
 
         self::$loaded[__METHOD__] = true;
@@ -664,51 +602,51 @@ abstract class JHtmlCrowdfunding
     public static function profileLocation($name, $countryCode)
     {
         $html = array();
-        if (!empty($name)) {
+        if (JString::strlen($name) > 0) {
             $html[] = '<div class="cf-location">';
-            $html[] = htmlentities($name, ENT_QUOTES, "UTF-8");
+            $html[] = htmlentities($name, ENT_QUOTES, 'UTF-8');
 
-            if (!empty($countryCode)) {
-                $html[] = ", " . htmlentities($countryCode, ENT_QUOTES, "UTF-8");
+            if (JString::strlen($countryCode) > 0) {
+                $html[] = ', ' . htmlentities($countryCode, ENT_QUOTES, 'UTF-8');
             }
 
             $html[] = '</div>';
         }
 
-        return implode("", $html);
+        return implode('', $html);
     }
 
-    public static function profileName($name, $link = "", $verified = false)
+    public static function profileName($name, $link = '', $verified = false)
     {
         $html = array();
 
-        if (!empty($link)) {
-            $html[] = '<a href="' . $link . '">';
-            $html[] = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
-            $html[] = '</a>';
+        if (!$link) {
+            $html[] = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
         } else {
-            $html[] = htmlspecialchars($name, ENT_QUOTES, "UTF-8");
+            $html[] = '<a href="' . $link . '">';
+            $html[] = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+            $html[] = '</a>';
         }
 
         if ($verified) {
-            $html[] = '<span class="glyphicon glyphicon-ok-sign hasTooltip cursor-pointer" title="'.JText::_("COM_CROWDFUNDING_TOOLTIP_PROFILE_VERIFIED").'"></span>';
+            $html[] = '<span class="fa fa-check-circle hasTooltip cursor-pointer" title="'.JText::_('COM_CROWDFUNDING_TOOLTIP_PROFILE_VERIFIED').'"></span>';
         }
 
         return implode("\n", $html);
     }
 
-    public static function profileAvatar($avatar, $link = "", $options = array())
+    public static function profileAvatar($avatar, $link = '', $options = array())
     {
-        $class = (isset($options["class"])) ? 'class="'.$options["class"].'"' : "";
+        $class = (!empty($options['class'])) ? 'class="'.$options['class'].'"' : '';
 
         $html = array();
 
-        if (!empty($link)) {
-            $html[] = '<a href="' . $link . '" '.$class.'>';
+        if (!$link) {
+            $html[] = '<a href="javascript: void(0);" '.$class.' />';
             $html[] = '<img class="media-object" src="'.$avatar.'" />';
             $html[] = '</a>';
         } else {
-            $html[] = '<a href="javascript: void(0);" '.$class.' />';
+            $html[] = '<a href="' . $link . '" '.$class.'>';
             $html[] = '<img class="media-object" src="'.$avatar.'" />';
             $html[] = '</a>';
         }

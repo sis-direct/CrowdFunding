@@ -7,9 +7,7 @@ jQuery(document).ready(function () {
     }
 
     // Initialize symbol length indicator
-    var shortDesc = jQuery('#jform_short_desc');
-    shortDesc.attr("maxlength", 255);
-    shortDesc.maxlength({
+    jQuery('#jform_short_desc').maxlength({
         alwaysShow: true,
         placement: 'bottom-right'
     });
@@ -27,15 +25,8 @@ jQuery(document).ready(function () {
                 type: "GET",
                 data: {query: query},
                 dataType: "text json",
-                async: true,
-                beforeSend : function() {
-                    // Show ajax loader.
-                    //$loader.show();
-                }
+                async: true
             }).done(function(response){
-                // Hide ajax loader.
-                //$loader.hide();
-
                 if (response.success === false) {
                     return false;
                 }
@@ -45,26 +36,24 @@ jQuery(document).ready(function () {
 
         },
         async: true,
-        limit: 5,
-        display: "name"
+        limit: 10,
+        display: "text",
+        name: "value"
     });
 
     $inputTypeahead.bind('typeahead:select', function(event, suggestion) {
-        jQuery("#jform_location_id").attr("value", suggestion.id);
+        jQuery("#jform_location_id").attr("value", suggestion.value);
     });
 
     // Validate the fields.
     jQuery('#js-cf-project-form').parsley({
-        uiEnabled: false,
-        messages: {
-            required: Joomla.JText._('COM_CROWDFUNDING_THIS_VALUE_IS_REQUIRED')
-        }
+        uiEnabled: false
     });
 
     /** Image Tools **/
 
-    var aspectWidth  = cfImageWidth * 2;
-    var aspectHeight = cfImageHeight + 50;
+    var aspectWidth  = crowdfundingOptions.imageWidth * 2;
+    var aspectHeight = crowdfundingOptions.imageHeight + 50;
 
     // Set picture wrapper size.
     var $pictureWrapper = jQuery("#js-fixed-dragger-cropper");
@@ -111,25 +100,8 @@ jQuery(document).ready(function () {
                 if ($image.cropperInitialized) {
                     $image.cropper("replace", response.result.data);
                 } else {
-
                     $image.attr("src", response.result.data);
-
-                    $image.cropper({
-                        aspectRatio: 1/1,
-                        autoCropArea: 0.6, // Center 60%
-                        multiple: false,
-                        dragCrop: false,
-                        dashed: false,
-                        movable: false,
-                        resizable: true,
-                        zoomable: false,
-                        minWidth: cfImageWidth,
-                        minHeight: cfImageHeight,
-                        built: function() {
-                            jQuery("#js-image-tools").show();
-                            $image.cropperInitialized = true;
-                        }
-                    });
+                    initializeCropper($image, crowdfundingOptions);
                 }
 
             }
@@ -227,4 +199,29 @@ jQuery(document).ready(function () {
         }
 
     });
+
+    function initializeCropper($image, componentOptions) {
+
+        var options = {
+            autoCropArea: 0.6, // Center 60%
+            multiple: false,
+            dragCrop: false,
+            dashed: false,
+            movable: false,
+            resizable: true,
+            zoomable: false,
+            minWidth: componentOptions.imageWidth,
+            minHeight: componentOptions.imageHeight,
+            built: function() {
+                jQuery("#js-image-tools").show();
+                $image.cropperInitialized = true;
+            }
+        };
+
+        if (componentOptions.aspectRatio) {
+            options.aspectRatio = componentOptions.aspectRatio;
+        }
+
+        $image.cropper(options);
+    }
 });

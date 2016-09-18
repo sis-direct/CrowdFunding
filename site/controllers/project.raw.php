@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -25,13 +25,12 @@ class CrowdfundingControllerProject extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return   CrowdfundingModelProject    The model.
      * @since    1.5
      */
     public function getModel($name = 'Project', $prefix = 'CrowdfundingModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -43,18 +42,15 @@ class CrowdfundingControllerProject extends JControllerLegacy
      */
     public function loadLocation()
     {
-        // Get the input
-        $query = $this->input->get->get('query', "", 'string');
+        $query = $this->input->get->get('query', '', 'string');
 
         $response = new Prism\Response\Json();
 
         try {
-
             $locations = new Crowdfunding\Locations(JFactory::getDbo());
             $locations->loadByString($query);
 
-            $locationData = $locations->toOptions();
-
+            $locationData  = $locations->toOptions('id', 'name');
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'));
@@ -77,15 +73,15 @@ class CrowdfundingControllerProject extends JControllerLegacy
     public function loadProject()
     {
         // Get the input
-        $query = $this->input->get->get('query', "", 'string');
+        $query = $this->input->get->get('query', '', 'string');
 
         $response = new Prism\Response\Json();
 
         try {
 
             $options = array(
-                "published" => Prism\Constants::PUBLISHED,
-                "approved"  => Prism\Constants::APPROVED,
+                'published' => Prism\Constants::PUBLISHED,
+                'approved'  => Prism\Constants::APPROVED,
             );
 
             $projects = new Crowdfunding\Projects(JFactory::getDbo());
@@ -116,7 +112,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
 
         $response = new Prism\Response\Json();
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
@@ -131,10 +127,10 @@ class CrowdfundingControllerProject extends JControllerLegacy
         $model = $this->getModel();
         /** @var $model CrowdfundingModelProject */
 
-        $projectId = $this->input->post->get("id");
+        $projectId = $this->input->post->get('id', 0, 'int');
 
         // Validate project owner.
-        if (!empty($projectId)) {
+        if ($projectId > 0) {
             $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $projectId, $userId);
             if (!$validator->isValid()) {
 
@@ -148,7 +144,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
             }
         }
 
-        $file = $this->input->files->get("project_image");
+        $file = $this->input->files->get('project_image');
         if (!$file) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
@@ -159,23 +155,23 @@ class CrowdfundingControllerProject extends JControllerLegacy
             $app->close();
         }
 
-        $temporaryUrl = "";
+        $temporaryUrl = '';
 
         try {
 
             // Get the folder where the images will be stored
-            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
             $image      = $model->uploadImage($file, $temporaryFolder);
             $imageName  = basename($image);
 
             // Prepare URL to temporary image.
-            $temporaryUrl = JUri::base(). CrowdfundingHelper::getTemporaryImagesFolderUri() . "/". $imageName;
+            $temporaryUrl = JUri::base(). CrowdfundingHelper::getTemporaryImagesFolderUri() . '/'. $imageName;
 
             // Remove an old image if it exists.
             $oldImage = $app->getUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT);
-            if (!empty($oldImage)) {
-                $oldImage = JPath::clean($temporaryFolder . "/" . basename($oldImage));
+            if (JString::strlen($oldImage) > 0) {
+                $oldImage = JPath::clean($temporaryFolder . '/' . basename($oldImage));
                 if (JFile::exists($oldImage)) {
                     JFile::delete($oldImage);
                 }
@@ -235,7 +231,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
 
         $response = new Prism\Response\Json();
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
@@ -250,15 +246,13 @@ class CrowdfundingControllerProject extends JControllerLegacy
         $model = $this->getModel();
         /** @var $model CrowdfundingModelProject */
 
-        $projectId = $this->input->post->get("id");
+        $projectId = $this->input->post->get('id', 0, 'int');
 
         // If there is a project, validate the owner.
-        if (!empty($projectId)) {
+        if ($projectId > 0) {
 
-            // Validate project owner.
             $validator = new Crowdfunding\Validator\Project\Owner(JFactory::getDbo(), $projectId, $userId);
             if (!$validator->isValid()) {
-
                 $response
                     ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
                     ->setText(JText::_('COM_CROWDFUNDING_ERROR_INVALID_PROJECT'))
@@ -267,12 +261,11 @@ class CrowdfundingControllerProject extends JControllerLegacy
                 echo $response;
                 $app->close();
             }
-
         }
 
         // Get the filename from the session.
         $fileName = basename($app->getUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT));
-        $temporaryFile = JPath::clean(CrowdfundingHelper::getTemporaryImagesFolder() ."/". $fileName);
+        $temporaryFile = JPath::clean(CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE) .'/'. $fileName);
 
         if (!$fileName or !JFile::exists($temporaryFile)) {
             $response
@@ -284,48 +277,48 @@ class CrowdfundingControllerProject extends JControllerLegacy
             $app->close();
         }
 
-        $imageUrl = "";
+        $imageUrl = '';
 
         try {
 
             // Get the folder where the images will be stored
-            $destination = CrowdfundingHelper::getTemporaryImagesFolder();
+            $destination = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
-            $params = JComponentHelper::getParams("com_crowdfunding");
+            $params = JComponentHelper::getParams('com_crowdfunding');
 
             $options = array(
-                "width"    => $this->input->getFloat("width"),
-                "height"   => $this->input->getFloat("height"),
-                "x"        => $this->input->getFloat("x"),
-                "y"        => $this->input->getFloat("y"),
-                "destination"  => $destination,
-                "resize_width" => $params->get("image_width", 200),
-                "resize_height" => $params->get("image_height", 200)
+                'width'    => $this->input->getFloat('width'),
+                'height'   => $this->input->getFloat('height'),
+                'x'        => $this->input->getFloat('x'),
+                'y'        => $this->input->getFloat('y'),
+                'destination'  => $destination,
+                'resize_width' => $params->get('image_width', 200),
+                'resize_height' => $params->get('image_height', 200)
             );
 
             // Resize the picture.
             $images     = $model->cropImage($temporaryFile, $options);
-            $imageName  = basename(Joomla\Utilities\ArrayHelper::getValue($images, "image"));
+            $imageName  = basename(Joomla\Utilities\ArrayHelper::getValue($images, 'image'));
 
             // Remove the temporary images if they exist.
             $temporaryImages = $app->getUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT);
-            if (!empty($temporaryImages)) {
+            if ($temporaryImages !== null and is_array($temporaryImages)) {
                 $model->removeTemporaryImages($temporaryImages, $destination);
             }
 
             // If there is a project, store the images to database.
             // If there is NO project, store the images in the session.
-            if (!empty($projectId)) {
+            if ($projectId > 0) {
                 $model->updateImages($projectId, $images, $destination);
                 $app->setUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT, null);
 
                 // Get the folder of the images where the pictures will be stored.
-                $imageUrl = JUri::base() . CrowdfundingHelper::getImagesFolderUri() ."/". $imageName;
+                $imageUrl = JUri::base() . CrowdfundingHelper::getImagesFolderUri() .'/'. $imageName;
             } else {
                 $app->setUserState(Crowdfunding\Constants::CROPPED_IMAGES_CONTEXT, $images);
 
                 // Get the temporary folder where the images will be stored.
-                $imageUrl = JUri::base() . CrowdfundingHelper::getTemporaryImagesFolderUri() ."/". $imageName;
+                $imageUrl = JUri::base() . CrowdfundingHelper::getTemporaryImagesFolderUri() .'/'. $imageName;
             }
 
         } catch (RuntimeException $e) {
@@ -369,7 +362,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
 
         $response = new Prism\Response\Json();
 
-        $userId = JFactory::getUser()->get("id");
+        $userId = JFactory::getUser()->get('id');
         if (!$userId) {
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
@@ -383,12 +376,12 @@ class CrowdfundingControllerProject extends JControllerLegacy
         try {
 
             // Get the folder where the images will be stored
-            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder();
+            $temporaryFolder = CrowdfundingHelper::getTemporaryImagesFolder(JPATH_BASE);
 
             // Remove old image if it exists.
             $oldImage = $app->getUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT);
-            if (!empty($oldImage)) {
-                $oldImage = JPath::clean($temporaryFolder . "/" . basename($oldImage));
+            if (JString::strlen($oldImage) > 0) {
+                $oldImage = JPath::clean($temporaryFolder . '/' . basename($oldImage));
                 if (JFile::exists($oldImage)) {
                     JFile::delete($oldImage);
                 }
@@ -398,7 +391,6 @@ class CrowdfundingControllerProject extends JControllerLegacy
             $app->setUserState(Crowdfunding\Constants::TEMPORARY_IMAGE_CONTEXT, null);
 
         } catch (Exception $e) {
-
             $response
                 ->setTitle(JText::_('COM_CROWDFUNDING_FAIL'))
                 ->setText(JText::_('COM_CROWDFUNDING_ERROR_SYSTEM'))
@@ -430,7 +422,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
 
         $response = new Prism\Response\Json();
 
-        $userId  = JFactory::getUser()->get("id");
+        $userId  = JFactory::getUser()->get('id');
 
         if (!$userId) {
             $response
@@ -475,7 +467,7 @@ class CrowdfundingControllerProject extends JControllerLegacy
         }
 
         $responseData = array(
-            "state" => $state
+            'state' => $state
         );
 
         $response

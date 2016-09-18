@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -63,9 +63,9 @@ class CrowdfundingModelIntro extends JModelItem
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.title, a.introtext, a.fulltext")
-            ->from($db->quoteName("#__content", "a"))
-            ->where("a.id = " . (int)$id);
+            ->select('a.title, a.introtext, a.fulltext')
+            ->from($db->quoteName('#__content', 'a'))
+            ->where('a.id = ' . (int)$id);
 
         $db->setQuery($query);
 

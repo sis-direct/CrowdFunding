@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -51,51 +51,51 @@ class CrowdfundingViewCategory extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->getCmd("option");
-    }
+    /**
+     * @var JApplicationSite
+     */
+    protected $app;
 
     public function display($tpl = null)
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
+        $this->app        = JFactory::getApplication();
 
-        // Initialise variables
-        $this->state      = $this->get("State");
+        $this->option     = JFactory::getApplication()->input->getCmd('option');
+        
+        $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
         // Get params
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
         /** @var  $this->params Joomla\Registry\Registry */
 
         // Prepare subcategories.
-        $this->displaySubcategories = $this->params->get("display_subcategories", 0);
-        if (!empty($this->displaySubcategories)) {
+        $this->displaySubcategories = (bool)$this->params->get('display_subcategories', Prism\Constants::DO_NOT_DISPLAY);
+        if ($this->displaySubcategories) {
             $this->prepareSubcategories();
         }
 
-        $this->itemsInRow  = $this->params->get("items_row", 3);
-        $this->items       = CrowdfundingHelper::prepareItems($this->items, $this->itemsInRow);
+        $this->itemsInRow  = (int)$this->params->get('items_row', 3);
+
+        $this->prepareItems($this->items);
 
         // Get the folder with images
-        $this->imageFolder = $this->params->get("images_directory", "images/crowdfunding");
+        $this->imageFolder = $this->params->get('images_directory', 'images/crowdfunding');
 
         // Get currency
-        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get("project_currency"));
+        $currency     = Crowdfunding\Currency::getInstance(JFactory::getDbo(), $this->params->get('project_currency'));
         $this->amount = new Crowdfunding\Amount($this->params);
         $this->amount->setCurrency($currency);
 
-        $this->displayCreator = $this->params->get("integration_display_creator", true);
+        $this->displayCreator = (bool)$this->params->get('integration_display_creator', Prism\Constants::DISPLAY);
 
         // Prepare social integration.
-        if (!empty($this->displayCreator)) {
+        if ($this->displayCreator) {
             $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
                 array(
-                    "social_platform" => $this->params->get("integration_social_platform"),
-                    "users_ids" => CrowdfundingHelper::fetchUserIds($this->items)
+                    'social_platform' => $this->params->get('integration_social_platform'),
+                    'users_ids' => CrowdfundingHelper::fetchUserIds($this->items)
                 )
             );
 
@@ -105,19 +105,19 @@ class CrowdfundingViewCategory extends JViewLegacy
         }
 
         $this->layoutData = array(
-            "items" => $this->items,
-            "params" => $this->params,
-            "amount" => $this->amount,
-            "socialProfiles" => $this->socialProfiles,
-            "imageFolder" => $this->imageFolder,
-            "titleLength" => $this->params->get("discover_title_length", 0),
-            "descriptionLength" => $this->params->get("discover_description_length", 0),
-            "span"  => (!empty($this->itemsInRow)) ? round(12 / $this->itemsInRow) : 4
+            'items' => $this->items,
+            'params' => $this->params,
+            'amount' => $this->amount,
+            'socialProfiles' => $this->socialProfiles,
+            'imageFolder' => $this->imageFolder,
+            'titleLength' => $this->params->get('discover_title_length', 0),
+            'descriptionLength' => $this->params->get('discover_description_length', 0),
+            'span'  => ($this->itemsInRow > 0) ? round(12 / $this->itemsInRow) : 4
         );
 
         // Get current category
-        $categoryId = $app->input->getInt("id");
-        $categories = Crowdfunding\Categories::getInstance("crowdfunding");
+        $categoryId = $this->app->input->getInt('id');
+        $categories = Crowdfunding\Categories::getInstance('crowdfunding');
         $this->item = $categories->get($categoryId);
 
         $this->prepareDocument();
@@ -146,18 +146,15 @@ class CrowdfundingViewCategory extends JViewLegacy
 
         // Meta keywords
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
     }
 
     private function preparePageHeading()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
         $menu  = $menus->getActive();
 
         // Prepare page heading
@@ -170,12 +167,9 @@ class CrowdfundingViewCategory extends JViewLegacy
 
     private function preparePageTitle()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
         $menu  = $menus->getActive();
 
         // Prepare page title
@@ -187,11 +181,11 @@ class CrowdfundingViewCategory extends JViewLegacy
 
         // Add title before or after Site Name
         if (!$title) {
-            $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
-            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
-            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+            $title = $this->app->get('sitename');
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 1) {
+            $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $this->app->get('sitename'));
         }
 
         $this->document->setTitle($title);
@@ -199,17 +193,15 @@ class CrowdfundingViewCategory extends JViewLegacy
 
     private function prepareSubcategories()
     {
-        $app = JFactory::getApplication();
-
-        $categoryId = $app->input->getInt("id");
+        $categoryId = $this->app->input->getInt('id');
 
         $categories = new Crowdfunding\Categories();
         $category   = $categories->get($categoryId);
 
         $this->categories = $category->getChildren();
 
-        $this->subcategoriesPerRow = $this->params->get("categories_items_row", 3);
-        $this->displayProjectsNumber = $this->params->get("categories_display_projects_number", 0);
+        $this->subcategoriesPerRow = $this->params->get('categories_items_row', 3);
+        $this->displayProjectsNumber = $this->params->get('categories_display_projects_number', 0);
 
         // Load projects number.
         if ($this->displayProjectsNumber) {
@@ -220,9 +212,24 @@ class CrowdfundingViewCategory extends JViewLegacy
 
             $categories->setDb(JFactory::getDbo());
 
-            $this->projectsNumber = $categories->getProjectsNumber($ids, array("state" => 1));
+            $this->projectsNumber = $categories->getProjectsNumber($ids, array('state' => 1));
         }
 
         $this->categories = CrowdfundingHelper::prepareCategories($this->categories);
+    }
+
+    private function prepareItems($items)
+    {
+        $options   = array();
+
+        $helperBus = new Prism\Helper\HelperBus($items);
+        $helperBus->addCommand(new Crowdfunding\Helper\PrepareItemsHelper());
+
+        // Count the number of funders.
+        if (strcmp('items_grid_two', $this->params->get('grid_layout')) === 0) {
+            $helperBus->addCommand(new Crowdfunding\Helper\PrepareItemFundersHelper(JFactory::getDbo()));
+        }
+
+        $helperBus->handle($options);
     }
 }

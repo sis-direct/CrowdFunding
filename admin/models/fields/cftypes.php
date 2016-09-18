@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('JPATH_BASE') or die;
@@ -13,6 +13,9 @@ jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
+
+jimport('Prism.init');
+jimport('Crowdfunding.init');
 
 /**
  * Form Field class for the Joomla Framework.
@@ -43,7 +46,7 @@ class JFormFieldCfTypes extends JFormFieldList
         $options = array();
 
         // Get types
-        $filters = new Crowdfunding\Filters(JFactory::getDbo());
+        $filters = Crowdfunding\Filters::getInstance(JFactory::getDbo());
 
         $typesOptions = $filters->getProjectsTypes();
 

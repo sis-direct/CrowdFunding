@@ -3,8 +3,8 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -79,13 +79,13 @@ class CrowdfundingViewUser extends JViewLegacy
         $amounts   = $statistics->getAmounts();
 
         if (!empty($amounts["invested"])) {
-            $this->investedAmount = (float)$amounts["invested"]->amount;
-            $this->investedTransactions = (int)$amounts["invested"]->number;
+            $this->investedAmount = (float)$amounts["invested"]['amount'];
+            $this->investedTransactions = (int)$amounts["invested"]['number'];
         }
 
         if (!empty($amounts["received"])) {
-            $this->receivedAmount = (float)$amounts["received"]->amount;
-            $this->receivedTransactions = (int)$amounts["received"]->number;
+            $this->receivedAmount = (float)$amounts["received"]['amount'];
+            $this->receivedTransactions = (int)$amounts["received"]['number'];
         }
 
         // Get social profile
@@ -151,6 +151,6 @@ class CrowdfundingViewUser extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        $this->document->addScript('../media/' . $this->option . '/js/admin/' . Joomla\String\String::strtolower($this->getName()) . '.js');
+        $this->document->addScript('../media/' . $this->option . '/js/admin/' . JString::strtolower($this->getName()) . '.js');
     }
 }

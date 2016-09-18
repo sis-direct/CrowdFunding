@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -32,7 +32,7 @@ class CrowdfundingViewReward extends JViewLegacy
     protected $pagination;
 
     /**
-     * @var CrowdfundingCurrency
+     * @var Crowdfunding\Currency
      */
     protected $currency;
 
@@ -50,28 +50,24 @@ class CrowdfundingViewReward extends JViewLegacy
     protected $option;
 
     protected $pageclass_sfx;
-
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
+    
     public function display($tpl = null)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
+        $this->option = JFactory::getApplication()->input->get('option');
+        
         // Get user ID.
-        $this->userId = JFactory::getUser()->get("id");
+        $this->userId = JFactory::getUser()->get('id');
 
         // Get reward ID.
-        $rewardId = $app->input->getInt("id");
+        $rewardId = $app->input->getInt('id');
 
         // Validate reward owner
         $validator = new Crowdfunding\Validator\Reward\Owner(JFactory::getDbo(), $rewardId, $this->userId);
         if (!$validator->isValid()) {
-            $app->enqueueMessage(JText::_("COM_CROWDFUNDING_ERROR_INVALID_REWARD"), "notice");
+            $app->enqueueMessage(JText::_('COM_CROWDFUNDING_ERROR_INVALID_REWARD'), 'notice');
             $app->redirect(JRoute::_(CrowdfundingHelperRoute::getDiscoverRoute()));
             return;
         }
@@ -82,16 +78,16 @@ class CrowdfundingViewReward extends JViewLegacy
 
         // Get params
         /** @var  $params Joomla\Registry\Registry */
-        $params = $this->state->get("params");
+        $params = $this->state->get('params');
         $this->params = $params;
 
         // Prepare an URL where user will be redirected when change the state of a reward.
-        $this->redirectUrl = "index.php?option=com_crowdfunding&view=reward&id=".$rewardId;
+        $this->redirectUrl = 'index.php?option=com_crowdfunding&view=reward&id='.$rewardId;
 
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
         // Load reward data.
         $this->reward = new Crowdfunding\Reward(JFactory::getDbo());
@@ -99,15 +95,15 @@ class CrowdfundingViewReward extends JViewLegacy
 
         // Prepare reward delivery date.
         $dateValidator = new Prism\Validator\Date($this->reward->getDeliveryDate());
-        $this->deliveryDate = ($dateValidator->isValid()) ? JHtml::_('date', $this->reward->getDeliveryDate(), JText::_('DATE_FORMAT_LC3')) : "--";
+        $this->deliveryDate = ($dateValidator->isValid()) ? JHtml::_('date', $this->reward->getDeliveryDate(), JText::_('DATE_FORMAT_LC3')) : '--';
 
         // Get images folder.
         $this->imagesFolder = CrowdfundingHelper::getImagesFolderUri($this->userId);
 
         // Get social profile
-        $socialPlatform = $this->params->get("integration_social_platform");
+        $socialPlatform = $this->params->get('integration_social_platform');
 
-        if (!empty($socialPlatform)) {
+        if (JString::strlen($socialPlatform) > 0) {
             $this->prepareSocialIntegration($socialPlatform);
         }
 
@@ -137,15 +133,19 @@ class CrowdfundingViewReward extends JViewLegacy
 
         // Meta keywords
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
 
         if ($this->params->get('robots')) {
-            $this->document->setMetadata('robots', $this->params->get('robots'));
+            $this->document->setMetaData('robots', $this->params->get('robots'));
         }
 
         // Scripts
         JHtml::_('bootstrap.tooltip');
+        JHtml::_('Prism.ui.pnotify');
+        JHtml::_('Prism.ui.joomlaHelper');
+
+        $this->document->addScript('media/com_crowdfunding/js/site/reward_state.js');
     }
 
     private function preparePageHeading()
@@ -164,7 +164,6 @@ class CrowdfundingViewReward extends JViewLegacy
         } else {
             $this->params->def('page_heading', JText::_('COM_CROWDFUNDING_REWARD_DEFAULT_PAGE_TITLE'));
         }
-
     }
 
     private function preparePageTitle()
@@ -178,9 +177,9 @@ class CrowdfundingViewReward extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
 
@@ -197,14 +196,13 @@ class CrowdfundingViewReward extends JViewLegacy
         }
 
         $options = array(
-            "social_platform" => $socialPlatform,
-            "users_ids" => $usersIds
+            'social_platform' => $socialPlatform,
+            'users_ids' => $usersIds
         );
 
         $profileBuilder = new Prism\Integration\Profiles\Builder($options);
         $profileBuilder->build();
 
         $this->socialProfiles = $profileBuilder->getProfiles();
-
     }
 }

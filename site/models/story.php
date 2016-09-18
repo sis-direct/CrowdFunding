@@ -4,13 +4,13 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-JLoader::register("CrowdfundingModelProject", CROWDFUNDING_PATH_COMPONENT_SITE . "/models/project.php");
+JLoader::register('CrowdfundingModelProject', CROWDFUNDING_PATH_COMPONENT_SITE . '/models/project.php');
 
 class CrowdfundingModelStory extends CrowdfundingModelProject
 {
@@ -20,7 +20,7 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
      * The base form is loaded from XML and then an event is fired
      * for users plugins to extend the form with extra fields.
      *
-     * @param    array   $data     An optional array of data for the form to interogate.
+     * @param    array   $data     An optional array of data for the form to interrogate.
      * @param    boolean $loadData True if the form is to load its own data (default case), false if not.
      *
      * @return    JForm    A JForm object on success, false on failure
@@ -52,10 +52,9 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         if (!$data) {
 
             $itemId = (int)$this->getState($this->getName() . '.id');
-            $userId = JFactory::getUser()->get("id");
+            $userId = JFactory::getUser()->get('id');
 
             $data = $this->getItem($itemId, $userId);
-
         }
 
         return $data;
@@ -71,12 +70,12 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
      */
     public function save($data)
     {
-        $id          = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
+        $id          = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, 'description');
 
         $keys = array(
-            "id" => $id,
-            "user_id" => JFactory::getUser()->get("id"),
+            'id' => $id,
+            'user_id' => JFactory::getUser()->get('id'),
         );
 
         // Load a record from the database.
@@ -84,34 +83,34 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         $row = $this->getTable();
         $row->load($keys);
 
-        $row->set("description", $description);
+        $row->set('description', $description);
 
-        $this->prepareTable($row, $data);
+        $this->prepareTableData($row, $data);
 
         $row->store();
 
         // Trigger the event onContentAfterSave.
-        $this->triggerEventAfterSave($row, "story");
+        $this->triggerEventAfterSave($row, 'story');
 
-        return $row->get("id");
+        return $row->get('id');
     }
 
-    protected function prepareTable(&$table, $data)
+    protected function prepareTableData($table, $data)
     {
         // Prepare the video
-        $pitchVideo = Joomla\Utilities\ArrayHelper::getValue($data, "pitch_video");
-        $table->set("pitch_video", $pitchVideo);
+        $pitchVideo = Joomla\Utilities\ArrayHelper::getValue($data, 'pitch_video');
+        $table->set('pitch_video', $pitchVideo);
 
         // Prepare the image.
-        if (!empty($data["pitch_image"])) {
+        if (!empty($data['pitch_image'])) {
 
             // Delete old image if I upload a new one.
-            if (!empty($table->pitch_image)) {
+            if (JString::strlen($table->pitch_image) > 0) {
 
                 $params       = JComponentHelper::getParams($this->option);
                 /** @var  $params Joomla\Registry\Registry */
 
-                $imagesFolder = $params->get("images_directory", "images/crowdfunding");
+                $imagesFolder = $params->get('images_directory', 'images/crowdfunding');
 
                 // Remove an image from the filesystem
                 $pitchImage = JPAth::clean($imagesFolder . DIRECTORY_SEPARATOR . $table->pitch_image);
@@ -121,10 +120,9 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
                 }
             }
 
-            $table->set("pitch_image", $data["pitch_image"]);
+            $table->set('pitch_image', $data['pitch_image']);
         }
     }
-
 
     /**
      * Upload an image
@@ -148,10 +146,10 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         $params     = JComponentHelper::getParams($this->option);
         /** @var  $params Joomla\Registry\Registry */
 
-        $tmpFolder = $app->get("tmp_path");
+        $tmpFolder = $app->get('tmp_path');
 
         // Joomla! media extension parameters
-        $mediaParams = JComponentHelper::getParams("com_media");
+        $mediaParams = JComponentHelper::getParams('com_media');
         /** @var  $mediaParams Joomla\Registry\Registry */
 
         $file = new Prism\File\File();
@@ -159,7 +157,7 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         // Prepare size validator.
         $KB            = 1024 * 1024;
         $fileSize      = (int)$app->input->server->get('CONTENT_LENGTH');
-        $uploadMaxSize = $mediaParams->get("upload_maxsize") * $KB;
+        $uploadMaxSize = $mediaParams->get('upload_maxsize') * $KB;
 
         $sizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
 
@@ -170,11 +168,11 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
 
         // Get allowed mime types from media manager options
-        $mimeTypes = explode(",", $mediaParams->get("upload_mime"));
+        $mimeTypes = explode(',', $mediaParams->get('upload_mime'));
         $imageValidator->setMimeTypes($mimeTypes);
 
         // Get allowed image extensions from media manager options
-        $imageExtensions = explode(",", $mediaParams->get("image_extensions"));
+        $imageExtensions = explode(',', $mediaParams->get('image_extensions'));
         $imageValidator->setImageExtensions($imageExtensions);
 
         $file
@@ -188,12 +186,11 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         }
 
         // Generate temporary file name
-        $ext = Joomla\String\String::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
+        $ext = JString::strtolower(JFile::makeSafe(JFile::getExt($image['name'])));
 
-        $generatedName = new Prism\String();
-        $generatedName->generateRandomString(32);
+        $generatedName = Prism\Utilities\StringHelper::generateRandomString(32);
 
-        $tmpDestFile = JPath::clean($tmpFolder . DIRECTORY_SEPARATOR . $generatedName . "." . $ext);
+        $tmpDestFile = JPath::clean($tmpFolder . DIRECTORY_SEPARATOR . $generatedName . '.' . $ext);
 
         // Prepare uploader object.
         $uploader = new Prism\File\Uploader\Local($uploadedFile);
@@ -218,15 +215,15 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
             throw new Exception(JText::sprintf('COM_CROWDFUNDING_ERROR_FILE_NOT_FOUND', $tmpDestFile));
         }
 
-        $imageName = $generatedName . "_pimage.png";
+        $imageName = $generatedName . '_pimage.png';
         $imageFile = $destination . DIRECTORY_SEPARATOR . $imageName;
 
         // Get the scale method.
-        $scaleMethod = $params->get("image_resizing_scale", JImage::SCALE_INSIDE);
+        $scaleMethod = $params->get('image_resizing_scale', JImage::SCALE_INSIDE);
 
         // Create main image
-        $width  = $params->get("pitch_image_width", 600);
-        $height = $params->get("pitch_image_height", 400);
+        $width  = $params->get('pitch_image_width', 600);
+        $height = $params->get('pitch_image_height', 400);
         $image->resize($width, $height, false, $scaleMethod);
         $image->toFile($imageFile, IMAGETYPE_PNG);
 
@@ -247,8 +244,8 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
     public function removeImage($id, $userId)
     {
         $keys = array(
-            "id" => $id,
-            "user_id" => $userId
+            'id' => $id,
+            'user_id' => $userId
         );
 
         // Load category data
@@ -256,24 +253,23 @@ class CrowdfundingModelStory extends CrowdfundingModelProject
         $row->load($keys);
 
         // Delete old image if I upload the new one
-        if ($row->get("pitch_image")) {
+        if ($row->get('pitch_image')) {
             jimport('joomla.filesystem.file');
 
             $params       = JComponentHelper::getParams($this->option);
             /** @var  $params Joomla\Registry\Registry */
 
-            $imagesFolder = $params->get("images_directory", "images/crowdfunding");
+            $imagesFolder = $params->get('images_directory', 'images/crowdfunding');
 
             // Remove an image from the filesystem
-            $pitchImage = JPath::clean($imagesFolder . DIRECTORY_SEPARATOR . $row->get("pitch_image"));
+            $pitchImage = JPath::clean($imagesFolder . DIRECTORY_SEPARATOR . $row->get('pitch_image'));
 
             if (is_file($pitchImage)) {
                 JFile::delete($pitchImage);
             }
         }
 
-        $row->set("pitch_image", "");
+        $row->set('pitch_image', '');
         $row->store();
     }
-
 }

@@ -4,7 +4,7 @@
  * @subpackage   Components
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -21,13 +21,12 @@ class CrowdfundingModelFriendMail extends JModelForm
     {
         parent::populateState();
 
-        $app = JFactory::getApplication("Site");
-        /** @var $app JApplicationSite * */
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $value);
-
     }
 
     /**
@@ -79,17 +78,17 @@ class CrowdfundingModelFriendMail extends JModelForm
     public function send($data)
     {
         // Send email to the administrator
-        $subject   = Joomla\Utilities\ArrayHelper::getValue($data, "subject");
-        $body      = Joomla\Utilities\ArrayHelper::getValue($data, "message");
-        $from      = Joomla\Utilities\ArrayHelper::getValue($data, "sender");
-        $fromName  = Joomla\Utilities\ArrayHelper::getValue($data, "sender_name");
-        $recipient = Joomla\Utilities\ArrayHelper::getValue($data, "receiver");
+        $subject   = Joomla\Utilities\ArrayHelper::getValue($data, 'subject');
+        $body      = Joomla\Utilities\ArrayHelper::getValue($data, 'message');
+        $from      = Joomla\Utilities\ArrayHelper::getValue($data, 'sender');
+        $fromName  = Joomla\Utilities\ArrayHelper::getValue($data, 'sender_name');
+        $recipient = Joomla\Utilities\ArrayHelper::getValue($data, 'receiver');
 
         $return = JFactory::getMailer()->sendMail($from, $fromName, $recipient, $subject, $body);
 
         // Check for an error.
         if ($return !== true) {
-            $error = JText::sprintf("COM_CROWDFUNDING_ERROR_MAIL_SENDING_FRIEND");
+            $error = JText::sprintf('COM_CROWDFUNDING_ERROR_MAIL_SENDING_FRIEND');
             JLog::add($error);
         }
     }
